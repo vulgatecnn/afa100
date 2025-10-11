@@ -1,0 +1,105 @@
+<!--登录页面-->
+<view class="container">
+  <view class="login-header">
+    <image class="logo" src="/images/logo.png" mode="aspectFit"></image>
+    <text class="app-name">AFA办公通行</text>
+    <text class="app-desc">智能办公空间通行管理系统</text>
+  </view>
+
+  <view class="login-content">
+    <view class="feature-list">
+      <view class="feature-item">
+        <view class="feature-icon visitor-icon"></view>
+        <view class="feature-text">
+          <text class="feature-title">访客预约</text>
+          <text class="feature-desc">便捷的访客预约申请流程</text>
+        </view>
+      </view>
+      
+      <view class="feature-item">
+        <view class="feature-icon employee-icon"></view>
+        <view class="feature-text">
+          <text class="feature-title">员工通行</text>
+          <text class="feature-desc">长期有效的员工通行权限</text>
+        </view>
+      </view>
+      
+      <view class="feature-item">
+        <view class="feature-icon qr-icon"></view>
+        <view class="feature-text">
+          <text class="feature-title">智能通行</text>
+          <text class="feature-desc">二维码扫码快速通行</text>
+        </view>
+      </view>
+      
+      <view class="feature-item">
+        <view class="feature-icon security-icon"></view>
+        <view class="feature-text">
+          <text class="feature-title">安全可靠</text>
+          <text class="feature-desc">多重验证保障通行安全</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="login-actions">
+      <button 
+        class="btn-wechat-login" 
+        bindtap="onWechatLogin"
+        loading="{{logging}}"
+        disabled="{{logging}}"
+      >
+        <image class="wechat-icon" src="/images/wechat.png" mode="aspectFit"></image>
+        <text class="login-text">{{logging ? '登录中...' : '微信授权登录'}}</text>
+      </button>
+      
+      <view class="login-tips">
+        <text class="tip-text">登录即表示同意</text>
+        <text class="tip-link" bindtap="onViewPrivacy">《隐私政策》</text>
+        <text class="tip-text">和</text>
+        <text class="tip-link" bindtap="onViewTerms">《服务条款》</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 身份选择弹窗 -->
+  <view class="modal-mask" wx:if="{{showUserTypeModal}}" bindtap="onCloseModal">
+    <view class="modal-content" catchtap="true">
+      <view class="modal-header">
+        <text class="modal-title">选择身份类型</text>
+        <text class="modal-subtitle">请选择您的身份以获得对应功能</text>
+      </view>
+      
+      <view class="user-type-list">
+        <view 
+          class="user-type-item" 
+          bindtap="onSelectUserType"
+          data-type="visitor"
+        >
+          <view class="type-icon visitor-type-icon"></view>
+          <view class="type-info">
+            <text class="type-title">访客</text>
+            <text class="type-desc">预约访问，临时通行</text>
+          </view>
+          <view class="type-arrow">></view>
+        </view>
+        
+        <view 
+          class="user-type-item" 
+          bindtap="onSelectUserType"
+          data-type="employee"
+        >
+          <view class="type-icon employee-type-icon"></view>
+          <view class="type-info">
+            <text class="type-title">员工</text>
+            <text class="type-desc">申请加入商户，长期通行</text>
+          </view>
+          <view class="type-arrow">></view>
+        </view>
+      </view>
+      
+      <view class="modal-actions">
+        <button class="btn-cancel" bindtap="onCloseModal">取消</button>
+      </view>
+    </view>
+  </view>
+</view>

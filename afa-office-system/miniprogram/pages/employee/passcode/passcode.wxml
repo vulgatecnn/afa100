@@ -1,0 +1,162 @@
+<!--员工通行码页面-->
+<view class="container">
+  <view class="header">
+    <text class="title">员工通行码</text>
+    <text class="subtitle">长期有效的员工通行凭证</text>
+  </view>
+
+  <!-- 通行码信息 -->
+  <view class="passcode-section" wx:if="{{passcodeInfo}}">
+    <view class="qr-container">
+      <canvas 
+        class="qr-canvas" 
+        canvas-id="qrCanvas"
+        style="width: {{qrSize}}px; height: {{qrSize}}px;"
+      ></canvas>
+      <view class="qr-overlay" wx:if="{{!passcodeInfo || passcodeInfo.status !== 'active'}}">
+        <text class="overlay-text">{{overlayText}}</text>
+      </view>
+      
+      <!-- 自动刷新倒计时 -->
+      <view class="refresh-timer" wx:if="{{passcodeInfo.status === 'active'}}">
+        <text class="timer-text">{{refreshCountdown}}秒后自动刷新</text>
+        <view class="timer-progress" style="width: {{refreshProgress}}%"></view>
+      </view>
+    </view>
+    
+    <view class="passcode-info">
+      <view class="info-item">
+        <text class="label">通行码状态</text>
+        <view class="status-badge status-{{passcodeInfo.status}}">
+          {{statusText[passcodeInfo.status]}}
+        </view>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">有效期至</text>
+        <text class="value">{{expiryTimeText}}</text>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">剩余次数</text>
+        <text class="value">{{remainingUsage}}/{{passcodeInfo.usageLimit}}</text>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">通行权限</text>
+        <text class="value">{{permissionsText}}</text>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">最后更新</text>
+        <text class="value">{{lastUpdateText}}</text>
+      </view>
+    </view>
+    
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button 
+        class="btn-refresh" 
+        bindtap="onManualRefresh"
+        loading="{{refreshing}}"
+        disabled="{{passcodeInfo.status !== 'active'}}"
+      >
+        {{refreshing ? '刷新中...' : '手动刷新'}}
+      </button>
+      
+      <button class="btn-history" bindtap="onViewHistory">
+        通行记录
+      </button>
+    </view>
+  </view>
+
+  <!-- 员工信息 -->
+  <view class="employee-section" wx:if="{{employeeInfo}}">
+    <view class="section-title">员工信息</view>
+    
+    <view class="info-grid">
+      <view class="info-item">
+        <text class="label">姓名</text>
+        <text class="value">{{employeeInfo.name}}</text>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">手机号</text>
+        <text class="value">{{employeeInfo.phone}}</text>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">所属商户</text>
+        <text class="value">{{employeeInfo.merchantName}}</text>
+      </view>
+      
+      <view class="info-item" wx:if="{{employeeInfo.department}}">
+        <text class="label">部门</text>
+        <text class="value">{{employeeInfo.department}}</text>
+      </view>
+      
+      <view class="info-item" wx:if="{{employeeInfo.position}}">
+        <text class="label">职位</text>
+        <text class="value">{{employeeInfo.position}}</text>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">入职时间</text>
+        <text class="value">{{employeeInfo.createdAtText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷功能 -->
+  <view class="quick-actions">
+    <view class="section-title">快捷功能</view>
+    
+    <view class="action-grid">
+      <view class="action-item" bindtap="onViewApproval">
+        <view class="action-icon approval-icon"></view>
+        <text class="action-text">访客审批</text>
+        <view class="action-badge" wx:if="{{pendingCount > 0}}">{{pendingCount}}</view>
+      </view>
+      
+      <view class="action-item" bindtap="onViewHistory">
+        <view class="action-icon history-icon"></view>
+        <text class="action-text">通行记录</text>
+      </view>
+      
+      <view class="action-item" bindtap="onViewSettings">
+        <view class="action-icon settings-icon"></view>
+        <text class="action-text">个人设置</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 使用说明 -->
+  <view class="instructions-section">
+    <view class="section-title">使用说明</view>
+    <view class="instruction-list">
+      <view class="instruction-item">
+        <text class="number">1</text>
+        <text class="text">员工通行码长期有效，每30秒自动刷新</text>
+      </view>
+      <view class="instruction-item">
+        <text class="number">2</text>
+        <text class="text">向门禁设备出示通行码即可通行</text>
+      </view>
+      <view class="instruction-item">
+        <text class="number">3</text>
+        <text class="text">可以审批访问本商户的访客申请</text>
+      </view>
+      <view class="instruction-item">
+        <text class="number">4</text>
+        <text class="text">如遇问题请联系商户管理员或IT支持</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 加载提示 -->
+<view class="loading-mask" wx:if="{{loading}}">
+  <view class="loading-content">
+    <text>加载中...</text>
+  </view>
+</view>

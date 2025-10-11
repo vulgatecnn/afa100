@@ -1,0 +1,83 @@
+<!--访客申请状态页面-->
+<view class="container">
+  <view class="header">
+    <text class="title">我的申请</text>
+  </view>
+
+  <!-- 申请列表 -->
+  <view class="application-list" wx:if="{{applications.length > 0}}">
+    <view 
+      class="application-item" 
+      wx:for="{{applications}}" 
+      wx:key="id"
+      bindtap="onApplicationTap"
+      data-id="{{item.id}}"
+    >
+      <view class="item-header">
+        <text class="merchant-name">{{item.merchantName}}</text>
+        <view class="status-badge status-{{item.status}}">
+          {{statusText[item.status]}}
+        </view>
+      </view>
+      
+      <view class="item-content">
+        <view class="info-row">
+          <text class="label">访客姓名：</text>
+          <text class="value">{{item.visitorName}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">访问目的：</text>
+          <text class="value">{{item.visitPurpose}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">预约时间：</text>
+          <text class="value">{{item.scheduledTimeText}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">申请时间：</text>
+          <text class="value">{{item.createdAtText}}</text>
+        </view>
+      </view>
+      
+      <view class="item-actions" wx:if="{{item.status === 'approved'}}">
+        <button 
+          class="btn-passcode" 
+          bindtap="onViewPasscode"
+          data-id="{{item.id}}"
+          catchtap="true"
+        >
+          查看通行码
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <image class="empty-icon" src="/images/empty.png" mode="aspectFit"></image>
+    <text class="empty-text">暂无申请记录</text>
+    <button class="btn-apply" bindtap="onNewApplication">
+      立即申请
+    </button>
+  </view>
+
+  <!-- 状态筛选 -->
+  <view class="filter-tabs">
+    <view 
+      class="tab-item {{currentTab === index ? 'active' : ''}}"
+      wx:for="{{tabs}}" 
+      wx:key="value"
+      bindtap="onTabChange"
+      data-index="{{index}}"
+    >
+      {{item.label}}
+    </view>
+  </view>
+</view>
+
+<!-- 加载提示 -->
+<view class="loading-mask" wx:if="{{loading}}">
+  <view class="loading-content">
+    <text>加载中...</text>
+  </view>
+</view>

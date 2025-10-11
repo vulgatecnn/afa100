@@ -1,0 +1,147 @@
+<!--员工审批访客申请页面-->
+<view class="container">
+  <view class="header">
+    <text class="title">访客审批</text>
+    <text class="subtitle">审批待访问的访客申请</text>
+  </view>
+
+  <!-- 筛选标签 -->
+  <view class="filter-tabs">
+    <view 
+      class="tab-item {{currentTab === index ? 'active' : ''}}"
+      wx:for="{{tabs}}" 
+      wx:key="value"
+      bindtap="onTabChange"
+      data-index="{{index}}"
+    >
+      {{item.label}}
+    </view>
+  </view>
+
+  <!-- 申请列表 -->
+  <view class="application-list" wx:if="{{applications.length > 0}}">
+    <view 
+      class="application-item" 
+      wx:for="{{applications}}" 
+      wx:key="id"
+    >
+      <view class="item-header">
+        <text class="visitor-name">{{item.visitorName}}</text>
+        <view class="status-badge status-{{item.status}}">
+          {{statusText[item.status]}}
+        </view>
+      </view>
+      
+      <view class="item-content">
+        <view class="info-row">
+          <text class="label">访客公司：</text>
+          <text class="value">{{item.visitorCompany || '未填写'}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">访客手机：</text>
+          <text class="value">{{item.visitorPhone}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">访问目的：</text>
+          <text class="value">{{item.visitPurpose}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">访问类型：</text>
+          <text class="value">{{item.visitType}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">预约时间：</text>
+          <text class="value">{{item.scheduledTimeText}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">访问时长：</text>
+          <text class="value">{{item.duration}}小时</text>
+        </view>
+        <view class="info-row">
+          <text class="label">申请时间：</text>
+          <text class="value">{{item.createdAtText}}</text>
+        </view>
+      </view>
+      
+      <!-- 审批操作 -->
+      <view class="item-actions" wx:if="{{item.status === 'pending'}}">
+        <button 
+          class="btn-reject" 
+          bindtap="onRejectApplication"
+          data-id="{{item.id}}"
+        >
+          拒绝
+        </button>
+        <button 
+          class="btn-approve" 
+          bindtap="onApproveApplication"
+          data-id="{{item.id}}"
+        >
+          通过
+        </button>
+      </view>
+      
+      <!-- 已审批信息 -->
+      <view class="approval-info" wx:if="{{item.status !== 'pending' && item.approvedAt}}">
+        <view class="info-row">
+          <text class="label">审批时间：</text>
+          <text class="value">{{item.approvedAtText}}</text>
+        </view>
+        <view class="info-row" wx:if="{{item.approvedBy}}">
+          <text class="label">审批人：</text>
+          <text class="value">{{item.approverName}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:else>
+    <image class="empty-icon" src="/images/empty.png" mode="aspectFit"></image>
+    <text class="empty-text">{{emptyText}}</text>
+  </view>
+</view>
+
+<!-- 审批确认弹窗 -->
+<view class="modal-mask" wx:if="{{showApprovalModal}}" bindtap="onCloseModal">
+  <view class="modal-content" catchtap="true">
+    <view class="modal-header">
+      <text class="modal-title">{{approvalType === 'approve' ? '通过申请' : '拒绝申请'}}</text>
+    </view>
+    
+    <view class="modal-body">
+      <view class="form-item" wx:if="{{approvalType === 'reject'}}">
+        <text class="label">拒绝原因</text>
+        <textarea 
+          class="textarea" 
+          value="{{rejectReason}}"
+          placeholder="请输入拒绝原因（可选）"
+          bindinput="onRejectReasonChange"
+          maxlength="200"
+        />
+      </view>
+      
+      <text class="confirm-text">
+        确定要{{approvalType === 'approve' ? '通过' : '拒绝'}}这个访客申请吗？
+      </text>
+    </view>
+    
+    <view class="modal-actions">
+      <button class="btn-cancel" bindtap="onCloseModal">取消</button>
+      <button 
+        class="btn-confirm" 
+        bindtap="onConfirmApproval"
+        loading="{{approving}}"
+      >
+        {{approving ? '处理中...' : '确定'}}
+      </button>
+    </view>
+  </view>
+</view>
+
+<!-- 加载提示 -->
+<view class="loading-mask" wx:if="{{loading}}">
+  <view class="loading-content">
+    <text>加载中...</text>
+  </view>
+</view>

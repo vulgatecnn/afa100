@@ -1,0 +1,1527 @@
+后端API服务 测试失败摘要 (2025/10/10 20:23:24)
+============================================================
+
+失败测试数量: 130
+提取到的错误详情: 263 个
+
+1. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: create > 应该成功创建访客申请
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+2. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: create > 应该使用默认值创建访客申请
+   错误信息: 创建访客申请后查询失败
+   错误类型: test_failure
+
+3. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: findById > 应该根据ID查找访客申请
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+4. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: findByApplicantId > 应该根据申请人ID查找申请列表
+   错误信息: 创建商户后查询失败
+   错误类型: test_failure
+
+5. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: findByMerchantId > 应该根据商户ID查找申请列表
+   错误信息: 创建商户后查询失败
+   错误类型: test_failure
+
+6. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: findByStatus > 应该根据状态查找申请列表
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+7. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: update > 应该成功更新访客申请信息
+   错误信息: 创建用户后查询失败
+   错误类型: test_failure
+
+8. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: approve and reject > 应该审批通过访客申请
+   错误信息: 数据库繁忙，请稍后重试
+   错误类型: test_failure
+
+9. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: approve and reject > 应该拒绝访客申请
+   错误信息: 创建用户后查询失败
+   错误类型: test_failure
+
+10. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: count > 应该统计访客申请数量
+   错误信息: 创建商户后查询失败
+   错误类型: test_failure
+
+11. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: count > 应该根据条件统计申请数量
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+12. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: validateApplicationData > 应该验证有效的申请数据
+   错误信息: 创建用户后查询失败
+   错误类型: test_failure
+
+13. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: validateApplicationData > 应该检测无效的申请数据
+   错误信息: 创建商户后查询失败
+   错误类型: test_failure
+
+14. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: incrementUsageCount > 应该增加通行码使用次数
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+15. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: isPasscodeValid > 应该检查通行码是否有效
+   错误信息: 创建用户后查询失败
+   错误类型: test_failure
+
+16. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: isPasscodeValid > 应该检测过期的通行码
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+17. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: isPasscodeValid > 应该检测使用次数超限的通行码
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+18. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: getFullInfo > 应该获取申请的完整信息
+   错误信息: 创建商户后查询失败
+   错误类型: test_failure
+
+19. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: batchUpdateStatus > 应该批量更新申请状态
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+20. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/login > 应该成功登录有效用户
+   错误信息: expected 500 to be 200 // Object.is equality
+   错误类型: test_failure
+
+21. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/login > 应该拒绝不存在的用户
+   错误信息: expected 500 to be 400 // Object.is equality
+   错误类型: test_failure
+
+22. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/wechat-login > 应该成功处理微信登录
+   错误信息: axios.default.get.mockResolvedValue is not a function
+   错误类型: test_failure
+
+23. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/wechat-login > 应该拒绝无效的用户类型
+   错误信息: axios.default.get.mockResolvedValue is not a function
+   错误类型: test_failure
+
+24. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/wechat-login > 应该拒绝缺少微信授权码的请求
+   错误信息: axios.default.get.mockResolvedValue is not a function
+   错误类型: test_failure
+
+25. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/wechat-login > 应该处理微信API错误
+   错误信息: axios.default.get.mockResolvedValue is not a function
+   错误类型: test_failure
+
+26. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/refresh-token > 应该刷新有效的token
+   错误信息: Cannot read properties of undefined (reading 'refreshToken')
+   错误类型: test_failure
+
+27. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/refresh-token > 应该拒绝无效的刷新token
+   错误信息: expected 500 to be 400 // Object.is equality
+   错误类型: test_failure
+
+28. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/verify-token > 应该验证有效的token
+   错误信息: Cannot read properties of undefined (reading 'accessToken')
+   错误类型: test_failure
+
+29. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: GET /api/v1/auth/me > 应该返回当前用户信息
+   错误信息: Cannot read properties of undefined (reading 'accessToken')
+   错误类型: test_failure
+
+30. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/logout > 应该成功登出用户
+   错误信息: Cannot read properties of undefined (reading 'accessToken')
+   错误类型: test_failure
+
+31. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: 错误处理 > 应该处理JSON格式错误
+   错误信息: expected 500 to be 400 // Object.is equality
+   错误类型: test_failure
+
+32. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: 错误处理 > 应该处理超大请求体
+   错误信息: expected 500 to be 413 // Object.is equality
+   错误类型: test_failure
+
+33. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: 安全性测试 > 应该防止XSS攻击
+   错误信息: expected 500 to be 400 // Object.is equality
+   错误类型: test_failure
+
+34. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: 安全性测试 > 应该限制请求频率
+   错误信息: expected 0 to be greater than 0
+   错误类型: test_failure
+
+35. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: create > 创建重复代码的权限应该失败
+   错误信息: 创建权限后查询失败
+   错误类型: test_failure
+
+36. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: findByCode > 应该根据代码查找权限
+   错误信息: 创建项目后查询失败
+   错误类型: test_failure
+
+37. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: findByResource > 应该根据资源类型和ID查找权限列表
+   错误信息: 创建商户后查询失败
+   错误类型: test_failure
+
+38. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: update > 应该成功更新权限信息
+   错误信息: 创建项目后查询失败
+   错误类型: test_failure
+
+39. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: delete > 应该删除权限
+   错误信息: SQLITE_CONSTRAINT: UNIQUE constraint failed: projects.code
+   错误类型: test_failure
+
+40. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: getActions and setActions > 应该获取和设置权限操作
+   错误信息: 创建权限后查询失败
+   错误类型: test_failure
+
+41. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: validatePermissionData > 应该检测无效的权限数据
+   错误信息: 创建项目后查询失败
+   错误类型: test_failure
+
+42. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: batchCreate > 应该批量创建权限
+   错误信息: 创建项目后查询失败
+   错误类型: test_failure
+
+43. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: merchant permissions > 应该为商户分配权限
+   错误信息: 创建权限后查询失败
+   错误类型: test_failure
+
+44. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: merchant permissions > 应该获取商户的权限列表
+   错误信息: 创建权限后查询失败
+   错误类型: test_failure
+
+45. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: merchant permissions > 应该撤销商户权限
+   错误信息: 创建商户后查询失败
+   错误类型: test_failure
+
+46. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: merchant permissions > 应该批量为商户分配权限
+   错误信息: 创建权限后查询失败
+   错误类型: test_failure
+
+47. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: count > 应该根据条件统计权限数量
+   错误信息: SQLITE_CONSTRAINT: UNIQUE constraint failed: merchants.code
+   错误类型: test_failure
+
+48. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: create > 应该成功创建通行记录
+   错误信息: 创建通行码后查询失败
+   错误类型: test_failure
+
+49. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: create > 应该创建失败的通行记录
+   错误信息: 创建项目后查询失败
+   错误类型: test_failure
+
+50. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findById > 应该根据ID查找通行记录
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+51. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findById > 查找不存在的记录应该返回null
+   错误信息: 创建通行码后查询失败
+   错误类型: test_failure
+
+52. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findByUserId > 应该根据用户ID查找通行记录列表
+   错误信息: 创建场地后查询失败
+   错误类型: test_failure
+
+53. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findByDeviceId > 应该根据设备ID查找通行记录列表
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+54. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findByPasscodeId > 应该根据通行码ID查找通行记录列表
+   错误信息: 创建通行码后查询失败
+   错误类型: test_failure
+
+55. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findByResult > 应该根据结果查找通行记录列表
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+56. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: update > 应该成功更新通行记录信息
+   错误信息: 创建项目后查询失败
+   错误类型: test_failure
+
+57. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: update > 更新不存在的记录应该失败
+   错误信息: 创建场地后查询失败
+   错误类型: test_failure
+
+58. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: delete > 应该物理删除通行记录
+   错误信息: 创建用户后查询失败
+   错误类型: test_failure
+
+59. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: count > 应该统计通行记录数量
+   错误信息: 创建楼层后查询失败
+   错误类型: test_failure
+
+60. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: count > 应该根据条件统计记录数量
+   错误信息: 创建通行码后查询失败
+   错误类型: test_failure
+
+61. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: getTodayCount > 应该获取今日通行记录数量
+   错误信息: 创建场地后查询失败
+   错误类型: test_failure
+
+62. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: getSuccessCount and getFailedCount > 应该获取成功和失败通行次数
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+63. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: validateRecordData > 应该验证有效的记录数据
+   错误信息: 创建用户后查询失败
+   错误类型: test_failure
+
+64. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: validateRecordData > 应该检测无效的记录数据
+   错误信息: 创建项目后查询失败
+   错误类型: test_failure
+
+65. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: exists > 应该检查通行记录是否存在
+   错误信息: 创建项目后查询失败
+   错误类型: test_failure
+
+66. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: getLatestByUserId > 应该获取用户最近的通行记录
+   错误信息: 创建通行码后查询失败
+   错误类型: test_failure
+
+67. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: getLatestByDeviceId > 应该获取设备最近的通行记录
+   错误信息: 创建用户后查询失败
+   错误类型: test_failure
+
+68. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: getStatistics > 应该获取通行统计信息
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+69. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: getFullInfo > 应该获取通行记录的完整信息
+   错误信息: 创建通行码后查询失败
+   错误类型: test_failure
+
+70. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: batchCreate > 应该批量创建通行记录
+   错误信息: 创建通行码后查询失败
+   错误类型: test_failure
+
+71. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: cleanup > 应该清理旧的通行记录
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+72. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findAll with filters > 应该支持复杂筛选查询
+   错误信息: 创建通行码后查询失败
+   错误类型: test_failure
+
+73. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findAll with filters > 应该支持分页查询
+   错误信息: 创建用户后查询失败
+   错误类型: test_failure
+
+74. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: findById > 应该根据ID查找用户
+   错误信息: SQLITE_CONSTRAINT: UNIQUE constraint failed: merchants.code
+   错误类型: test_failure
+
+75. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: findByPhone > 应该根据手机号查找用户
+   错误信息: 创建用户后查询失败
+   错误类型: test_failure
+
+76. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: findByMerchantId > 应该根据商户ID查找用户列表
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+77. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: update > 应该成功更新用户信息
+   错误信息: 用户不存在或更新失败
+   错误类型: test_failure
+
+78. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: softDelete > 应该软删除用户（设置状态为inactive）
+   错误信息: Cannot read properties of null (reading 'status')
+   错误类型: test_failure
+
+79. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: count > 应该根据条件统计用户数量
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+80. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: exists > 应该检查用户是否存在
+   错误信息: 创建用户后查询失败
+   错误类型: test_failure
+
+81. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: findAll with pagination > 应该支持分页查询
+   错误信息: expected [] to have a length of 2 but got +0
+   错误类型: test_failure
+
+82. tests/unit/models/merchant.model.test.ts
+   测试套件: MerchantModel
+   测试名称: create > 应该成功创建商户
+   错误信息: 创建商户后查询失败
+   错误类型: test_failure
+
+83. tests/unit/models/merchant.model.test.ts
+   测试套件: MerchantModel
+   测试名称: findById > 应该根据ID查找商户
+   错误信息: Cannot read properties of null (reading 'id')
+   错误类型: test_failure
+
+84. tests/unit/models/merchant.model.test.ts
+   测试套件: MerchantModel
+   测试名称: getSettings and updateSettings > 应该获取和更新商户设置
+   错误信息: 商户不存在或更新失败
+   错误类型: test_failure
+
+85. tests/unit/models/merchant.model.test.ts
+   测试套件: MerchantModel
+   测试名称: batchUpdateStatus > 应该批量更新商户状态
+   错误信息: Cannot read properties of null (reading 'status')
+   错误类型: test_failure
+
+86. tests/unit/models/space-hierarchy.test.ts
+   测试套件: Space Hierarchy Integration
+   测试名称: 创建完整的空间层级结构 > 应该能够创建项目->场地->楼层的完整层级
+   错误信息: expected [] to have a length of 1 but got +0
+   错误类型: test_failure
+
+87. tests/unit/models/space-hierarchy.test.ts
+   测试套件: Space Hierarchy Integration
+   测试名称: 创建完整的空间层级结构 > 应该能够获取项目的完整层级结构
+   错误信息: 创建项目后查询失败
+   错误类型: test_failure
+
+88. tests/unit/models/space-hierarchy.test.ts
+   测试套件: Space Hierarchy Integration
+   测试名称: 权限管理集成 > 应该能够为不同层级的空间创建权限
+   错误信息: 创建项目后查询失败
+   错误类型: test_failure
+
+89. tests/unit/models/space-hierarchy.test.ts
+   测试套件: Space Hierarchy Integration
+   测试名称: 数据完整性约束 > 删除场地时应该级联删除楼层
+   错误信息: 数据库繁忙，请稍后重试
+   错误类型: test_failure
+
+90. tests/unit/models/space-hierarchy.test.ts
+   测试套件: Space Hierarchy Integration
+   测试名称: 统计信息 > 应该能够获取项目的统计信息
+   错误信息: 创建场地后查询失败
+   错误类型: test_failure
+
+91. tests/unit/models/project.model.test.ts
+   测试套件: ProjectModel
+   测试名称: create > 应该成功创建项目
+   错误信息: 创建项目后查询失败
+   错误类型: test_failure
+
+92. tests/unit/models/project.model.test.ts
+   测试套件: ProjectModel
+   测试名称: findByCode > 应该根据编码查找项目
+   错误信息: expected undefined to be 'TEST_PROJECT_005' // Object.is equality
+   错误类型: test_failure
+
+93. tests/unit/models/project.model.test.ts
+   测试套件: ProjectModel
+   测试名称: count > 应该统计项目数量
+   错误信息: expected +0 to be 2 // Object.is equality
+   错误类型: test_failure
+
+94. tests/unit/models/project.model.test.ts
+   测试套件: ProjectModel
+   测试名称: count > 应该根据条件统计项目数量
+   错误信息: expected 0 to be greater than 0
+   错误类型: test_failure
+
+95. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: create > 应该使用默认状态创建场地
+   错误信息: 创建场地后查询失败
+   错误类型: test_failure
+
+96. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: findById > 应该根据ID查找场地
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+97. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: findByProjectId > 应该根据项目ID查找场地列表
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+98. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: findByCode > 查找不存在的场地编码应该返回null
+   错误信息: 创建项目后查询失败
+   错误类型: test_failure
+
+99. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: softDelete > 应该软删除场地（设置状态为inactive）
+   错误信息: Cannot read properties of null (reading 'status')
+   错误类型: test_failure
+
+100. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: delete > 应该物理删除场地
+   错误信息: 创建场地后查询失败
+   错误类型: test_failure
+
+101. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: count > 应该统计场地数量
+   错误信息: expected +0 to be 1 // Object.is equality
+   错误类型: test_failure
+
+102. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: count > 应该根据条件统计场地数量
+   错误信息: 创建项目后查询失败
+   错误类型: test_failure
+
+103. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: exists > 应该检查场地是否存在
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+104. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: codeExists > 应该检查场地编码是否已存在（在指定项目内）
+   错误信息: 创建项目后查询失败
+   错误类型: test_failure
+
+105. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: batchUpdateStatus > 应该批量更新场地状态
+   错误信息: Cannot read properties of null (reading 'status')
+   错误类型: test_failure
+
+106. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: findAll with filters > 应该支持复杂筛选查询
+   错误信息: 创建项目后查询失败
+   错误类型: test_failure
+
+107. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: findAll with filters > 应该支持分页查询
+   错误信息: 创建场地后查询失败
+   错误类型: test_failure
+
+108. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: create > 应该成功创建通行码
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+109. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: create > 应该使用默认值创建通行码
+   错误信息: 创建访客申请后查询失败
+   错误类型: test_failure
+
+110. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: findById > 查找不存在的通行码应该返回null
+   错误信息: 创建商户后查询失败
+   错误类型: test_failure
+
+111. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: findByCode > 应该根据通行码内容查找通行码
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+112. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: findByCode > 查找不存在的通行码内容应该返回null
+   错误信息: 创建用户后查询失败
+   错误类型: test_failure
+
+113. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: findByUserId > 应该根据用户ID查找通行码列表
+   错误信息: 创建用户后查询失败
+   错误类型: test_failure
+
+114. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: isValid > 应该验证有效的通行码
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+115. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: isValid > 应该检测已失效的通行码
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+116. tests/unit/models/floor.model.test.ts
+   测试套件: FloorModel
+   测试名称: findById > 应该根据ID查找楼层
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+117. tests/unit/models/floor.model.test.ts
+   测试套件: FloorModel
+   测试名称: findById > 查找不存在的楼层应该返回null
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+118. tests/unit/models/floor.model.test.ts
+   测试套件: FloorModel
+   测试名称: findByVenueId > 应该根据场地ID查找楼层列表
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+119. tests/unit/models/floor.model.test.ts
+   测试套件: FloorModel
+   测试名称: validateFloorData > 应该验证有效的楼层数据
+   错误信息: SQLITE_CONSTRAINT: FOREIGN KEY constraint failed
+   错误类型: test_failure
+
+120. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 错误验证测试 - 故意失败的测试用例
+   测试名称: 应该故意失败 - 断言错误
+   错误信息: expected true to be false // Object.is equality
+   错误类型: test_failure
+
+121. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 错误验证测试 - 故意失败的测试用例
+   测试名称: 应该故意失败 - 类型错误
+   错误信息: expected 'string' to be 123 // Object.is equality
+   错误类型: test_failure
+
+122. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 错误验证测试 - 故意失败的测试用例
+   测试名称: 应该故意失败 - 对象比较错误
+   错误信息: expected { name: '张三', age: 25 } to deeply equal { name: '李四', age: 30 }
+   错误类型: test_failure
+
+123. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 错误验证测试 - 故意失败的测试用例
+   测试名称: 应该故意失败 - 数组长度错误
+   错误信息: expected [ 1, 2, 3 ] to have a length of 5 but got 3
+   错误类型: test_failure
+
+124. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 错误验证测试 - 故意失败的测试用例
+   测试名称: 应该故意失败 - 抛出异常
+   错误信息: 这是一个故意抛出的测试错误
+   错误类型: test_failure
+
+125. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 错误验证测试 - 故意失败的测试用例
+   测试名称: 应该故意失败 - 异步错误
+   错误信息: 异步操作失败
+   错误类型: test_failure
+
+126. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 错误验证测试 - 故意失败的测试用例
+   测试名称: 应该故意失败 - 超时错误
+   错误信息: Test timed out in 100ms.
+   错误类型: test_failure
+
+127. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 服务层错误测试
+   测试名称: 应该故意失败 - 数据库连接错误
+   错误信息: expected null not to be null
+   错误类型: test_failure
+
+128. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 服务层错误测试
+   测试名称: 应该故意失败 - 权限验证错误
+   错误信息: expected [ 'read' ] to include 'admin'
+   错误类型: test_failure
+
+129. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 工具函数错误测试
+   测试名称: 应该故意失败 - 日期格式化错误
+   错误信息: expected NaN not to be NaN
+   错误类型: test_failure
+
+130. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 工具函数错误测试
+   测试名称: 应该故意失败 - 正则表达式匹配错误
+   错误信息: TypeError: Database.getInstance is not a function
+   错误类型: error
+
+131. tests/performance/access-performance.test.ts
+   测试套件: 通行系统性能测试
+   测试名称: 通行系统性能测试
+   错误信息: TypeError: Database.getInstance is not a function
+   错误类型: error
+
+132. tests/performance/access-performance.test.ts
+   测试套件: 通行系统性能测试
+   测试名称: 通行系统性能测试
+   错误信息: TypeError: Database.getInstance is not a function
+   错误类型: error
+
+133. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/login > 应该成功登录有效用户
+   错误信息: AssertionError: expected 500 to be 200 // Object.is equality
+   错误类型: assertion
+
+134. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/login > 应该拒绝不存在的用户
+   错误信息: AssertionError: expected 500 to be 400 // Object.is equality
+   错误类型: assertion
+
+135. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/wechat-login > 应该成功处理微信登录
+   错误类型: test_failure
+
+136. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/wechat-login > 应该拒绝无效的用户类型
+   错误类型: test_failure
+
+137. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/wechat-login > 应该拒绝缺少微信授权码的请求
+   错误类型: test_failure
+
+138. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/wechat-login > 应该处理微信API错误
+   错误信息: TypeError: axios.default.get.mockResolvedValue is not a function
+   错误类型: error
+
+139. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/refresh-token > 应该刷新有效的token
+   错误信息: TypeError: Cannot read properties of undefined (reading 'refreshToken')
+   错误类型: error
+
+140. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/refresh-token > 应该拒绝无效的刷新token
+   错误信息: AssertionError: expected 500 to be 400 // Object.is equality
+   错误类型: assertion
+
+141. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/verify-token > 应该验证有效的token
+   错误信息: TypeError: Cannot read properties of undefined (reading 'accessToken')
+   错误类型: error
+
+142. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: GET /api/v1/auth/me > 应该返回当前用户信息
+   错误信息: TypeError: Cannot read properties of undefined (reading 'accessToken')
+   错误类型: error
+
+143. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: POST /api/v1/auth/logout > 应该成功登出用户
+   错误信息: TypeError: Cannot read properties of undefined (reading 'accessToken')
+   错误类型: error
+
+144. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: 错误处理 > 应该处理JSON格式错误
+   错误信息: AssertionError: expected 500 to be 400 // Object.is equality
+   错误类型: assertion
+
+145. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: 错误处理 > 应该处理超大请求体
+   错误信息: AssertionError: expected 500 to be 413 // Object.is equality
+   错误类型: assertion
+
+146. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: 安全性测试 > 应该防止XSS攻击
+   错误信息: AssertionError: expected 500 to be 400 // Object.is equality
+   错误类型: assertion
+
+147. tests/integration/auth.test.ts
+   测试套件: Auth Integration Tests
+   测试名称: 安全性测试 > 应该限制请求频率
+   错误信息: AssertionError: expected 0 to be greater than 0
+   错误类型: assertion
+
+148. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 错误验证测试 - 故意失败的测试用例
+   测试名称: 应该故意失败 - 断言错误
+   错误信息: AssertionError: expected true to be false // Object.is equality
+   错误类型: assertion
+
+149. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 错误验证测试 - 故意失败的测试用例
+   测试名称: 应该故意失败 - 类型错误
+   错误信息: AssertionError: expected 'string' to be 123 // Object.is equality | - Expected:
+   错误类型: assertion
+
+150. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 错误验证测试 - 故意失败的测试用例
+   测试名称: 应该故意失败 - 对象比较错误
+   错误信息: AssertionError: expected { name: '张三', age: 25 } to deeply equal { name: '李四', age: 30 }
+   错误类型: assertion
+
+151. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 错误验证测试 - 故意失败的测试用例
+   测试名称: 应该故意失败 - 数组长度错误
+   错误信息: AssertionError: expected [ 1, 2, 3 ] to have a length of 5 but got 3
+   错误类型: assertion
+
+152. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 错误验证测试 - 故意失败的测试用例
+   测试名称: 应该故意失败 - 抛出异常
+   错误信息: Error: 这是一个故意抛出的测试错误
+   错误类型: error
+
+153. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 错误验证测试 - 故意失败的测试用例
+   测试名称: 应该故意失败 - 异步错误
+   错误信息: Error: 异步操作失败
+   错误类型: error
+
+154. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 错误验证测试 - 故意失败的测试用例
+   测试名称: 应该故意失败 - 超时错误
+   错误信息: Error: Test timed out in 100ms.
+   错误类型: error
+
+155. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 服务层错误测试
+   测试名称: 应该故意失败 - 数据库连接错误
+   错误信息: AssertionError: expected null not to be null
+   错误类型: assertion
+
+156. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 服务层错误测试
+   测试名称: 应该故意失败 - 权限验证错误
+   错误信息: AssertionError: expected [ 'read' ] to include 'admin'
+   错误类型: assertion
+
+157. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 工具函数错误测试
+   测试名称: 应该故意失败 - 日期格式化错误
+   错误信息: AssertionError: expected NaN not to be NaN
+   错误类型: assertion
+
+158. tests/unit/controllers/test-error-validation.test.ts
+   测试套件: 工具函数错误测试
+   测试名称: 应该故意失败 - 正则表达式匹配错误
+   错误信息: AssertionError: expected false to be true // Object.is equality
+   错误类型: assertion
+
+159. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: create > 应该成功创建通行记录
+   错误类型: test_failure
+
+160. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findById > 查找不存在的记录应该返回null
+   错误类型: test_failure
+
+161. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findByPasscodeId > 应该根据通行码ID查找通行记录列表
+   错误类型: test_failure
+
+162. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: count > 应该根据条件统计记录数量
+   错误类型: test_failure
+
+163. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: getLatestByUserId > 应该获取用户最近的通行记录
+   错误类型: test_failure
+
+164. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: getFullInfo > 应该获取通行记录的完整信息
+   错误类型: test_failure
+
+165. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: batchCreate > 应该批量创建通行记录
+   错误类型: test_failure
+
+166. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findAll with filters > 应该支持复杂筛选查询
+   错误信息: Error: 创建通行码后查询失败
+   错误类型: error
+
+167. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: create > 应该创建失败的通行记录
+   错误类型: test_failure
+
+168. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: update > 应该成功更新通行记录信息
+   错误类型: test_failure
+
+169. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: validateRecordData > 应该检测无效的记录数据
+   错误类型: test_failure
+
+170. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: exists > 应该检查通行记录是否存在
+   错误信息: Error: 创建项目后查询失败
+   错误类型: error
+
+171. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findById > 应该根据ID查找通行记录
+   错误类型: test_failure
+
+172. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findByDeviceId > 应该根据设备ID查找通行记录列表
+   错误类型: test_failure
+
+173. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findByResult > 应该根据结果查找通行记录列表
+   错误类型: test_failure
+
+174. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: getSuccessCount and getFailedCount > 应该获取成功和失败通行次数
+   错误类型: test_failure
+
+175. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: getStatistics > 应该获取通行统计信息
+   错误类型: test_failure
+
+176. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: cleanup > 应该清理旧的通行记录
+   错误类型: test_failure
+
+177. tests/unit/models/floor.model.test.ts
+   测试套件: FloorModel
+   测试名称: findById > 应该根据ID查找楼层
+   错误类型: test_failure
+
+178. tests/unit/models/floor.model.test.ts
+   测试套件: FloorModel
+   测试名称: findById > 查找不存在的楼层应该返回null
+   错误类型: test_failure
+
+179. tests/unit/models/floor.model.test.ts
+   测试套件: FloorModel
+   测试名称: findByVenueId > 应该根据场地ID查找楼层列表
+   错误类型: test_failure
+
+180. tests/unit/models/floor.model.test.ts
+   测试套件: FloorModel
+   测试名称: validateFloorData > 应该验证有效的楼层数据
+   错误类型: test_failure
+
+181. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: create > 应该成功创建通行码
+   错误类型: test_failure
+
+182. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: findByCode > 应该根据通行码内容查找通行码
+   错误类型: test_failure
+
+183. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: isValid > 应该验证有效的通行码
+   错误类型: test_failure
+
+184. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: isValid > 应该检测已失效的通行码
+   错误类型: test_failure
+
+185. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: findByMerchantId > 应该根据商户ID查找用户列表
+   错误类型: test_failure
+
+186. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: count > 应该根据条件统计用户数量
+   错误类型: test_failure
+
+187. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: findById > 应该根据ID查找场地
+   错误类型: test_failure
+
+188. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: findByProjectId > 应该根据项目ID查找场地列表
+   错误类型: test_failure
+
+189. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: exists > 应该检查场地是否存在
+   错误类型: test_failure
+
+190. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: create > 应该成功创建访客申请
+   错误类型: test_failure
+
+191. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: findById > 应该根据ID查找访客申请
+   错误类型: test_failure
+
+192. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: findByStatus > 应该根据状态查找申请列表
+   错误类型: test_failure
+
+193. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: count > 应该根据条件统计申请数量
+   错误类型: test_failure
+
+194. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: incrementUsageCount > 应该增加通行码使用次数
+   错误类型: test_failure
+
+195. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: isPasscodeValid > 应该检测过期的通行码
+   错误类型: test_failure
+
+196. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: isPasscodeValid > 应该检测使用次数超限的通行码
+   错误类型: test_failure
+
+197. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: batchUpdateStatus > 应该批量更新申请状态
+   错误信息: Serialized Error: { errno: 19, code: 'SQLITE_CONSTRAINT' }
+   错误类型: error
+
+198. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findByUserId > 应该根据用户ID查找通行记录列表
+   错误类型: test_failure
+
+199. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: update > 更新不存在的记录应该失败
+   错误类型: test_failure
+
+200. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: getTodayCount > 应该获取今日通行记录数量
+   错误信息: Error: 创建场地后查询失败
+   错误类型: error
+
+201. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: delete > 应该物理删除通行记录
+   错误类型: test_failure
+
+202. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: validateRecordData > 应该验证有效的记录数据
+   错误类型: test_failure
+
+203. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: getLatestByDeviceId > 应该获取设备最近的通行记录
+   错误类型: test_failure
+
+204. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: findAll with filters > 应该支持分页查询
+   错误信息: Error: 创建用户后查询失败
+   错误类型: error
+
+205. tests/unit/models/access-record.model.test.ts
+   测试套件: AccessRecordModel
+   测试名称: count > 应该统计通行记录数量
+   错误信息: Error: 创建楼层后查询失败
+   错误类型: error
+
+206. tests/unit/models/merchant.model.test.ts
+   测试套件: MerchantModel
+   测试名称: create > 应该成功创建商户
+   错误信息: Error: 创建商户后查询失败
+   错误类型: error
+
+207. tests/unit/models/merchant.model.test.ts
+   测试套件: MerchantModel
+   测试名称: findById > 应该根据ID查找商户
+   错误信息: TypeError: Cannot read properties of null (reading 'id')
+   错误类型: error
+
+208. tests/unit/models/merchant.model.test.ts
+   测试套件: MerchantModel
+   测试名称: getSettings and updateSettings > 应该获取和更新商户设置
+   错误信息: Error: 商户不存在或更新失败
+   错误类型: error
+
+209. tests/unit/models/merchant.model.test.ts
+   测试套件: MerchantModel
+   测试名称: batchUpdateStatus > 应该批量更新商户状态
+   错误信息: TypeError: Cannot read properties of null (reading 'status')
+   错误类型: error
+
+210. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: create > 应该使用默认值创建通行码
+   错误信息: Error: 创建访客申请后查询失败
+   错误类型: error
+
+211. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: findById > 查找不存在的通行码应该返回null
+   错误信息: Error: 创建商户后查询失败
+   错误类型: error
+
+212. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: findById > 查找不存在的通行码应该返回null
+   错误类型: test_failure
+
+213. tests/unit/models/space-hierarchy.test.ts
+   测试套件: Space Hierarchy Integration
+   测试名称: 数据完整性约束 > 删除场地时应该级联删除楼层
+   错误类型: test_failure
+
+214. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: approve and reject > 应该审批通过访客申请
+   错误信息: Error: 数据库繁忙，请稍后重试
+   错误类型: error
+
+215. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: findByCode > 查找不存在的通行码内容应该返回null
+   错误类型: test_failure
+
+216. tests/unit/models/passcode.model.test.ts
+   测试套件: PasscodeModel
+   测试名称: findByUserId > 应该根据用户ID查找通行码列表
+   错误信息: Error: 创建用户后查询失败
+   错误类型: error
+
+217. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: create > 创建重复代码的权限应该失败
+   错误信息: Error: 创建权限后查询失败
+   错误类型: error
+
+218. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: findByCode > 应该根据代码查找权限
+   错误类型: test_failure
+
+219. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: update > 应该成功更新权限信息
+   错误类型: test_failure
+
+220. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: validatePermissionData > 应该检测无效的权限数据
+   错误类型: test_failure
+
+221. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: batchCreate > 应该批量创建权限
+   错误信息: Error: 创建项目后查询失败
+   错误类型: error
+
+222. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: findByResource > 应该根据资源类型和ID查找权限列表
+   错误类型: test_failure
+
+223. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: merchant permissions > 应该撤销商户权限
+   错误信息: Error: 创建商户后查询失败
+   错误类型: error
+
+224. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: delete > 应该删除权限
+   错误信息: Serialized Error: { errno: 19, code: 'SQLITE_CONSTRAINT' }
+   错误类型: error
+
+225. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: getActions and setActions > 应该获取和设置权限操作
+   错误信息: Error: 创建权限后查询失败
+   错误类型: error
+
+226. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: merchant permissions > 应该为商户分配权限
+   错误信息: Error: 创建权限后查询失败
+   错误类型: error
+
+227. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: merchant permissions > 应该获取商户的权限列表
+   错误信息: Error: 创建权限后查询失败
+   错误类型: error
+
+228. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: merchant permissions > 应该批量为商户分配权限
+   错误信息: Error: 创建权限后查询失败
+   错误类型: error
+
+229. tests/unit/models/permission.model.test.ts
+   测试套件: PermissionModel
+   测试名称: count > 应该根据条件统计权限数量
+   错误类型: test_failure
+
+230. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: findById > 应该根据ID查找用户
+   错误信息: Serialized Error: { errno: 19, code: 'SQLITE_CONSTRAINT' }
+   错误类型: error
+
+231. tests/unit/models/project.model.test.ts
+   测试套件: ProjectModel
+   测试名称: create > 应该成功创建项目
+   错误信息: Error: 创建项目后查询失败
+   错误类型: error
+
+232. tests/unit/models/project.model.test.ts
+   测试套件: ProjectModel
+   测试名称: findByCode > 应该根据编码查找项目
+   错误信息: AssertionError: expected undefined to be 'TEST_PROJECT_005' // Object.is equality | - Expected:
+   错误类型: assertion
+
+233. tests/unit/models/project.model.test.ts
+   测试套件: ProjectModel
+   测试名称: count > 应该统计项目数量
+   错误信息: AssertionError: expected +0 to be 2 // Object.is equality
+   错误类型: assertion
+
+234. tests/unit/models/project.model.test.ts
+   测试套件: ProjectModel
+   测试名称: count > 应该根据条件统计项目数量
+   错误信息: AssertionError: expected 0 to be greater than 0
+   错误类型: assertion
+
+235. tests/unit/models/space-hierarchy.test.ts
+   测试套件: Space Hierarchy Integration
+   测试名称: 创建完整的空间层级结构 > 应该能够创建项目->场地->楼层的完整层级
+   错误信息: AssertionError: expected [] to have a length of 1 but got +0
+   错误类型: assertion
+
+236. tests/unit/models/space-hierarchy.test.ts
+   测试套件: Space Hierarchy Integration
+   测试名称: 创建完整的空间层级结构 > 应该能够获取项目的完整层级结构
+   错误信息: Error: 创建项目后查询失败
+   错误类型: error
+
+237. tests/unit/models/space-hierarchy.test.ts
+   测试套件: Space Hierarchy Integration
+   测试名称: 权限管理集成 > 应该能够为不同层级的空间创建权限
+   错误信息: Error: 创建项目后查询失败
+   错误类型: error
+
+238. tests/unit/models/space-hierarchy.test.ts
+   测试套件: Space Hierarchy Integration
+   测试名称: 统计信息 > 应该能够获取项目的统计信息
+   错误信息: Error: 创建场地后查询失败
+   错误类型: error
+
+239. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: findByPhone > 应该根据手机号查找用户
+   错误信息: Error: 创建用户后查询失败
+   错误类型: error
+
+240. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: update > 应该成功更新用户信息
+   错误信息: Error: 用户不存在或更新失败
+   错误类型: error
+
+241. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: softDelete > 应该软删除用户（设置状态为inactive）
+   错误信息: TypeError: Cannot read properties of null (reading 'status')
+   错误类型: error
+
+242. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: exists > 应该检查用户是否存在
+   错误信息: Error: 创建用户后查询失败
+   错误类型: error
+
+243. tests/unit/models/user.model.test.ts
+   测试套件: UserModel
+   测试名称: findAll with pagination > 应该支持分页查询
+   错误信息: AssertionError: expected [] to have a length of 2 but got +0
+   错误类型: assertion
+
+244. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: create > 应该使用默认状态创建场地
+   错误信息: Error: 创建场地后查询失败
+   错误类型: error
+
+245. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: findByCode > 查找不存在的场地编码应该返回null
+   错误类型: test_failure
+
+246. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: count > 应该根据条件统计场地数量
+   错误类型: test_failure
+
+247. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: codeExists > 应该检查场地编码是否已存在（在指定项目内）
+   错误类型: test_failure
+
+248. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: findAll with filters > 应该支持复杂筛选查询
+   错误信息: Error: 创建项目后查询失败
+   错误类型: error
+
+249. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: softDelete > 应该软删除场地（设置状态为inactive）
+   错误信息: TypeError: Cannot read properties of null (reading 'status')
+   错误类型: error
+
+250. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: delete > 应该物理删除场地
+   错误信息: Error: 创建场地后查询失败
+   错误类型: error
+
+251. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: count > 应该统计场地数量
+   错误信息: AssertionError: expected +0 to be 1 // Object.is equality
+   错误类型: assertion
+
+252. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: batchUpdateStatus > 应该批量更新场地状态
+   错误信息: TypeError: Cannot read properties of null (reading 'status')
+   错误类型: error
+
+253. tests/unit/models/venue.model.test.ts
+   测试套件: VenueModel
+   测试名称: findAll with filters > 应该支持分页查询
+   错误信息: Error: 创建场地后查询失败
+   错误类型: error
+
+254. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: create > 应该使用默认值创建访客申请
+   错误信息: Error: 创建访客申请后查询失败
+   错误类型: error
+
+255. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: findByApplicantId > 应该根据申请人ID查找申请列表
+   错误类型: test_failure
+
+256. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: findByMerchantId > 应该根据商户ID查找申请列表
+   错误类型: test_failure
+
+257. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: count > 应该统计访客申请数量
+   错误类型: test_failure
+
+258. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: validateApplicationData > 应该检测无效的申请数据
+   错误类型: test_failure
+
+259. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: getFullInfo > 应该获取申请的完整信息
+   错误信息: Error: 创建商户后查询失败
+   错误类型: error
+
+260. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: update > 应该成功更新访客申请信息
+   错误信息: Error: 创建用户后查询失败
+   错误类型: error
+
+261. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: approve and reject > 应该拒绝访客申请
+   错误类型: test_failure
+
+262. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: validateApplicationData > 应该验证有效的申请数据
+   错误类型: test_failure
+
+263. tests/unit/models/visitor-application.model.test.ts
+   测试套件: VisitorApplicationModel
+   测试名称: isPasscodeValid > 应该检查通行码是否有效
+   错误信息: AssertionError: expected false to be true // Object.is equality
+   错误类型: assertion
+
+------------------------------------------------------------
+📄 完整测试日志: 2025-10-10-33368-test-execution.log
+📄 详细错误日志: 2025-10-10-33368-test-errors.log
+============================================================

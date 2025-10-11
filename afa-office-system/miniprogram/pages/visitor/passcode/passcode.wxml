@@ -1,0 +1,128 @@
+<!--访客通行码页面-->
+<view class="container">
+  <view class="header">
+    <text class="title">访客通行码</text>
+    <text class="subtitle">请在有效时间内使用</text>
+  </view>
+
+  <!-- 通行码信息 -->
+  <view class="passcode-section" wx:if="{{passcodeInfo}}">
+    <view class="qr-container">
+      <canvas 
+        class="qr-canvas" 
+        canvas-id="qrCanvas"
+        style="width: {{qrSize}}px; height: {{qrSize}}px;"
+      ></canvas>
+      <view class="qr-overlay" wx:if="{{!passcodeInfo || passcodeInfo.status !== 'active'}}">
+        <text class="overlay-text">{{overlayText}}</text>
+      </view>
+    </view>
+    
+    <view class="passcode-info">
+      <view class="info-item">
+        <text class="label">通行码状态</text>
+        <view class="status-badge status-{{passcodeInfo.status}}">
+          {{statusText[passcodeInfo.status]}}
+        </view>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">有效期至</text>
+        <text class="value">{{expiryTimeText}}</text>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">剩余次数</text>
+        <text class="value">{{remainingUsage}}/{{passcodeInfo.usageLimit}}</text>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">通行权限</text>
+        <text class="value">{{permissionsText}}</text>
+      </view>
+    </view>
+    
+    <!-- 操作按钮 -->
+    <view class="action-buttons">
+      <button 
+        class="btn-refresh" 
+        bindtap="onRefreshPasscode"
+        loading="{{refreshing}}"
+        disabled="{{passcodeInfo.status !== 'active'}}"
+      >
+        {{refreshing ? '刷新中...' : '刷新通行码'}}
+      </button>
+      
+      <button class="btn-history" bindtap="onViewHistory">
+        查看通行记录
+      </button>
+    </view>
+  </view>
+
+  <!-- 申请信息 -->
+  <view class="application-section" wx:if="{{applicationInfo}}">
+    <view class="section-title">申请信息</view>
+    
+    <view class="info-grid">
+      <view class="info-item">
+        <text class="label">访客姓名</text>
+        <text class="value">{{applicationInfo.visitorName}}</text>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">访客手机</text>
+        <text class="value">{{applicationInfo.visitorPhone}}</text>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">被访商户</text>
+        <text class="value">{{applicationInfo.merchantName}}</text>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">访问目的</text>
+        <text class="value">{{applicationInfo.visitPurpose}}</text>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">预约时间</text>
+        <text class="value">{{applicationInfo.scheduledTimeText}}</text>
+      </view>
+      
+      <view class="info-item">
+        <text class="label">访问时长</text>
+        <text class="value">{{applicationInfo.duration}}小时</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 使用说明 -->
+  <view class="instructions-section">
+    <view class="section-title">使用说明</view>
+    <view class="instruction-list">
+      <view class="instruction-item">
+        <text class="number">1</text>
+        <text class="text">请在预约时间内到达指定地点</text>
+      </view>
+      <view class="instruction-item">
+        <text class="number">2</text>
+        <text class="text">向门禁设备出示此通行码</text>
+      </view>
+      <view class="instruction-item">
+        <text class="number">3</text>
+        <text class="text">通行码会自动刷新，请保持网络连接</text>
+      </view>
+      <view class="instruction-item">
+        <text class="number">4</text>
+        <text class="text">如遇问题请联系被访商户或前台</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 加载提示 -->
+<view class="loading-mask" wx:if="{{loading}}">
+  <view class="loading-content">
+    <text>加载中...</text>
+  </view>
+</view>

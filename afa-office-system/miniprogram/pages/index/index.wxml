@@ -1,0 +1,112 @@
+<!--小程序首页-->
+<view class="container">
+  <!-- 欢迎区域 -->
+  <view class="welcome-section">
+    <view class="logo-container">
+      <image class="logo" src="/images/logo.png" mode="aspectFit"></image>
+    </view>
+    <text class="welcome-title">AFA办公通行</text>
+    <text class="welcome-subtitle">智能办公空间通行管理</text>
+  </view>
+
+  <!-- 用户信息区域 -->
+  <view class="user-section" wx:if="{{userInfo}}">
+    <view class="user-card">
+      <image class="avatar" src="{{userInfo.avatar || '/images/default-avatar.png'}}" mode="aspectFill"></image>
+      <view class="user-info">
+        <text class="user-name">{{userInfo.name || '未设置姓名'}}</text>
+        <text class="user-type">{{userTypeText[userInfo.userType]}}</text>
+      </view>
+      <view class="user-status status-{{userInfo.status}}">
+        {{statusText[userInfo.status]}}
+      </view>
+    </view>
+  </view>
+
+  <!-- 功能菜单 -->
+  <view class="menu-section">
+    <!-- 访客功能 -->
+    <view class="menu-group" wx:if="{{!userInfo || userInfo.userType === 'visitor'}}">
+      <view class="group-title">访客服务</view>
+      <view class="menu-grid">
+        <view class="menu-item" bindtap="onVisitorApply">
+          <view class="menu-icon visitor-apply-icon"></view>
+          <text class="menu-text">访客预约</text>
+          <text class="menu-desc">预约访问申请</text>
+        </view>
+        
+        <view class="menu-item" bindtap="onVisitorStatus">
+          <view class="menu-icon visitor-status-icon"></view>
+          <text class="menu-text">申请状态</text>
+          <text class="menu-desc">查看申请进度</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 员工功能 -->
+    <view class="menu-group" wx:if="{{userInfo && userInfo.userType === 'employee'}}">
+      <view class="group-title">员工服务</view>
+      <view class="menu-grid">
+        <view class="menu-item" bindtap="onEmployeePasscode">
+          <view class="menu-icon employee-passcode-icon"></view>
+          <text class="menu-text">员工通行码</text>
+          <text class="menu-desc">长期通行凭证</text>
+        </view>
+        
+        <view class="menu-item" bindtap="onVisitorApprove">
+          <view class="menu-icon visitor-approve-icon"></view>
+          <text class="menu-text">访客审批</text>
+          <text class="menu-desc">审批访客申请</text>
+          <view class="menu-badge" wx:if="{{pendingCount > 0}}">{{pendingCount}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 通用功能 -->
+    <view class="menu-group" wx:if="{{!userInfo}}">
+      <view class="group-title">身份选择</view>
+      <view class="menu-grid">
+        <view class="menu-item" bindtap="onSelectVisitor">
+          <view class="menu-icon visitor-icon"></view>
+          <text class="menu-text">我是访客</text>
+          <text class="menu-desc">预约访问申请</text>
+        </view>
+        
+        <view class="menu-item" bindtap="onSelectEmployee">
+          <view class="menu-icon employee-icon"></view>
+          <text class="menu-text">我是员工</text>
+          <text class="menu-desc">员工申请或登录</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 快捷入口 -->
+  <view class="quick-section" wx:if="{{userInfo}}">
+    <view class="section-title">快捷入口</view>
+    <view class="quick-grid">
+      <view class="quick-item" bindtap="onViewHistory">
+        <view class="quick-icon history-icon"></view>
+        <text class="quick-text">通行记录</text>
+      </view>
+      
+      <view class="quick-item" bindtap="onContactSupport">
+        <view class="quick-icon support-icon"></view>
+        <text class="quick-text">联系客服</text>
+      </view>
+      
+      <view class="quick-item" bindtap="onViewHelp">
+        <view class="quick-icon help-icon"></view>
+        <text class="quick-text">使用帮助</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 登录按钮 -->
+  <view class="login-section" wx:if="{{!userInfo}}">
+    <button class="btn-login" bindtap="onLogin">
+      微信授权登录
+    </button>
+    <text class="login-tip">登录后可使用完整功能</text>
+  </view>
+</view>

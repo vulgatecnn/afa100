@@ -1,0 +1,88 @@
+{
+  "users": [
+    {
+      "name": "测试租务管理员",
+      "user_type": "tenant_admin",
+      "phone": "13800138000",
+      "status": "active"
+    },
+    {
+      "name": "测试商户管理员",
+      "user_type": "merchant_admin", 
+      "phone": "13800138001",
+      "status": "active"
+    },
+    {
+      "name": "测试员工",
+      "user_type": "employee",
+      "phone": "13800138002", 
+      "status": "active"
+    },
+    {
+      "name": "测试访客",
+      "user_type": "visitor",
+      "phone": "13800138003",
+      "status": "active"
+    }
+  ],
+  "merchants": [
+    {
+      "name": "测试商户A",
+      "code": "TEST_MERCHANT_A",
+      "contact": "张三",
+      "phone": "13900139000",
+      "email": "merchant_a@test.com",
+      "status": "active"
+    },
+    {
+      "name": "测试商户B", 
+      "code": "TEST_MERCHANT_B",
+      "contact": "李四",
+      "phone": "13900139001",
+      "email": "merchant_b@test.com",
+      "status": "active"
+    }
+  ],
+  "projects": [
+    {
+      "code": "TEST_PROJECT_001",
+      "name": "测试项目1",
+      "description": "用于测试的项目1",
+      "status": "active"
+    },
+    {
+      "code": "TEST_PROJECT_002", 
+      "name": "测试项目2",
+      "description": "用于测试的项目2",
+      "status": "active"
+    }
+  ],
+  "venues": [
+    {
+      "code": "VENUE_A",
+      "name": "测试场地A",
+      "description": "测试项目1的场地A",
+      "status": "active"
+    },
+    {
+      "code": "VENUE_B",
+      "name": "测试场地B", 
+      "description": "测试项目1的场地B",
+      "status": "active"
+    }
+  ],
+  "floors": [
+    {
+      "code": "F1",
+      "name": "1楼",
+      "description": "场地A的1楼",
+      "status": "active"
+    },
+    {
+      "code": "F2",
+      "name": "2楼",
+      "description": "场地A的2楼", 
+      "status": "active"
+    }
+  ]
+}

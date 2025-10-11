@@ -1,0 +1,115 @@
+租务管理端 测试失败摘要 (2025/10/10 20:22:04)
+============================================================
+
+失败测试数量: 9
+提取到的错误详情: 18 个
+
+1. tests/unit/components/error-test.test.tsx
+   测试套件: 前端租务管理端错误测试
+   测试名称: 应该故意失败 - 组件渲染错误
+   错误信息: Unable to find an element by: [data-testid="non-existent-element"]
+   错误类型: test_failure
+
+2. tests/unit/components/error-test.test.tsx
+   测试套件: 前端租务管理端错误测试
+   测试名称: 应该故意失败 - 文本内容不匹配
+   错误信息: expect(element).toHaveTextContent() | Received:
+   错误类型: test_failure
+
+3. tests/unit/components/error-test.test.tsx
+   测试套件: 前端租务管理端错误测试
+   测试名称: 应该故意失败 - 属性验证错误
+   错误信息: expect(element).toHaveAttribute("data-testid", "wrong-test-id") // element.getAttribute("data-testid") === "wrong-test-id" | Received:
+   错误类型: test_failure
+
+4. tests/unit/components/error-test.test.tsx
+   测试套件: 前端租务管理端错误测试
+   测试名称: 应该故意失败 - 状态管理错误
+   错误信息: expected null not to be null
+   错误类型: test_failure
+
+5. tests/unit/components/error-test.test.tsx
+   测试套件: 前端租务管理端错误测试
+   测试名称: 应该故意失败 - API响应格式错误
+   错误信息: expected false to be true // Object.is equality
+   错误类型: test_failure
+
+6. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该渲染登录表单
+   错误信息: Cannot read properties of undefined (reading '_context')
+   错误类型: test_failure
+
+7. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该验证必填字段
+   错误信息: Cannot read properties of undefined (reading '_context')
+   错误类型: test_failure
+
+8. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该验证邮箱格式
+   错误信息: Cannot read properties of undefined (reading '_context')
+   错误类型: test_failure
+
+9. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该验证密码长度
+   错误信息: Error: Playwright Test did not expect test.describe() to be called here.
+   错误类型: error
+
+10. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该渲染登录表单
+   错误类型: test_failure
+
+11. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该验证必填字段
+   错误类型: test_failure
+
+12. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该验证邮箱格式
+   错误类型: test_failure
+
+13. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该验证密码长度
+   错误信息: TypeError: Cannot read properties of undefined (reading '_context')
+   错误类型: error
+
+14. tests/unit/components/error-test.test.tsx
+   测试套件: 前端租务管理端错误测试
+   测试名称: 应该故意失败 - 组件渲染错误
+   错误信息: TestingLibraryElementError: Unable to find an element by: [data-testid="non-existent-element"]
+   错误类型: element_not_found
+
+15. tests/unit/components/error-test.test.tsx
+   测试套件: 前端租务管理端错误测试
+   测试名称: 应该故意失败 - 文本内容不匹配
+   错误信息: Error: expect(element).toHaveTextContent() | Received:
+   错误类型: error
+
+16. tests/unit/components/error-test.test.tsx
+   测试套件: 前端租务管理端错误测试
+   测试名称: 应该故意失败 - 属性验证错误
+   错误信息: Error: expect(element).toHaveAttribute("data-testid", "wrong-test-id") // element.getAttribute("data-testid") === "wrong-test-id" | Received:
+   错误类型: error
+
+17. tests/unit/components/error-test.test.tsx
+   测试套件: 前端租务管理端错误测试
+   测试名称: 应该故意失败 - 状态管理错误
+   错误信息: AssertionError: expected null not to be null
+   错误类型: assertion
+
+18. tests/unit/components/error-test.test.tsx
+   测试套件: 前端租务管理端错误测试
+   测试名称: 应该故意失败 - API响应格式错误
+   错误信息: AssertionError: expected false to be true // Object.is equality
+   错误类型: assertion
+
+------------------------------------------------------------
+📄 完整测试日志: 2025-10-10-6988-test-execution.log
+📄 详细错误日志: 2025-10-10-6988-test-errors.log
+============================================================

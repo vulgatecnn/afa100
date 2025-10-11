@@ -1,0 +1,298 @@
+微信小程序 测试失败摘要 (2025/10/10 20:20:51)
+============================================================
+
+失败测试数量: 24
+提取到的错误详情: 48 个
+
+1. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 二维码生成准确性 > 应该根据通行码内容生成正确的二维码
+   错误信息: expected "spy" to be called with arguments: [ +0, +0, 200, 200 ] | Received:
+   错误类型: test_failure
+
+2. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 二维码生成准确性 > 应该根据屏幕尺寸自适应二维码大小
+   错误信息: expected 177 to be 200 // Object.is equality
+   错误类型: test_failure
+
+3. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 通行码状态实时更新 > 应该准确显示通行码的实时状态
+   错误信息: expected '已过期' to be '剩余 3 次使用' // Object.is equality
+   错误类型: test_failure
+
+4. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 通行码状态实时更新 > 应该准确显示通行码的过期状态
+   错误信息: expected true to be false // Object.is equality
+   错误类型: test_failure
+
+5. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 员工通行码自动刷新准确性 > 应该按照设定频率准确刷新员工通行码
+   错误信息: Aborting after running 10000 timers, assuming an infinite loop!
+   错误类型: test_failure
+
+6. tests/unit/services/employee.test.ts
+   测试套件: EmployeeService
+   测试名称: submitApplication > should handle duplicate application
+   错误信息: expected [Function] to throw error including '您已提交过申请，请勿重复提交' but got 'HTTP 400: [object Object]'
+   错误类型: test_failure
+
+7. tests/unit/services/employee.test.ts
+   测试套件: EmployeeService
+   测试名称: approveVisitorApplication > should handle approval failure
+   错误信息: expected [Function] to throw error including '审批操作失败' but got 'HTTP 400: [object Object]'
+   错误类型: test_failure
+
+8. tests/integration/employee-flow.test.ts
+   测试套件: Employee Flow Integration Tests
+   测试名称: Passcode Management > should handle passcode refresh failure
+   错误信息: expected [Function] to throw error including '服务器错误，无法刷新通行码' but got 'HTTP 500: [object Object]'
+   错误类型: test_failure
+
+9. tests/integration/employee-flow.test.ts
+   测试套件: Employee Flow Integration Tests
+   测试名称: Data Validation > should validate ID card format
+   错误信息: expected true to be false // Object.is equality
+   错误类型: test_failure
+
+10. tests/integration/visitor-flow.test.ts
+   测试套件: Visitor Flow Integration Tests
+   测试名称: Complete Visitor Application Flow > should handle usage limit exceeded
+   错误信息: expected [Function] to throw error including '通行码使用次数已达上限，无法刷新' but got 'HTTP 400: [object Object]'
+   错误类型: test_failure
+
+11. tests/integration/visitor-flow.test.ts
+   测试套件: Visitor Flow Integration Tests
+   测试名称: Error Handling > should handle invalid application data
+   错误信息: expected [Function] to throw error including '申请数据无效' but got 'HTTP 400: [object Object]'
+   错误类型: test_failure
+
+12. tests/integration/visitor-flow.test.ts
+   测试套件: Visitor Flow Integration Tests
+   测试名称: Data Validation > should validate scheduled time format
+   错误信息: expected '2024-01-01T10:00:00.000Z' to be '2024-01-01T10:00:00Z' // Object.is equality
+   错误类型: test_failure
+
+13. tests/unit/services/visitor.test.ts
+   测试套件: VisitorService
+   测试名称: submitApplication > should validate required fields
+   错误信息: expected [Function] to throw error including '访客姓名不能为空' but got 'HTTP 400: [object Object]'
+   错误类型: test_failure
+
+14. tests/unit/services/visitor.test.ts
+   测试套件: VisitorService
+   测试名称: refreshPasscode > should handle refresh failure
+   错误信息: expected [Function] to throw error including '通行码刷新失败' but got 'HTTP 400: [object Object]'
+   错误类型: test_failure
+
+15. tests/e2e/complete-visitor-flow.test.ts
+   测试套件: 访客预约完整流程端到端测试
+   测试名称: 数据验证测试 > 应该验证访客申请数据格式
+   错误信息: expected '2024-01-01T10:00:00.000Z' to be '2024-01-01T10:00:00Z' // Object.is equality
+   错误类型: test_failure
+
+16. tests/e2e/complete-visitor-flow.test.ts
+   测试套件: 访客预约完整流程端到端测试
+   测试名称: 数据验证测试 > 应该验证申请数据完整性
+   错误信息: expected false to be true // Object.is equality
+   错误类型: test_failure
+
+17. tests/e2e/complete-visitor-flow.test.ts
+   测试套件: 访客预约完整流程端到端测试
+   测试名称: 通行码展示实时性测试 > 应该实时更新通行码状态
+   错误信息: expected 'active' to be 'expired' // Object.is equality
+   错误类型: test_failure
+
+18. tests/unit/utils/error-test.test.ts
+   测试套件: 小程序错误测试
+   测试名称: 应该故意失败 - 微信API调用错误
+   错误信息: expected 'getUserInfo:fail' to be 'getUserInfo:ok' // Object.is equality
+   错误类型: test_failure
+
+19. tests/unit/utils/error-test.test.ts
+   测试套件: 小程序错误测试
+   测试名称: 应该故意失败 - 页面数据绑定错误
+   错误信息: expected null not to be null
+   错误类型: test_failure
+
+20. tests/unit/utils/error-test.test.ts
+   测试套件: 小程序错误测试
+   测试名称: 应该故意失败 - 二维码生成错误
+   错误信息: expected '' to match /^[A-Z0-9]{8,}$/
+   错误类型: test_failure
+
+21. tests/unit/utils/error-test.test.ts
+   测试套件: 小程序错误测试
+   测试名称: 应该故意失败 - 访客申请验证错误
+   错误信息: expected '' not to be '' // Object.is equality
+   错误类型: test_failure
+
+22. tests/unit/utils/error-test.test.ts
+   测试套件: 小程序错误测试
+   测试名称: 应该故意失败 - 通行码有效性检查错误
+   错误信息: expected 1672531200000 to be greater than 1760098850650
+   错误类型: test_failure
+
+23. tests/unit/utils/error-test.test.ts
+   测试套件: 小程序错误测试
+   测试名称: 应该故意失败 - 小程序存储错误
+   错误信息: expected null not to be null
+   错误类型: test_failure
+
+24. tests/unit/utils/error-test.test.ts
+   测试套件: 小程序错误测试
+   测试名称: 应该故意失败 - 网络连接检查错误
+   错误信息: expected false to be true // Object.is equality
+   错误类型: test_failure
+
+25. tests/integration/employee-flow.test.ts
+   测试套件: Employee Flow Integration Tests
+   测试名称: Passcode Management > should handle passcode refresh failure
+   错误信息: AssertionError: expected [Function] to throw error including '服务器错误，无法刷新通行码' but got 'HTTP 500: [object Object]'
+   错误类型: assertion
+
+26. tests/integration/employee-flow.test.ts
+   测试套件: Employee Flow Integration Tests
+   测试名称: Data Validation > should validate ID card format
+   错误信息: AssertionError: expected true to be false // Object.is equality
+   错误类型: assertion
+
+27. tests/integration/visitor-flow.test.ts
+   测试套件: Visitor Flow Integration Tests
+   测试名称: Complete Visitor Application Flow > should handle usage limit exceeded
+   错误信息: AssertionError: expected [Function] to throw error including '通行码使用次数已达上限，无法刷新' but got 'HTTP 400: [object Object]'
+   错误类型: assertion
+
+28. tests/integration/visitor-flow.test.ts
+   测试套件: Visitor Flow Integration Tests
+   测试名称: Error Handling > should handle invalid application data
+   错误信息: AssertionError: expected [Function] to throw error including '申请数据无效' but got 'HTTP 400: [object Object]'
+   错误类型: assertion
+
+29. tests/integration/visitor-flow.test.ts
+   测试套件: Visitor Flow Integration Tests
+   测试名称: Data Validation > should validate scheduled time format
+   错误信息: AssertionError: expected '2024-01-01T10:00:00.000Z' to be '2024-01-01T10:00:00Z' // Object.is equality
+   错误类型: assertion
+
+30. tests/e2e/complete-visitor-flow.test.ts
+   测试套件: 访客预约完整流程端到端测试
+   测试名称: 数据验证测试 > 应该验证访客申请数据格式
+   错误信息: AssertionError: expected '2024-01-01T10:00:00.000Z' to be '2024-01-01T10:00:00Z' // Object.is equality
+   错误类型: assertion
+
+31. tests/e2e/complete-visitor-flow.test.ts
+   测试套件: 访客预约完整流程端到端测试
+   测试名称: 数据验证测试 > 应该验证申请数据完整性
+   错误信息: AssertionError: expected false to be true // Object.is equality
+   错误类型: assertion
+
+32. tests/e2e/complete-visitor-flow.test.ts
+   测试套件: 访客预约完整流程端到端测试
+   测试名称: 通行码展示实时性测试 > 应该实时更新通行码状态
+   错误信息: AssertionError: expected 'active' to be 'expired' // Object.is equality
+   错误类型: assertion
+
+33. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 二维码生成准确性 > 应该根据通行码内容生成正确的二维码
+   错误信息: AssertionError: expected "spy" to be called with arguments: [ +0, +0, 200, 200 ] | Received:
+   错误类型: assertion
+
+34. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 二维码生成准确性 > 应该根据屏幕尺寸自适应二维码大小
+   错误信息: AssertionError: expected 177 to be 200 // Object.is equality
+   错误类型: assertion
+
+35. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 通行码状态实时更新 > 应该准确显示通行码的实时状态
+   错误信息: AssertionError: expected '已过期' to be '剩余 3 次使用' // Object.is equality
+   错误类型: assertion
+
+36. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 通行码状态实时更新 > 应该准确显示通行码的过期状态
+   错误信息: AssertionError: expected true to be false // Object.is equality
+   错误类型: assertion
+
+37. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 员工通行码自动刷新准确性 > 应该按照设定频率准确刷新员工通行码
+   错误信息: Error: Aborting after running 10000 timers, assuming an infinite loop!
+   错误类型: error
+
+38. tests/unit/services/employee.test.ts
+   测试套件: EmployeeService
+   测试名称: submitApplication > should handle duplicate application
+   错误信息: AssertionError: expected [Function] to throw error including '您已提交过申请，请勿重复提交' but got 'HTTP 400: [object Object]'
+   错误类型: assertion
+
+39. tests/unit/services/employee.test.ts
+   测试套件: EmployeeService
+   测试名称: approveVisitorApplication > should handle approval failure
+   错误信息: AssertionError: expected [Function] to throw error including '审批操作失败' but got 'HTTP 400: [object Object]'
+   错误类型: assertion
+
+40. tests/unit/services/visitor.test.ts
+   测试套件: VisitorService
+   测试名称: submitApplication > should validate required fields
+   错误信息: AssertionError: expected [Function] to throw error including '访客姓名不能为空' but got 'HTTP 400: [object Object]'
+   错误类型: assertion
+
+41. tests/unit/services/visitor.test.ts
+   测试套件: VisitorService
+   测试名称: refreshPasscode > should handle refresh failure
+   错误信息: AssertionError: expected [Function] to throw error including '通行码刷新失败' but got 'HTTP 400: [object Object]'
+   错误类型: assertion
+
+42. tests/unit/utils/error-test.test.ts
+   测试套件: 小程序错误测试
+   测试名称: 应该故意失败 - 微信API调用错误
+   错误信息: AssertionError: expected 'getUserInfo:fail' to be 'getUserInfo:ok' // Object.is equality
+   错误类型: assertion
+
+43. tests/unit/utils/error-test.test.ts
+   测试套件: 小程序错误测试
+   测试名称: 应该故意失败 - 页面数据绑定错误
+   错误信息: AssertionError: expected null not to be null
+   错误类型: assertion
+
+44. tests/unit/utils/error-test.test.ts
+   测试套件: 小程序错误测试
+   测试名称: 应该故意失败 - 二维码生成错误
+   错误信息: AssertionError: expected '' to match /^[A-Z0-9]{8,}$/ | - Expected:
+   错误类型: assertion
+
+45. tests/unit/utils/error-test.test.ts
+   测试套件: 小程序错误测试
+   测试名称: 应该故意失败 - 访客申请验证错误
+   错误信息: AssertionError: expected '' not to be '' // Object.is equality
+   错误类型: assertion
+
+46. tests/unit/utils/error-test.test.ts
+   测试套件: 小程序错误测试
+   测试名称: 应该故意失败 - 通行码有效性检查错误
+   错误信息: AssertionError: expected 1672531200000 to be greater than 1760098850650
+   错误类型: assertion
+
+47. tests/unit/utils/error-test.test.ts
+   测试套件: 小程序错误测试
+   测试名称: 应该故意失败 - 小程序存储错误
+   错误信息: AssertionError: expected null not to be null
+   错误类型: assertion
+
+48. tests/unit/utils/error-test.test.ts
+   测试套件: 小程序错误测试
+   测试名称: 应该故意失败 - 网络连接检查错误
+   错误信息: AssertionError: expected false to be true // Object.is equality
+   错误类型: assertion
+
+------------------------------------------------------------
+📄 完整测试日志: 2025-10-10-34900-test-execution.log
+📄 详细错误日志: 2025-10-10-34900-test-errors.log
+============================================================

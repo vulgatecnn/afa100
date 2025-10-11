@@ -1,0 +1,52 @@
+{
+  "name": "afa-office-miniprogram",
+  "version": "1.0.0",
+  "description": "AFA办公小程序 - 智能办公空间通行管理",
+  "main": "app.ts",
+  "scripts": {
+    "dev": "echo '请使用微信开发者工具打开项目进行开发'",
+    "build": "echo '请使用微信开发者工具进行构建'",
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest --coverage --run",
+    "test:ui": "vitest --ui",
+    "lint": "eslint . --ext .ts,.js",
+    "lint:fix": "eslint . --ext .ts,.js --fix",
+    "type-check": "tsc --noEmit"
+  },
+  "keywords": [
+    "miniprogram",
+    "wechat",
+    "office",
+    "access-control",
+    "qrcode",
+    "visitor-management"
+  ],
+  "author": "AFA Team",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "@vitest/coverage-v8": "^1.0.0",
+    "@vitest/ui": "^1.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.0",
+    "jsdom": "^23.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/afa-team/office-miniprogram.git"
+  },
+  "bugs": {
+    "url": "https://github.com/afa-team/office-miniprogram/issues"
+  },
+  "homepage": "https://github.com/afa-team/office-miniprogram#readme"
+}

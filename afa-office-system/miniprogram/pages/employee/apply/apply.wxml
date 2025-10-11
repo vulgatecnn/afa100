@@ -1,0 +1,307 @@
+<!--员工申请页面-->
+<view class="container">
+  <view class="header">
+    <text class="title">员工申请</text>
+    <text class="subtitle">申请成为正式员工，获得长期通行权限</text>
+  </view>
+
+  <!-- 申请状态显示 -->
+  <view class="status-section" wx:if="{{existingApplication}}">
+    <view class="status-card status-{{existingApplication.status}}">
+      <view class="status-header">
+        <text class="status-title">申请状态</text>
+        <view class="status-badge status-{{existingApplication.status}}">
+          {{statusText[existingApplication.status]}}
+        </view>
+      </view>
+      
+      <view class="status-content">
+        <view class="info-row">
+          <text class="label">申请商户：</text>
+          <text class="value">{{existingApplication.merchantName}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">申请姓名：</text>
+          <text class="value">{{existingApplication.name}}</text>
+        </view>
+        <view class="info-row">
+          <text class="label">申请时间：</text>
+          <text class="value">{{existingApplication.createdAtText}}</text>
+        </view>
+        <view class="info-row" wx:if="{{existingApplication.approvedAt}}">
+          <text class="label">审批时间：</text>
+          <text class="value">{{existingApplication.approvedAtText}}</text>
+        </view>
+        <view class="info-row" wx:if="{{existingApplication.status === 'rejected' && existingApplication.reason}}">
+          <text class="label">拒绝原因：</text>
+          <text class="value reason-text">{{existingApplication.reason}}</text>
+        </view>
+      </view>
+      
+      <view class="status-actions">
+        <button 
+          class="btn-passcode" 
+          wx:if="{{existingApplication.status === 'approved'}}"
+          bindtap="onViewEmployeePasscode"
+        >
+          查看员工通行码
+        </button>
+        <button 
+          class="btn-reapply" 
+          wx:if="{{existingApplication.status === 'rejected'}}"
+          bindtap="onReapply"
+        >
+          重新申请
+        </button>
+        <button 
+          class="btn-withdraw" 
+          wx:if="{{existingApplication.status === 'pending'}}"
+          bindtap="onWithdrawApplication"
+        >
+          撤销申请
+        </button>
+      </view>
+    </view>
+  </view>
+
+  <!-- 申请表单 -->
+  <form bindsubmit="onSubmit" bindreset="onReset" wx:if="{{!existingApplication || showReapplyForm}}">
+    <view class="form-section">
+      <view class="section-title">基本信息</view>
+      
+      <view class="form-item">
+        <text class="label">姓名 *</text>
+        <input 
+          class="input {{formErrors.name ? 'input-error' : ''}}" 
+          name="name"
+          value="{{formData.name}}"
+          placeholder="请输入真实姓名"
+          bindinput="onInputChange"
+          data-field="name"
+          maxlength="20"
+        />
+        <text class="error-text" wx:if="{{formErrors.name}}">{{formErrors.name}}</text>
+      </view>
+
+      <view class="form-item">
+        <text class="label">手机号 *</text>
+        <input 
+          class="input {{formErrors.phone ? 'input-error' : ''}}" 
+          name="phone"
+          value="{{formData.phone}}"
+          placeholder="请输入11位手机号"
+          type="number"
+          bindinput="onInputChange"
+          data-field="phone"
+          maxlength="11"
+        />
+        <text class="error-text" wx:if="{{formErrors.phone}}">{{formErrors.phone}}</text>
+      </view>
+
+      <view class="form-item">
+        <text class="label">身份证号</text>
+        <input 
+          class="input {{formErrors.idCard ? 'input-error' : ''}}" 
+          name="idCard"
+          value="{{formData.idCard}}"
+          placeholder="请输入18位身份证号（可选）"
+          bindinput="onInputChange"
+          data-field="idCard"
+          maxlength="18"
+        />
+        <text class="error-text" wx:if="{{formErrors.idCard}}">{{formErrors.idCard}}</text>
+      </view>
+
+      <view class="form-item">
+        <text class="label">邮箱地址</text>
+        <input 
+          class="input {{formErrors.email ? 'input-error' : ''}}" 
+          name="email"
+          value="{{formData.email}}"
+          placeholder="请输入邮箱地址（可选）"
+          bindinput="onInputChange"
+          data-field="email"
+        />
+        <text class="error-text" wx:if="{{formErrors.email}}">{{formErrors.email}}</text>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <view class="section-title">工作信息</view>
+      
+      <view class="form-item">
+        <text class="label">申请商户 *</text>
+        <picker 
+          mode="selector" 
+          range="{{merchants}}" 
+          range-key="name"
+          value="{{merchantIndex}}"
+          bindchange="onMerchantChange"
+          class="{{formErrors.merchantId ? 'picker-error' : ''}}"
+        >
+          <view class="picker {{!selectedMerchant ? 'picker-placeholder' : ''}}">
+            {{selectedMerchant ? selectedMerchant.name : '请选择要加入的商户'}}
+          </view>
+        </picker>
+        <text class="error-text" wx:if="{{formErrors.merchantId}}">{{formErrors.merchantId}}</text>
+        
+        <!-- 商户信息展示 -->
+        <view class="merchant-info" wx:if="{{selectedMerchant}}">
+          <view class="merchant-detail">
+            <text class="detail-label">联系人：</text>
+            <text class="detail-value">{{selectedMerchant.contact}}</text>
+          </view>
+          <view class="merchant-detail">
+            <text class="detail-label">联系电话：</text>
+            <text class="detail-value">{{selectedMerchant.phone}}</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="form-item">
+        <text class="label">部门 *</text>
+        <input 
+          class="input {{formErrors.department ? 'input-error' : ''}}" 
+          name="department"
+          value="{{formData.department}}"
+          placeholder="请输入所属部门"
+          bindinput="onInputChange"
+          data-field="department"
+          maxlength="30"
+        />
+        <text class="error-text" wx:if="{{formErrors.department}}">{{formErrors.department}}</text>
+      </view>
+
+      <view class="form-item">
+        <text class="label">职位 *</text>
+        <input 
+          class="input {{formErrors.position ? 'input-error' : ''}}" 
+          name="position"
+          value="{{formData.position}}"
+          placeholder="请输入职位名称"
+          bindinput="onInputChange"
+          data-field="position"
+          maxlength="30"
+        />
+        <text class="error-text" wx:if="{{formErrors.position}}">{{formErrors.position}}</text>
+      </view>
+
+      <view class="form-item">
+        <text class="label">入职日期</text>
+        <picker 
+          mode="date" 
+          value="{{formData.startDate}}"
+          bindchange="onDateChange"
+          data-field="startDate"
+        >
+          <view class="picker">
+            {{formData.startDate || '请选择预期入职日期（可选）'}}
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <view class="form-section">
+      <view class="section-title">紧急联系人</view>
+      
+      <view class="form-item">
+        <text class="label">联系人姓名</text>
+        <input 
+          class="input {{formErrors.emergencyContact ? 'input-error' : ''}}" 
+          name="emergencyContact"
+          value="{{formData.emergencyContact}}"
+          placeholder="请输入紧急联系人姓名（可选）"
+          bindinput="onInputChange"
+          data-field="emergencyContact"
+          maxlength="20"
+        />
+        <text class="error-text" wx:if="{{formErrors.emergencyContact}}">{{formErrors.emergencyContact}}</text>
+      </view>
+
+      <view class="form-item">
+        <text class="label">联系人电话</text>
+        <input 
+          class="input {{formErrors.emergencyPhone ? 'input-error' : ''}}" 
+          name="emergencyPhone"
+          value="{{formData.emergencyPhone}}"
+          placeholder="请输入紧急联系人电话（可选）"
+          type="number"
+          bindinput="onInputChange"
+          data-field="emergencyPhone"
+          maxlength="11"
+        />
+        <text class="error-text" wx:if="{{formErrors.emergencyPhone}}">{{formErrors.emergencyPhone}}</text>
+      </view>
+
+      <view class="form-item">
+        <text class="label">与联系人关系</text>
+        <picker 
+          mode="selector" 
+          range="{{relationshipOptions}}" 
+          value="{{relationshipIndex}}"
+          bindchange="onRelationshipChange"
+        >
+          <view class="picker">
+            {{formData.emergencyRelationship || '请选择关系（可选）'}}
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <!-- 身份验证提示 -->
+    <view class="verification-section" wx:if="{{!existingApplication}}">
+      <view class="section-title">身份验证</view>
+      <view class="verification-notice">
+        <view class="notice-icon">🔒</view>
+        <view class="notice-content">
+          <text class="notice-title">实名认证</text>
+          <text class="notice-desc">为确保安全，您的申请将与微信实名信息进行验证</text>
+        </view>
+      </view>
+    </view>
+
+    <view class="button-group">
+      <button class="btn-reset" form-type="reset" wx:if="{{!showReapplyForm}}">重置</button>
+      <button 
+        class="btn-cancel" 
+        bindtap="onCancelReapply" 
+        wx:if="{{showReapplyForm}}"
+      >
+        取消
+      </button>
+      <button class="btn-submit" form-type="submit" loading="{{submitting}}">
+        {{submitting ? '提交中...' : (showReapplyForm ? '重新提交' : '提交申请')}}
+      </button>
+    </view>
+  </form>
+
+  <!-- 申请须知 -->
+  <view class="notice-section">
+    <view class="section-title">申请须知</view>
+    <view class="notice-list">
+      <view class="notice-item">
+        <text class="number">1</text>
+        <text class="text">请确保填写信息真实有效</text>
+      </view>
+      <view class="notice-item">
+        <text class="number">2</text>
+        <text class="text">申请提交后需要商户管理员审批</text>
+      </view>
+      <view class="notice-item">
+        <text class="number">3</text>
+        <text class="text">审批通过后将获得长期通行权限</text>
+      </view>
+      <view class="notice-item">
+        <text class="number">4</text>
+        <text class="text">如有疑问请联系目标商户HR或管理员</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 加载提示 -->
+<view class="loading-mask" wx:if="{{loading}}">
+  <view class="loading-content">
+    <text>加载中...</text>
+  </view>
+</view>

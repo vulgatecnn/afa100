@@ -1,0 +1,131 @@
+<!--访客通行记录页面-->
+<view class="container">
+  <view class="header">
+    <text class="title">通行记录</text>
+    <text class="subtitle">查看您的通行历史</text>
+  </view>
+
+  <!-- 筛选器 -->
+  <view class="filter-section">
+    <view class="filter-tabs">
+      <view 
+        class="filter-tab {{activeFilter === 'all' ? 'active' : ''}}"
+        bindtap="onFilterChange"
+        data-filter="all"
+      >
+        全部
+      </view>
+      <view 
+        class="filter-tab {{activeFilter === 'success' ? 'active' : ''}}"
+        bindtap="onFilterChange"
+        data-filter="success"
+      >
+        成功
+      </view>
+      <view 
+        class="filter-tab {{activeFilter === 'failed' ? 'active' : ''}}"
+        bindtap="onFilterChange"
+        data-filter="failed"
+      >
+        失败
+      </view>
+    </view>
+    
+    <view class="date-filter">
+      <picker 
+        mode="date" 
+        value="{{startDate}}" 
+        bindchange="onStartDateChange"
+        class="date-picker"
+      >
+        <view class="picker-text">{{startDate || '开始日期'}}</view>
+      </picker>
+      <text class="date-separator">至</text>
+      <picker 
+        mode="date" 
+        value="{{endDate}}" 
+        bindchange="onEndDateChange"
+        class="date-picker"
+      >
+        <view class="picker-text">{{endDate || '结束日期'}}</view>
+      </picker>
+    </view>
+  </view>
+
+  <!-- 记录列表 -->
+  <view class="records-section">
+    <view class="records-list" wx:if="{{filteredRecords.length > 0}}">
+      <view 
+        class="record-item" 
+        wx:for="{{filteredRecords}}" 
+        wx:key="id"
+      >
+        <view class="record-header">
+          <view class="record-time">{{item.timeText}}</view>
+          <view class="record-status status-{{item.result}}">
+            {{item.result === 'success' ? '成功' : '失败'}}
+          </view>
+        </view>
+        
+        <view class="record-content">
+          <view class="record-info">
+            <text class="info-label">设备:</text>
+            <text class="info-value">{{item.deviceType}} ({{item.deviceId}})</text>
+          </view>
+          
+          <view class="record-info">
+            <text class="info-label">方向:</text>
+            <text class="info-value">{{item.direction === 'in' ? '进入' : '离开'}}</text>
+          </view>
+          
+          <view class="record-info" wx:if="{{item.location}}">
+            <text class="info-label">位置:</text>
+            <text class="info-value">{{item.locationText}}</text>
+          </view>
+          
+          <view class="record-info" wx:if="{{item.failReason}}">
+            <text class="info-label">失败原因:</text>
+            <text class="info-value error-text">{{item.failReason}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+    
+    <!-- 空状态 -->
+    <view class="empty-state" wx:if="{{filteredRecords.length === 0 && !loading}}">
+      <view class="empty-icon"></view>
+      <text class="empty-text">暂无通行记录</text>
+      <text class="empty-subtitle">使用通行码后记录会显示在这里</text>
+    </view>
+  </view>
+
+  <!-- 统计信息 -->
+  <view class="stats-section" wx:if="{{records.length > 0}}">
+    <view class="section-title">统计信息</view>
+    <view class="stats-grid">
+      <view class="stat-item">
+        <text class="stat-number">{{stats.total}}</text>
+        <text class="stat-label">总次数</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{stats.success}}</text>
+        <text class="stat-label">成功</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{stats.failed}}</text>
+        <text class="stat-label">失败</text>
+      </view>
+      <view class="stat-item">
+        <text class="stat-number">{{stats.successRate}}%</text>
+        <text class="stat-label">成功率</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<!-- 加载提示 -->
+<view class="loading-mask" wx:if="{{loading}}">
+  <view class="loading-content">
+    <text>加载中...</text>
+  </view>
+</view>

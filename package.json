@@ -1,0 +1,52 @@
+{
+  "name": "afa-office-system",
+  "version": "1.0.0",
+  "description": "AFA办公小程序系统 - 综合性办公通行管理系统",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0",
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "test": "node afa-office-system/scripts/test-runner.js",
+    "test:verbose": "node afa-office-system/scripts/test-runner.js --verbose",
+    "test:silent": "node afa-office-system/scripts/test-runner.js --silent",
+    "test:coverage": "node afa-office-system/scripts/test-runner.js --coverage",
+    "test:parallel": "node afa-office-system/scripts/test-runner.js --parallel",
+    "test:backend": "node afa-office-system/scripts/test-runner.js --module=backend",
+    "test:frontend": "node afa-office-system/scripts/test-runner.js --module=frontend-tenant && node afa-office-system/scripts/test-runner.js --module=frontend-merchant",
+    "test:miniprogram": "node afa-office-system/scripts/test-runner.js --module=miniprogram",
+    "test:legacy": "pnpm -r test",
+    "test:coverage:legacy": "pnpm -r test:coverage",
+    "lint": "pnpm -r lint",
+    "format": "pnpm -r format",
+    "clean": "pnpm -r clean && rm -rf node_modules",
+    "backend:dev": "pnpm --filter backend dev",
+    "backend:test": "pnpm --filter backend test",
+    "frontend:dev": "pnpm --filter tenant-admin dev && pnpm --filter merchant-admin dev",
+    "frontend:build": "pnpm --filter tenant-admin build && pnpm --filter merchant-admin build",
+    "db:init": "pnpm --filter backend db:init",
+    "db:migrate": "pnpm --filter backend db:migrate",
+    "db:reset": "pnpm --filter backend db:reset"
+  },
+  "devDependencies": {
+    "@faker-js/faker": "10.0.0",
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  },
+  "keywords": [
+    "办公系统",
+    "小程序",
+    "通行管理",
+    "访客管理",
+    "typescript",
+    "express",
+    "react"
+  ],
+  "author": "AFA Team",
+  "license": "MIT"
+}

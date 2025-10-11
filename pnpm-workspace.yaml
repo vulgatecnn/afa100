@@ -1,0 +1,5 @@
+packages:
+  - 'afa-office-system/backend'
+  - 'afa-office-system/frontend/tenant-admin'
+  - 'afa-office-system/frontend/merchant-admin'
+  - 'afa-office-system/miniprogram'

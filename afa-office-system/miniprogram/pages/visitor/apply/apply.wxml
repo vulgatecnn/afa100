@@ -1,0 +1,138 @@
+<!--访客预约申请页面-->
+<view class="container">
+  <view class="header">
+    <text class="title">访客预约申请</text>
+    <text class="subtitle">请填写完整的访问信息</text>
+  </view>
+
+  <form bindsubmit="onSubmit" bindreset="onReset">
+    <view class="form-section">
+      <view class="section-title">访客信息</view>
+      
+      <view class="form-item">
+        <text class="label">访客姓名 *</text>
+        <input 
+          class="input" 
+          name="visitorName"
+          value="{{formData.visitorName}}"
+          placeholder="请输入访客姓名"
+          bindinput="onInputChange"
+          data-field="visitorName"
+        />
+      </view>
+
+      <view class="form-item">
+        <text class="label">访客手机 *</text>
+        <input 
+          class="input" 
+          name="visitorPhone"
+          value="{{formData.visitorPhone}}"
+          placeholder="请输入访客手机号"
+          type="number"
+          bindinput="onInputChange"
+          data-field="visitorPhone"
+        />
+      </view>
+
+      <view class="form-item">
+        <text class="label">访客公司</text>
+        <input 
+          class="input" 
+          name="visitorCompany"
+          value="{{formData.visitorCompany}}"
+          placeholder="请输入访客公司名称"
+          bindinput="onInputChange"
+          data-field="visitorCompany"
+        />
+      </view>
+    </view>
+
+    <view class="form-section">
+      <view class="section-title">访问信息</view>
+      
+      <view class="form-item">
+        <text class="label">被访商户 *</text>
+        <picker 
+          mode="selector" 
+          range="{{merchantNames}}" 
+          range-key="name"
+          value="{{merchantIndex}}"
+          bindchange="onMerchantChange"
+        >
+          <view class="picker">
+            {{selectedMerchant ? selectedMerchant.name : '请选择被访商户'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="label">访问目的 *</text>
+        <textarea 
+          class="textarea" 
+          name="visitPurpose"
+          value="{{formData.visitPurpose}}"
+          placeholder="请简要说明访问目的"
+          bindinput="onInputChange"
+          data-field="visitPurpose"
+          maxlength="200"
+        />
+      </view>
+
+      <view class="form-item">
+        <text class="label">访问类型 *</text>
+        <picker 
+          mode="selector" 
+          range="{{visitTypes}}" 
+          value="{{visitTypeIndex}}"
+          bindchange="onVisitTypeChange"
+        >
+          <view class="picker">
+            {{formData.visitType || '请选择访问类型'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="label">预约时间 *</text>
+        <picker 
+          mode="multiSelector" 
+          range="{{dateTimeRange}}" 
+          value="{{dateTimeIndex}}"
+          bindchange="onDateTimeChange"
+        >
+          <view class="picker">
+            {{scheduledTimeText || '请选择预约时间'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-item">
+        <text class="label">访问时长 *</text>
+        <picker 
+          mode="selector" 
+          range="{{durations}}" 
+          value="{{durationIndex}}"
+          bindchange="onDurationChange"
+        >
+          <view class="picker">
+            {{formData.duration ? formData.duration + '小时' : '请选择访问时长'}}
+          </view>
+        </picker>
+      </view>
+    </view>
+
+    <view class="button-group">
+      <button class="btn-reset" form-type="reset">重置</button>
+      <button class="btn-submit" form-type="submit" loading="{{submitting}}">
+        {{submitting ? '提交中...' : '提交申请'}}
+      </button>
+    </view>
+  </form>
+</view>
+
+<!-- 加载提示 -->
+<view class="loading-mask" wx:if="{{loading}}">
+  <view class="loading-content">
+    <text>加载中...</text>
+  </view>
+</view>

@@ -1,0 +1,55 @@
+租务管理端 测试失败摘要 (2025/10/10 22:02:54)
+============================================================
+
+失败测试数量: 4
+提取到的错误详情: 8 个
+
+1. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该渲染登录表单
+   错误信息: Cannot read properties of undefined (reading '_context')
+   错误类型: test_failure
+
+2. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该验证必填字段
+   错误信息: Cannot read properties of undefined (reading '_context')
+   错误类型: test_failure
+
+3. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该验证邮箱格式
+   错误信息: Cannot read properties of undefined (reading '_context')
+   错误类型: test_failure
+
+4. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该验证密码长度
+   错误信息: Error: Playwright Test did not expect test.describe() to be called here.
+   错误类型: error
+
+5. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该渲染登录表单
+   错误类型: test_failure
+
+6. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该验证必填字段
+   错误类型: test_failure
+
+7. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该验证邮箱格式
+   错误类型: test_failure
+
+8. src/pages/Login/Login.test.tsx
+   测试套件: LoginPage
+   测试名称: 应该验证密码长度
+   错误信息: TypeError: Cannot read properties of undefined (reading '_context')
+   错误类型: error
+
+------------------------------------------------------------
+📄 完整测试日志: 2025-10-10-4452-test-execution.log
+📄 详细错误日志: 2025-10-10-4452-test-errors.log
+============================================================

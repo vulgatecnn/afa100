@@ -85,7 +85,7 @@ jobs:
           echo "cache-key=${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}" >> $GITHUB_OUTPUT
 
       - name: 缓存依赖
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.pnpm-store
@@ -98,7 +98,7 @@ jobs:
             ${{ runner.os }}-pnpm-
 
       - name: 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: 确定测试范围
         id: test-scope
@@ -147,7 +147,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 恢复依赖缓存
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.pnpm-store
@@ -156,7 +156,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
 
       - name: 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: 等待MySQL就绪
         run: |
@@ -213,7 +213,7 @@ jobs:
 
       - name: 上传后端测试报告
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: backend-test-reports
           path: |
@@ -247,7 +247,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 恢复依赖缓存
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.pnpm-store
@@ -256,7 +256,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
 
       - name: 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: 代码质量检查
         working-directory: afa-office-system/frontend/${{ matrix.frontend }}
@@ -291,7 +291,7 @@ jobs:
 
       - name: 上传前端测试报告
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: frontend-${{ matrix.frontend }}-test-reports
           path: |
@@ -344,7 +344,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 恢复依赖缓存
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.pnpm-store
@@ -355,7 +355,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
 
       - name: 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: 安装Playwright浏览器
         working-directory: afa-office-system/backend
@@ -429,7 +429,7 @@ jobs:
 
       - name: 上传E2E测试报告
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: e2e-test-reports-${{ matrix.browser }}
           path: |
@@ -439,7 +439,7 @@ jobs:
 
       - name: 上传测试截图
         if: failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: e2e-screenshots-${{ matrix.browser }}
           path: |
@@ -485,7 +485,7 @@ jobs:
           version: ${{ env.PNPM_VERSION }}
 
       - name: 恢复依赖缓存
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/.pnpm-store
@@ -494,7 +494,7 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
 
       - name: 安装依赖
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --no-frozen-lockfile
 
       - name: 安装所有浏览器
         working-directory: afa-office-system/backend
@@ -544,7 +544,7 @@ jobs:
 
       - name: 上传跨浏览器测试报告
         if: always()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: cross-browser-test-reports
           path: |
@@ -563,7 +563,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: 下载所有测试报告
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           path: test-reports
 
@@ -602,7 +602,7 @@ jobs:
           echo "- 提交: ${{ github.sha }}" >> test-summary.md
 
       - name: 上传测试汇总报告
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: test-summary-report
           path: |

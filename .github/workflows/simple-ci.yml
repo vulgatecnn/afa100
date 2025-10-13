@@ -50,14 +50,29 @@ jobs:
             fi
           fi
 
-      - name: 前端构建测试
-        strategy:
-          matrix:
-            frontend: [tenant-admin, merchant-admin]
-        working-directory: afa-office-system/frontend/${{ matrix.frontend }}
+      - name: 前端构建测试 - 租务管理端
+        working-directory: afa-office-system/frontend/tenant-admin
         continue-on-error: true
         run: |
-          echo "检查前端项目: ${{ matrix.frontend }}"
+          echo "检查前端项目: tenant-admin"
+          if [ -f "package.json" ]; then
+            echo "安装前端依赖..."
+            pnpm install --no-frozen-lockfile --force
+            echo "尝试构建..."
+            if grep -q "build" package.json; then
+              pnpm build || echo "构建失败，但继续..."
+            fi
+            echo "尝试运行测试..."
+            if grep -q "test" package.json; then
+              timeout 30 pnpm test --run || echo "测试超时或失败，但继续..."
+            fi
+          fi
+
+      - name: 前端构建测试 - 商户管理端
+        working-directory: afa-office-system/frontend/merchant-admin
+        continue-on-error: true
+        run: |
+          echo "检查前端项目: merchant-admin"
           if [ -f "package.json" ]; then
             echo "安装前端依赖..."
             pnpm install --no-frozen-lockfile --force

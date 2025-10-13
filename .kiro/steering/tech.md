@@ -95,6 +95,56 @@ pnpm db:reset
 - **测试环境**: 内存数据库，自动化测试
 - **生产环境**: PostgreSQL/MySQL，性能优化
 
+## 端口配置
+
+- **租务管理端**: 5000端口 (http://localhost:5000)
+- **商户管理端**: 5050端口 (http://localhost:5050)
+- **后端API服务器**: 5100端口 (http://localhost:5100)
+- **API基础路径**: http://localhost:5100/api/v1
+
+### 环境变量配置
+
+**后端环境变量 (.env):**
+- `PORT=5100` - 后端服务器端口
+- `CORS_ORIGIN=http://localhost:5000` - 允许的前端域名
+
+**前端环境变量 (.env):**
+- `VITE_PORT=5000` (租务管理端) / `VITE_PORT=5050` (商户管理端)
+- `VITE_API_BASE_URL=http://localhost:5100/api/v1` - API基础地址
+
+### 端口冲突处理
+
+**推荐方式 - 使用自动化脚本:**
+```powershell
+# 快速终止所有开发端口进程
+.\scripts\kill-dev.cmd
+
+# 或者使用PowerShell脚本
+.\scripts\kill-dev-ports.ps1 -All          # 终止所有端口进程
+.\scripts\kill-dev-ports.ps1 -Frontend     # 仅终止前端进程
+.\scripts\kill-dev-ports.ps1 -Backend      # 仅终止后端进程
+.\scripts\kill-dev-ports.ps1 -List         # 查看端口占用情况
+```
+
+**手动方式 (Windows系统):**
+```cmd
+# 查找占用端口的进程
+netstat -ano | findstr :5000
+netstat -ano | findstr :5100
+
+# 终止进程 (PID为进程ID)
+taskkill /PID <进程ID> /F
+
+# 或者直接终止Node.js进程
+taskkill /IM node.exe /F
+```
+
+**启动顺序建议:**
+1. 运行 `.\scripts\kill-dev.cmd` 清理端口
+2. 先启动后端服务器 (端口5100)
+3. 再启动前端开发服务器 (端口5000)
+4. 确保两个服务都正常运行后再进行开发
+
 ## pnpm包管理规范
 
 ### 安装和配置

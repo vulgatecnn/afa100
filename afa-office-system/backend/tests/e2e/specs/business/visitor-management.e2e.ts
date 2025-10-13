@@ -15,7 +15,7 @@ test.describe('访客管理流程测试', () => {
 
     test.beforeEach(async ({ page }) => {
       // 导航到访客管理页面
-      await page.goto('http://localhost:3002/dashboard');
+      await page.goto('http://localhost:5050/dashboard');
       await page.click('[data-testid="nav-visitors"]');
       await expect(page).toHaveURL(/.*\/visitors/);
     });
@@ -221,7 +221,7 @@ test.describe('访客管理流程测试', () => {
   test.describe('访客自助申请流程', () => {
     test('访客在线申请流程', async ({ page }) => {
       // 访问访客申请页面（小程序或Web端）
-      await page.goto('http://localhost:3000/visitor-application');
+      await page.goto('http://localhost:5100/visitor-application');
       
       // 填写访客基本信息
       await page.fill('[data-testid="visitor-name"]', '李访客');
@@ -269,7 +269,7 @@ test.describe('访客管理流程测试', () => {
 
     test('访客申请状态查询', async ({ page }) => {
       // 访问状态查询页面
-      await page.goto('http://localhost:3000/visitor-status');
+      await page.goto('http://localhost:5100/visitor-status');
       
       // 输入申请编号
       await page.fill('[data-testid="application-number-input"]', 'VA202412150001');
@@ -303,7 +303,7 @@ test.describe('访客管理流程测试', () => {
   test.describe('访客通行验证', () => {
     test('二维码扫描验证流程', async ({ page }) => {
       // 模拟门禁系统扫码页面
-      await page.goto('http://localhost:3000/access-control');
+      await page.goto('http://localhost:5100/access-control');
       
       // 模拟扫描二维码（实际中会通过摄像头扫描）
       const qrCodeData = 'VA202412150001_APPROVED_20241215';
@@ -341,7 +341,7 @@ test.describe('访客管理流程测试', () => {
 
     test('访客离场登记', async ({ page }) => {
       // 访问离场登记页面
-      await page.goto('http://localhost:3000/access-control/exit');
+      await page.goto('http://localhost:5100/access-control/exit');
       
       // 扫描访客二维码或输入信息
       await page.fill('[data-testid="visitor-identifier"]', 'VA202412150001');
@@ -374,7 +374,7 @@ test.describe('访客管理流程测试', () => {
   test.describe('访客数据统计', () => {
     test('访客统计报表查看', async ({ page }) => {
       // 使用商户管理员身份
-      await page.goto('http://localhost:3002/login');
+      await page.goto('http://localhost:5050/login');
       await page.fill('[data-testid="username"]', 'merchant_admin');
       await page.fill('[data-testid="password"]', 'password123');
       await page.click('[data-testid="login-button"]');

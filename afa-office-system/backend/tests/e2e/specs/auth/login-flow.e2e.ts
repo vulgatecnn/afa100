@@ -16,7 +16,7 @@ test.describe('用户登录流程测试', () => {
 
   test('租务管理员登录流程', async ({ page }) => {
     // 访问租务管理端登录页
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     
     // 验证登录页面元素
     await expect(page.locator('[data-testid="login-form"]')).toBeVisible();
@@ -49,7 +49,7 @@ test.describe('用户登录流程测试', () => {
 
   test('商户管理员登录流程', async ({ page }) => {
     // 访问商户管理端登录页
-    await page.goto('http://localhost:3002/login');
+    await page.goto('http://localhost:5050/login');
     
     // 验证登录页面
     await expect(page.locator('[data-testid="login-form"]')).toBeVisible();
@@ -78,7 +78,7 @@ test.describe('用户登录流程测试', () => {
 
   test('商户员工登录流程', async ({ page }) => {
     // 访问商户管理端登录页
-    await page.goto('http://localhost:3002/login');
+    await page.goto('http://localhost:5050/login');
     
     // 填写员工登录信息
     await page.fill('[data-testid="username"]', 'employee_user');
@@ -103,7 +103,7 @@ test.describe('用户登录流程测试', () => {
   });
 
   test('登录失败处理', async ({ page }) => {
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     
     // 测试错误的用户名
     await page.fill('[data-testid="username"]', 'wrong_user');
@@ -126,7 +126,7 @@ test.describe('用户登录流程测试', () => {
   });
 
   test('空字段验证', async ({ page }) => {
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     
     // 尝试空用户名登录
     await page.fill('[data-testid="password"]', 'password123');

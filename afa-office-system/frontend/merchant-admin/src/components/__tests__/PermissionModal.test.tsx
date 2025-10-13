@@ -44,27 +44,27 @@ describe('PermissionModal', () => {
   it('should display permission groups', () => {
     render(<PermissionModal {...defaultProps} />)
     
-    expect(screen.getByText('空间访问权限')).toBeInTheDocument()
-    expect(screen.getByText('管理权限')).toBeInTheDocument()
-    expect(screen.getByText('系统权限')).toBeInTheDocument()
+    expect(screen.getAllByText('空间访问权限')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('管理权限')[0]).toBeInTheDocument()
+    expect(screen.getAllByText('系统权限')[0]).toBeInTheDocument()
   })
 
   it('should show selected permissions count', () => {
     render(<PermissionModal {...defaultProps} />)
     
     // Should show some permissions are selected
-    expect(screen.getByText(/已选择.*项权限/)).toBeInTheDocument()
+    expect(screen.getAllByText(/已选择.*项权限/)[0]).toBeInTheDocument()
   })
 
   it('should not render when visible is false', () => {
-    render(<PermissionModal {...defaultProps} visible={false} />)
+    const { container } = render(<PermissionModal {...defaultProps} visible={false} />)
     
-    expect(screen.queryByText('权限设置')).not.toBeInTheDocument()
+    expect(container.querySelector('.ant-modal')).not.toBeInTheDocument()
   })
 
   it('should not render when employee is null', () => {
-    render(<PermissionModal {...defaultProps} employee={null} />)
+    const { container } = render(<PermissionModal {...defaultProps} employee={null} />)
     
-    expect(screen.queryByText('张三')).not.toBeInTheDocument()
+    expect(container.querySelector('.ant-modal')).not.toBeInTheDocument()
   })
 })

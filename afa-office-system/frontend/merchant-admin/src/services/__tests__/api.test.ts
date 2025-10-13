@@ -68,7 +68,7 @@ describe('merchant-admin api.ts - 请求拦截器和响应拦截器测试', () =
       )
 
       const response = await api.get('/test-auth')
-      expect(response).toEqual({ message: 'authorized' })
+      expect(response.data).toEqual({ message: 'authorized' })
     })
 
     it('应该在没有token时不添加Authorization头', async () => {
@@ -88,7 +88,7 @@ describe('merchant-admin api.ts - 请求拦截器和响应拦截器测试', () =
       )
 
       const response = await api.get('/test-no-auth')
-      expect(response).toEqual({ message: 'no auth header' })
+      expect(response.data).toEqual({ message: 'no auth header' })
     })
   })
 
@@ -106,7 +106,7 @@ describe('merchant-admin api.ts - 请求拦截器和响应拦截器测试', () =
       )
 
       const response = await api.get('/test-success')
-      expect(response).toEqual({ id: 1, name: '测试数据' })
+      expect(response.data).toEqual({ id: 1, name: '测试数据' })
     })
 
     it('应该处理success为true但没有data字段的响应', async () => {
@@ -204,7 +204,7 @@ describe('merchant-admin api.ts - 请求拦截器和响应拦截器测试', () =
         })
       )
 
-      await expect(api.get('/test-network-error')).rejects.toThrow('网络连接失败')
+      await expect(api.get('/test-network-error')).rejects.toThrow('网络错误，请检查网络连接')
       expect(message.error).toHaveBeenCalledWith('网络连接失败，请检查网络设置')
     })
   })
@@ -238,7 +238,7 @@ describe('merchant-admin api.ts - 请求拦截器和响应拦截器测试', () =
       )
 
       const response = await api.get('/test-get')
-      expect(response).toEqual({ method: 'GET' })
+      expect(response.data).toEqual({ method: 'GET' })
     })
 
     it('应该支持POST请求', async () => {
@@ -258,7 +258,7 @@ describe('merchant-admin api.ts - 请求拦截器和响应拦截器测试', () =
       )
 
       const response = await api.post('/test-post', postData)
-      expect(response).toEqual({ method: 'POST', received: postData })
+      expect(response.data).toEqual({ method: 'POST', received: postData })
     })
 
     it('应该支持PUT请求', async () => {
@@ -278,7 +278,7 @@ describe('merchant-admin api.ts - 请求拦截器和响应拦截器测试', () =
       )
 
       const response = await api.put('/test-put', putData)
-      expect(response).toEqual({ method: 'PUT', received: putData })
+      expect(response.data).toEqual({ method: 'PUT', received: putData })
     })
 
     it('应该支持DELETE请求', async () => {
@@ -293,7 +293,7 @@ describe('merchant-admin api.ts - 请求拦截器和响应拦截器测试', () =
       )
 
       const response = await api.delete('/test-delete')
-      expect(response).toEqual({ method: 'DELETE' })
+      expect(response.data).toEqual({ method: 'DELETE' })
     })
 
     it('应该支持PATCH请求', async () => {
@@ -313,7 +313,7 @@ describe('merchant-admin api.ts - 请求拦截器和响应拦截器测试', () =
       )
 
       const response = await api.patch('/test-patch', patchData)
-      expect(response).toEqual({ method: 'PATCH', received: patchData })
+      expect(response.data).toEqual({ method: 'PATCH', received: patchData })
     })
   })
 })

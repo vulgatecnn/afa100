@@ -2,14 +2,14 @@
  * 文件上传下载路由
  */
 
-import express from 'express';
+import express, { Router } from 'express';
 import multer from 'multer';
 import { FileController } from '../../controllers/file.controller.js';
-import { authMiddleware } from '../../middleware/auth.middleware.js';
-import { rateLimitMiddleware } from '../../middleware/rate-limit.middleware.js';
+import { authenticate } from '../../middleware/auth.middleware.js';
+import { rateLimits } from '../../middleware/rate-limit.middleware.js';
 import { appConfig } from '../../config/app.config.js';
 
-const router = express.Router();
+const router: Router = express.Router();
 const fileController = new FileController();
 
 // 配置multer中间件
@@ -51,33 +51,33 @@ function parseFileSize(sizeStr: string): number {
 
 // 文件上传
 router.post('/upload', 
-  authMiddleware,
-  rateLimitMiddleware.upload,
+  authenticate,
+  rateLimits.upload,
   upload.single('file'),
   fileController.uploadFile
 );
 
 // 文件下载
 router.get('/:fileId/download',
-  authMiddleware,
+  authenticate,
   fileController.downloadFile
 );
 
 // 获取文件信息
 router.get('/:fileId',
-  authMiddleware,
+  authenticate,
   fileController.getFileInfo
 );
 
 // 删除文件
 router.delete('/:fileId',
-  authMiddleware,
+  authenticate,
   fileController.deleteFile
 );
 
 // 获取用户文件列表
 router.get('/',
-  authMiddleware,
+  authenticate,
   fileController.getUserFiles
 );
 

@@ -47,7 +47,7 @@ setup('创建租务管理员认证状态', async ({ page }) => {
 
   try {
     // 访问租务管理端登录页
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     
     // 填写登录信息
     await page.fill('[data-testid="username"]', 'tenant_admin');
@@ -79,7 +79,7 @@ setup('创建商户管理员认证状态', async ({ page }) => {
 
   try {
     // 访问商户管理端登录页
-    await page.goto('http://localhost:3002/login');
+    await page.goto('http://localhost:5050/login');
     
     // 填写登录信息
     await page.fill('[data-testid="username"]', 'merchant_admin');
@@ -110,7 +110,7 @@ setup('创建商户员工认证状态', async ({ page }) => {
 
   try {
     // 访问商户管理端登录页
-    await page.goto('http://localhost:3002/login');
+    await page.goto('http://localhost:5050/login');
     
     // 填写登录信息
     await page.fill('[data-testid="username"]', 'employee_user');

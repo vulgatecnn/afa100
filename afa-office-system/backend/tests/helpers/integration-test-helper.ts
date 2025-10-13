@@ -31,6 +31,15 @@ export class IntegrationTestHelper {
   private environment: TestEnvironment = 'unit';
 
   /**
+   * 快速设置测试环境（静态方法）
+   */
+  static async quickSetup(options: TestSetupOptions = {}): Promise<IntegrationTestHelper> {
+    const helper = new IntegrationTestHelper();
+    await helper.setup(options);
+    return helper;
+  }
+
+  /**
    * 设置测试环境
    */
   async setup(options: TestSetupOptions = {}): Promise<IntegrationTestContext> {

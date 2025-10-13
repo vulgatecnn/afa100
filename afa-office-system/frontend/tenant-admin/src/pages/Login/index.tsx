@@ -7,7 +7,7 @@ import './Login.css'
 const { Title, Text } = Typography
 
 interface LoginFormData {
-  email: string
+  phone: string
   password: string
 }
 
@@ -46,16 +46,16 @@ const LoginPage: React.FC = () => {
             size="large"
           >
             <Form.Item
-              name="email"
+              name="phone"
               rules={[
-                { required: true, message: '请输入邮箱地址' },
-                { type: 'email', message: '请输入有效的邮箱地址' }
+                { required: true, message: '请输入手机号' },
+                { pattern: /^1[3-9]\d{9}$/, message: '请输入有效的手机号' }
               ]}
             >
               <Input
                 prefix={<UserOutlined />}
-                placeholder="邮箱地址"
-                autoComplete="email"
+                placeholder="手机号"
+                autoComplete="tel"
               />
             </Form.Item>
 

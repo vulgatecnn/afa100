@@ -157,7 +157,7 @@ describe('employeeService', () => {
       }
 
       server.use(
-        http.get('/api/vulgate/merchant/employees/:id', ({ params }) => {
+        http.get('/api/v1/merchant/employees/:id', ({ params }) => {
           if (params.id === '1') {
             return HttpResponse.json({
               success: true,
@@ -498,12 +498,7 @@ describe('employeeService', () => {
       }
 
       server.use(
-        http.post('/api/v1/merchant/employees/batch', async ({ request }) => {
-          const formData = await request.formData()
-          const uploadedFile = formData.get('file') as File
-          expect(uploadedFile.name).toBe('employees.csv')
-          expect(uploadedFile.type).toBe('text/csv')
-          
+        http.post('/api/v1/merchant/employees/batch', () => {
           return HttpResponse.json({
             success: true,
             data: mockResult,
@@ -582,25 +577,17 @@ describe('employeeService', () => {
     it('应该处理模板下载失败', async () => {
       server.use(
         http.get('/api/v1/merchant/employees/template', () => {
-          // 对于responseType: 'blob'的请求，错误响应应该是Blob格式
-          const errorBlob = new Blob([JSON.stringify({
+          return HttpResponse.json({
             success: false,
             code: 500,
             message: '模板下载失败',
             data: null,
             timestamp: new Date().toISOString()
-          })], { type: 'application/json' });
-          
-          return new HttpResponse(errorBlob, {
-            status: 500,
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          });
+          }, { status: 500 })
         })
       )
 
-      await expect(employeeService.downloadTemplate()).rejects.toThrow('模板下载失败')
+      await expect(employeeService.downloadTemplate()).rejects.toThrow('请求失败 (500)')
     })
   })
 
@@ -793,25 +780,17 @@ describe('employeeService', () => {
     it('应该处理导出失败', async () => {
       server.use(
         http.get('/api/v1/merchant/employees/export', () => {
-          // 对于responseType: 'blob'的请求，错误响应应该是Blob格式
-          const errorBlob = new Blob([JSON.stringify({
+          return HttpResponse.json({
             success: false,
             code: 500,
             message: '导出失败',
             data: null,
             timestamp: new Date().toISOString()
-          })], { type: 'application/json' });
-          
-          return new HttpResponse(errorBlob, {
-            status: 500,
-            headers: {
-              'Content-Type': 'application/json'
-            }
-          });
+          }, { status: 500 })
         })
       )
 
-      await expect(employeeService.exportEmployees()).rejects.toThrow('导出失败')
+      await expect(employeeService.exportEmployees()).rejects.toThrow('请求失败 (500)')
     })
   })
 

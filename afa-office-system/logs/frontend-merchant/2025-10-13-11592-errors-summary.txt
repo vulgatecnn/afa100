@@ -1,0 +1,56 @@
+商户管理端 测试失败摘要 (2025/10/13 09:28:51)
+============================================================
+
+失败测试数量: 4
+提取到的错误详情: 8 个
+
+1. src/services/__tests__/employeeService.test.ts
+   测试套件: employeeService
+   测试名称: batchImportEmployees > 应该成功批量导入员工
+   错误信息: Test timed out in 10000ms.
+   错误类型: test_failure
+
+2. src/services/__tests__/employeeService.test.ts
+   测试套件: employeeService
+   测试名称: batchImportEmployees > 应该处理文件格式错误
+   错误信息: Test timed out in 10000ms.
+   错误类型: test_failure
+
+3. src/services/__tests__/employeeService.test.ts
+   测试套件: employeeService
+   测试名称: batchImportEmployees > 应该处理文件过大
+   错误信息: Test timed out in 10000ms.
+   错误类型: test_failure
+
+4. src/components/__tests__/PermissionModal.test.tsx
+   测试套件: PermissionModal
+   测试名称: should display permission groups
+   错误信息: Error: Not implemented: window.computedStyle(elt, pseudoElt)
+   错误类型: error
+
+5. src/components/__tests__/PermissionModal.test.tsx
+   测试套件: PermissionModal
+   测试名称: should display permission groups
+   错误信息: TestingLibraryElementError: Found multiple elements with the text: 系统权限
+   错误类型: element_not_found
+
+6. src/services/__tests__/employeeService.test.ts
+   测试套件: employeeService
+   测试名称: batchImportEmployees > 应该成功批量导入员工
+   错误类型: test_failure
+
+7. src/services/__tests__/employeeService.test.ts
+   测试套件: employeeService
+   测试名称: batchImportEmployees > 应该处理文件格式错误
+   错误类型: test_failure
+
+8. src/services/__tests__/employeeService.test.ts
+   测试套件: employeeService
+   测试名称: batchImportEmployees > 应该处理文件过大
+   错误信息: Error: Test timed out in 10000ms.
+   错误类型: error
+
+------------------------------------------------------------
+📄 完整测试日志: 2025-10-13-11592-test-execution.log
+📄 详细错误日志: 2025-10-13-11592-test-errors.log
+============================================================

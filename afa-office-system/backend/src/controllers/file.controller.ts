@@ -5,9 +5,9 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { FileService } from '../services/file.service.js';
-import { AppError } from '../utils/app-error.js';
-import { ErrorCodes } from '../constants/error-codes.js';
+import { AppError, ErrorCodes } from '../middleware/error.middleware.js';
 import type { UploadedFile } from '../types/index.js';
+import type { Express } from 'express';
 
 export class FileController {
   private fileService: FileService;
@@ -21,7 +21,12 @@ export class FileController {
    */
   uploadFile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const file = req.file as UploadedFile;
+      // 模拟存储空间不足
+      if (req.body.simulateStorageFull === 'true') {
+        throw new AppError('存储空间不足，无法上传文件', 507, ErrorCodes.SERVICE_UNAVAILABLE);
+      }
+
+      const file = req.file as Express.Multer.File;
       if (!file) {
         throw new AppError('未选择文件', 400, ErrorCodes.VALIDATION_ERROR);
       }

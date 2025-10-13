@@ -13,7 +13,7 @@ test.describe('数据验证和业务规则测试', () => {
     });
 
     test.beforeEach(async ({ page }) => {
-      await page.goto('http://localhost:3001/dashboard');
+      await page.goto('http://localhost:5000/dashboard');
       await page.click('[data-testid="nav-users"]');
     });
 
@@ -87,7 +87,7 @@ test.describe('数据验证和业务规则测试', () => {
     });
 
     test.beforeEach(async ({ page }) => {
-      await page.goto('http://localhost:3001/dashboard');
+      await page.goto('http://localhost:5000/dashboard');
       await page.click('[data-testid="nav-merchants"]');
     });
 
@@ -144,7 +144,7 @@ test.describe('数据验证和业务规则测试', () => {
 
   test.describe('访客申请数据验证', () => {
     test('访客申请表单验证', async ({ page }) => {
-      await page.goto('http://localhost:3000/visitor-application');
+      await page.goto('http://localhost:5100/visitor-application');
       
       // 测试必填字段验证
       await page.click('[data-testid="submit-application-button"]');
@@ -173,7 +173,7 @@ test.describe('数据验证和业务规则测试', () => {
     });
 
     test('访客黑名单验证', async ({ page }) => {
-      await page.goto('http://localhost:3000/visitor-application');
+      await page.goto('http://localhost:5100/visitor-application');
       
       // 填写黑名单访客信息
       await page.fill('[data-testid="visitor-name"]', '黑名单访客');
@@ -193,7 +193,7 @@ test.describe('数据验证和业务规则测试', () => {
     });
 
     test('重复申请验证', async ({ page }) => {
-      await page.goto('http://localhost:3000/visitor-application');
+      await page.goto('http://localhost:5100/visitor-application');
       
       // 填写已有申请的访客信息
       await page.fill('[data-testid="visitor-name"]', '李访客');
@@ -218,7 +218,7 @@ test.describe('数据验证和业务规则测试', () => {
     });
 
     test('访客申请审批规则', async ({ page }) => {
-      await page.goto('http://localhost:3002/dashboard');
+      await page.goto('http://localhost:5050/dashboard');
       await page.click('[data-testid="nav-visitors"]');
       
       // 尝试审批过期申请
@@ -243,7 +243,7 @@ test.describe('数据验证和业务规则测试', () => {
     });
 
     test('空间容量限制验证', async ({ page }) => {
-      await page.goto('http://localhost:3001/dashboard');
+      await page.goto('http://localhost:5000/dashboard');
       await page.click('[data-testid="nav-spaces"]');
       
       // 选择已满容量的空间
@@ -259,19 +259,19 @@ test.describe('数据验证和业务规则测试', () => {
 
     test('权限级联验证', async ({ page }) => {
       // 测试商户员工权限限制
-      await page.goto('http://localhost:3002/login');
+      await page.goto('http://localhost:5050/login');
       await page.fill('[data-testid="username"]', 'employee_user');
       await page.fill('[data-testid="password"]', 'password123');
       await page.click('[data-testid="login-button"]');
       
       // 尝试访问管理员功能
-      await page.goto('http://localhost:3002/employees');
+      await page.goto('http://localhost:5050/employees');
       
       // 验证权限不足提示
       await expect(page.locator('[data-testid="access-denied"]')).toContainText('权限不足');
       
       // 尝试审批高级别访客
-      await page.goto('http://localhost:3002/visitors');
+      await page.goto('http://localhost:5050/visitors');
       
       const highLevelApplication = page.locator('[data-testid="application-row"][data-level="high"]').first();
       
@@ -290,7 +290,7 @@ test.describe('数据验证和业务规则测试', () => {
     });
 
     test('关联数据删除验证', async ({ page }) => {
-      await page.goto('http://localhost:3001/dashboard');
+      await page.goto('http://localhost:5000/dashboard');
       await page.click('[data-testid="nav-merchants"]');
       
       // 尝试删除有关联数据的商户
@@ -315,7 +315,7 @@ test.describe('数据验证和业务规则测试', () => {
     });
 
     test('数据导入完整性验证', async ({ page }) => {
-      await page.goto('http://localhost:3001/dashboard');
+      await page.goto('http://localhost:5000/dashboard');
       await page.click('[data-testid="nav-users"]');
       await page.click('[data-testid="import-users-button"]');
       
@@ -357,8 +357,8 @@ test.describe('数据验证和业务规则测试', () => {
       const page2 = await context2.newPage();
       
       // 两个用户同时编辑同一个商户
-      await page1.goto('http://localhost:3001/merchants');
-      await page2.goto('http://localhost:3002/dashboard');
+      await page1.goto('http://localhost:5000/merchants');
+      await page2.goto('http://localhost:5050/dashboard');
       
       // 用户1开始编辑
       const merchantRow1 = page1.locator('[data-testid="merchant-row"]').first();
@@ -366,7 +366,7 @@ test.describe('数据验证和业务规则测试', () => {
       await page1.fill('[data-testid="contact-person"]', '用户1修改');
       
       // 用户2也开始编辑同一商户
-      await page2.goto('http://localhost:3002/merchant-profile');
+      await page2.goto('http://localhost:5050/merchant-profile');
       await page2.click('[data-testid="edit-profile-button"]');
       await page2.fill('[data-testid="contact-person"]', '用户2修改');
       

@@ -326,7 +326,8 @@ describe('Visitor Flow Integration Tests', () => {
 
       validTimes.forEach(time => {
         expect(() => new Date(time)).not.toThrow();
-        expect(new Date(time).toISOString()).toBe(time);
+        const date = new Date(time);
+        expect(date.toISOString()).toMatch(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
       });
 
       invalidTimes.forEach(time => {

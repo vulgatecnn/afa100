@@ -451,6 +451,20 @@ export class DataSyncTestHelper {
   }
 
   /**
+   * 清理测试资源
+   */
+  async cleanup(): Promise<void> {
+    // 清理任何持久的测试资源
+    // 这里可以添加具体的清理逻辑，比如清理缓存、关闭连接等
+    try {
+      // 目前没有需要清理的资源
+      // 如果将来有WebSocket连接或其他需要清理的资源，在这里处理
+    } catch (error) {
+      console.warn('数据同步测试辅助工具清理时出现警告:', error)
+    }
+  }
+
+  /**
    * 创建数据同步测试场景
    */
   static async createTestScenario(

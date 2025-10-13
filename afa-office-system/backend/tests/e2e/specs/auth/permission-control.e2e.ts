@@ -9,7 +9,7 @@ test.describe('权限控制测试', () => {
 
   test('租务管理员权限验证', async ({ page }) => {
     // 使用租务管理员身份登录
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     await page.fill('[data-testid="username"]', 'tenant_admin');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');
@@ -42,7 +42,7 @@ test.describe('权限控制测试', () => {
 
   test('商户管理员权限验证', async ({ page }) => {
     // 使用商户管理员身份登录
-    await page.goto('http://localhost:3002/login');
+    await page.goto('http://localhost:5050/login');
     await page.fill('[data-testid="username"]', 'merchant_admin');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');
@@ -76,13 +76,13 @@ test.describe('权限控制测试', () => {
     await expect(page.locator('[data-testid="nav-users"]')).not.toBeVisible();
     
     // 尝试直接访问受限页面应该被拒绝
-    await page.goto('http://localhost:3001/merchants');
+    await page.goto('http://localhost:5000/merchants');
     await expect(page).toHaveURL(/.*\/login/); // 应该跳转到登录页或显示权限错误
   });
 
   test('商户员工权限验证', async ({ page }) => {
     // 使用商户员工身份登录
-    await page.goto('http://localhost:3002/login');
+    await page.goto('http://localhost:5050/login');
     await page.fill('[data-testid="username"]', 'employee_user');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');
@@ -106,7 +106,7 @@ test.describe('权限控制测试', () => {
     await expect(page.locator('[data-testid="nav-employees"]')).not.toBeVisible();
     
     // 不应该有添加/删除员工的权限
-    await page.goto('http://localhost:3002/employees');
+    await page.goto('http://localhost:5050/employees');
     await expect(page.locator('[data-testid="access-denied"]')).toBeVisible();
     
     // 不应该看到系统设置
@@ -117,28 +117,28 @@ test.describe('权限控制测试', () => {
     // 尝试直接访问需要认证的页面
     
     // 访问租务管理端仪表板
-    await page.goto('http://localhost:3001/dashboard');
+    await page.goto('http://localhost:5000/dashboard');
     await expect(page).toHaveURL(/.*\/login/);
     
     // 访问商户管理端仪表板
-    await page.goto('http://localhost:3002/dashboard');
+    await page.goto('http://localhost:5050/dashboard');
     await expect(page).toHaveURL(/.*\/login/);
     
     // 访问具体功能页面
-    await page.goto('http://localhost:3001/merchants');
+    await page.goto('http://localhost:5000/merchants');
     await expect(page).toHaveURL(/.*\/login/);
     
-    await page.goto('http://localhost:3002/employees');
+    await page.goto('http://localhost:5050/employees');
     await expect(page).toHaveURL(/.*\/login/);
     
     // 验证API访问也被拒绝
-    const response = await page.request.get('http://localhost:3000/api/v1/merchants');
+    const response = await page.request.get('http://localhost:5100/api/v1/merchants');
     expect(response.status()).toBe(401); // 未认证
   });
 
   test('跨角色访问控制', async ({ page }) => {
     // 商户管理员尝试访问租务管理功能
-    await page.goto('http://localhost:3002/login');
+    await page.goto('http://localhost:5050/login');
     await page.fill('[data-testid="username"]', 'merchant_admin');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');
@@ -148,7 +148,7 @@ test.describe('权限控制测试', () => {
     const merchantToken = await page.evaluate(() => localStorage.getItem('auth_token'));
     
     // 尝试用商户管理员令牌访问租务管理API
-    const response = await page.request.get('http://localhost:3000/api/v1/merchants', {
+    const response = await page.request.get('http://localhost:5100/api/v1/merchants', {
       headers: {
         'Authorization': `Bearer ${merchantToken}`
       }
@@ -162,7 +162,7 @@ test.describe('权限控制测试', () => {
 
   test('资源级权限控制', async ({ page }) => {
     // 商户管理员只能管理自己商户的数据
-    await page.goto('http://localhost:3002/login');
+    await page.goto('http://localhost:5050/login');
     await page.fill('[data-testid="username"]', 'merchant_admin');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');
@@ -183,13 +183,13 @@ test.describe('权限控制测试', () => {
     }
     
     // 尝试访问其他商户的员工详情应该被拒绝
-    await page.goto('http://localhost:3002/employees/999'); // 假设这是其他商户的员工ID
+    await page.goto('http://localhost:5050/employees/999'); // 假设这是其他商户的员工ID
     await expect(page.locator('[data-testid="access-denied"]')).toBeVisible();
   });
 
   test('动态权限更新', async ({ page }) => {
     // 登录为商户员工
-    await page.goto('http://localhost:3002/login');
+    await page.goto('http://localhost:5050/login');
     await page.fill('[data-testid="username"]', 'employee_user');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');
@@ -210,7 +210,7 @@ test.describe('权限控制测试', () => {
 
   test('会话安全性验证', async ({ page }) => {
     // 登录获取会话
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     await page.fill('[data-testid="username"]', 'tenant_admin');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');
@@ -226,7 +226,7 @@ test.describe('权限控制测试', () => {
     }, tamperedToken);
     
     // 尝试访问需要认证的API
-    const response = await page.request.get('http://localhost:3000/api/v1/merchants');
+    const response = await page.request.get('http://localhost:5100/api/v1/merchants');
     expect(response.status()).toBe(401); // 令牌无效
     
     // 页面应该自动跳转到登录页

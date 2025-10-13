@@ -11,6 +11,7 @@ import { errorHandler } from './middleware/error.middleware.js';
 import { notFound } from './middleware/not-found.middleware.js';
 import { requestLogger } from './middleware/logger.middleware.js';
 import { securityHeaders } from './middleware/security.middleware.js';
+import { maintenanceCheck } from './middleware/maintenance.middleware.js';
 
 // 导入路由
 import routes from './routes/index.js';
@@ -45,6 +46,9 @@ app.use(requestLogger);
 // 请求体解析中间件
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// 系统维护检查中间件
+app.use(maintenanceCheck);
 
 // 静态文件服务
 app.use('/uploads', express.static(join(__dirname, '../uploads')));

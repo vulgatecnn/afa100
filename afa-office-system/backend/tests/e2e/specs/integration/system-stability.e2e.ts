@@ -14,15 +14,15 @@ test.describe('系统稳定性测试', () => {
     });
 
     test('长时间会话稳定性测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/dashboard');
+      await page.goto('http://localhost:5000/dashboard');
       
       // 模拟长时间使用场景
       const operations = [
-        () => page.goto('http://localhost:3001/users'),
-        () => page.goto('http://localhost:3001/merchants'),
-        () => page.goto('http://localhost:3001/spaces'),
-        () => page.goto('http://localhost:3001/visitor-applications'),
-        () => page.goto('http://localhost:3001/access-records')
+        () => page.goto('http://localhost:5000/users'),
+        () => page.goto('http://localhost:5000/merchants'),
+        () => page.goto('http://localhost:5000/spaces'),
+        () => page.goto('http://localhost:5000/visitor-applications'),
+        () => page.goto('http://localhost:5000/access-records')
       ];
       
       // 循环执行操作30次，模拟长时间使用
@@ -46,7 +46,7 @@ test.describe('系统稳定性测试', () => {
     });
 
     test('内存泄漏检测测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/dashboard');
+      await page.goto('http://localhost:5000/dashboard');
       
       // 记录初始内存使用
       const initialMemory = await page.evaluate(() => {
@@ -56,13 +56,13 @@ test.describe('系统稳定性测试', () => {
       // 执行大量DOM操作
       for (let i = 0; i < 50; i++) {
         // 打开和关闭模态框
-        await page.goto('http://localhost:3001/users');
+        await page.goto('http://localhost:5000/users');
         await page.click('[data-testid="add-user-button"]');
         await expect(page.locator('[data-testid="add-user-modal"]')).toBeVisible();
         await page.press('Escape'); // 关闭模态框
         
         // 切换页面
-        await page.goto('http://localhost:3001/merchants');
+        await page.goto('http://localhost:5000/merchants');
         await page.waitForLoadState('networkidle');
       }
       
@@ -114,7 +114,7 @@ test.describe('系统稳定性测试', () => {
           switch (index % 3) {
             case 0:
               // 用户管理操作
-              await page.goto('http://localhost:3001/users');
+              await page.goto('http://localhost:5000/users');
               await page.waitForLoadState('networkidle');
               await page.click('[data-testid="add-user-button"]');
               await page.fill('[data-testid="user-username"]', `concurrent_user_${index}`);
@@ -126,7 +126,7 @@ test.describe('系统稳定性测试', () => {
               
             case 1:
               // 商户管理操作
-              await page.goto('http://localhost:3001/merchants');
+              await page.goto('http://localhost:5000/merchants');
               await page.waitForLoadState('networkidle');
               const merchantRow = page.locator('[data-testid="merchant-row"]').first();
               await merchantRow.locator('[data-testid="edit-merchant-button"]').click();
@@ -136,7 +136,7 @@ test.describe('系统稳定性测试', () => {
               
             case 2:
               // 数据查询操作
-              await page.goto('http://localhost:3001/visitor-applications');
+              await page.goto('http://localhost:5000/visitor-applications');
               await page.waitForLoadState('networkidle');
               await page.fill('[data-testid="search-input"]', '测试');
               await page.click('[data-testid="search-button"]');
@@ -163,7 +163,7 @@ test.describe('系统稳定性测试', () => {
     });
 
     test('大数据量处理测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       
       // 模拟大量数据加载
       await page.route('**/api/v1/users*', route => {
@@ -224,7 +224,7 @@ test.describe('系统稳定性测试', () => {
     });
 
     test('网络波动恢复测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       
       let requestCount = 0;
       
@@ -257,7 +257,7 @@ test.describe('系统稳定性测试', () => {
     });
 
     test('浏览器崩溃恢复测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       
       // 创建用户并保存到localStorage
       await page.click('[data-testid="add-user-button"]');
@@ -300,7 +300,7 @@ test.describe('系统稳定性测试', () => {
     });
 
     test('数据库连接中断恢复', async ({ page }) => {
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       
       // 模拟数据库连接问题
       await page.route('**/api/v1/**', route => {
@@ -342,7 +342,7 @@ test.describe('系统稳定性测试', () => {
     });
 
     test('文件上传大小限制测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/merchants');
+      await page.goto('http://localhost:5000/merchants');
       await page.click('[data-testid="add-merchant-button"]');
       
       // 模拟上传超大文件
@@ -368,7 +368,7 @@ test.describe('系统稳定性测试', () => {
     });
 
     test('并发文件上传测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/merchants');
+      await page.goto('http://localhost:5000/merchants');
       await page.click('[data-testid="add-merchant-button"]');
       
       // 模拟多个文件同时上传
@@ -398,7 +398,7 @@ test.describe('系统稳定性测试', () => {
     });
 
     test('缓存管理测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       
       // 记录初始请求
       const initialRequests: string[] = [];
@@ -441,7 +441,7 @@ test.describe('系统稳定性测试', () => {
 
   test.describe('安全性压力测试', () => {
     test('恶意请求防护测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/login');
+      await page.goto('http://localhost:5000/login');
       
       // 模拟暴力破解攻击
       const attackAttempts = [];
@@ -465,12 +465,12 @@ test.describe('系统稳定性测试', () => {
     });
 
     test('XSS攻击防护测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/login');
+      await page.goto('http://localhost:5000/login');
       await page.fill('[data-testid="username"]', 'tenant_admin');
       await page.fill('[data-testid="password"]', 'password123');
       await page.click('[data-testid="login-button"]');
       
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       await page.click('[data-testid="add-user-button"]');
       
       // 尝试注入恶意脚本
@@ -499,12 +499,12 @@ test.describe('系统稳定性测试', () => {
     });
 
     test('SQL注入防护测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/login');
+      await page.goto('http://localhost:5000/login');
       await page.fill('[data-testid="username"]', 'tenant_admin');
       await page.fill('[data-testid="password"]', 'password123');
       await page.click('[data-testid="login-button"]');
       
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       
       // 尝试SQL注入攻击
       const sqlInjection = "'; DROP TABLE users; --";

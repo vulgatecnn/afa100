@@ -13,7 +13,7 @@ interface AuthContextType {
   user: User | null
   isAuthenticated: boolean
   loading: boolean
-  login: (credentials: { email: string; password: string }) => Promise<void>
+  login: (credentials: { phone: string; password: string }) => Promise<void>
   logout: () => void
 }
 
@@ -50,7 +50,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkAuth()
   }, [])
 
-  const login = async (credentials: { email: string; password: string }) => {
+  const login = async (credentials: { phone: string; password: string }) => {
     try {
       setLoading(true)
       const response = await authService.login(credentials)

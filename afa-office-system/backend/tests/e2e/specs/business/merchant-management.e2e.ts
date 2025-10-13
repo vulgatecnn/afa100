@@ -14,7 +14,7 @@ test.describe('商户管理流程测试', () => {
 
   test.beforeEach(async ({ page }) => {
     // 导航到商户管理页面
-    await page.goto('http://localhost:3001/dashboard');
+    await page.goto('http://localhost:5000/dashboard');
     await page.click('[data-testid="nav-merchants"]');
     await expect(page).toHaveURL(/.*\/merchants/);
   });

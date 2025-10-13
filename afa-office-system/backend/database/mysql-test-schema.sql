@@ -235,7 +235,7 @@ CREATE TABLE IF NOT EXISTS `access_records` (
     FOREIGN KEY (`venue_id`) REFERENCES `venues`(`id`) ON DELETE SET NULL,
     FOREIGN KEY (`floor_id`) REFERENCES `floors`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
--
+
 -- 文件表
 CREATE TABLE IF NOT EXISTS `files` (
     `id` VARCHAR(36) PRIMARY KEY,

@@ -12,8 +12,8 @@ import { UserModel } from '../../src/models/user.model.js';
 import { MerchantModel } from '../../src/models/merchant.model.js';
 import { AccessRecordModel } from '../../src/models/access-record.model.js';
 import { PasscodeModel } from '../../src/models/passcode.model.js';
-import { JWTUtils } from '../../src/utils/jwt.js';
-import type { User, Merchant } from '../../src/types/index.js';
+import { JwtUtils } from '../../src/utils/jwt.js';
+import type { User, Merchant, AccessDirection, AccessResult } from '../../src/types/index.js';
 
 interface PerformanceMetrics {
   operation: string;
@@ -73,11 +73,7 @@ describe('系统性能基准测试', () => {
     });
 
     // 生成认证令牌
-    authToken = JWTUtils.generateToken({
-      userId: adminUser.id,
-      userType: 'merchant_admin',
-      merchantId: testMerchant.id
-    });
+    authToken = JwtUtils.generateAccessToken(adminUser);
 
     // 创建多个测试用户用于性能测试
     const userPromises = Array.from({ length: 50 }, (_, i) =>
@@ -305,9 +301,10 @@ describe('系统性能基准测试', () => {
       const passcode = await PasscodeModel.create({
         user_id: user.id,
         code: 'PERF_TEST_CODE',
-        user_type: 'employee',
-        expires_at: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-        status: 'active'
+        type: 'employee',
+        status: 'active',
+        usage_count: 0,
+        expiry_time: new Date(Date.now() + 60 * 60 * 1000).toISOString()
       });
 
       const validatePasscodeData = {
@@ -452,7 +449,7 @@ describe('系统性能基准测试', () => {
       // 测试用户列表查询
       const userListMetrics = await measureDatabasePerformance(
         '用户列表查询',
-        () => UserModel.findAll({ merchant_id: testMerchant.id }),
+        () => UserModel.findAll({ merchantId: testMerchant.id }),
         50
       );
 
@@ -485,8 +482,8 @@ describe('系统性能基准测试', () => {
       const userFilterMetrics = await measureDatabasePerformance(
         '用户条件查询',
         () => UserModel.findAll({ 
-          merchant_id: testMerchant.id, 
-          user_type: 'employee',
+          merchantId: testMerchant.id, 
+          userType: 'employee',
           status: 'active'
         }),
         30
@@ -504,7 +501,7 @@ describe('系统性能基准测试', () => {
       // 测试通行记录分页查询
       const recordPaginationMetrics = await measureDatabasePerformance(
         '通行记录分页查询',
-        () => AccessRecordModel.findWithPagination({
+        () => AccessRecordModel.findAll({
           page: Math.floor(Math.random() * 3) + 1,
           limit: 20
         }),
@@ -538,10 +535,10 @@ describe('系统性能基准测试', () => {
       // 测试通行记录时间范围查询
       const recordTimeRangeMetrics = await measureDatabasePerformance(
         '通行记录时间范围查询',
-        () => AccessRecordModel.findByTimeRange(
-          new Date(Date.now() - 60 * 60 * 1000).toISOString(),
-          new Date().toISOString()
-        ),
+        () => AccessRecordModel.findAll({
+          startDate: new Date(Date.now() - 60 * 60 * 1000).toISOString(),
+          endDate: new Date().toISOString()
+        }),
         25
       );
 
@@ -608,8 +605,8 @@ describe('系统性能基准测试', () => {
           const batchData = Array.from({ length: 10 }, (_, i) => ({
             user_id: testUsers[i % testUsers.length].id,
             device_id: `batch_device_${i % 3}`,
-            direction: i % 2 === 0 ? 'in' : 'out',
-            result: 'success',
+            direction: (i % 2 === 0 ? 'in' : 'out') as AccessDirection,
+            result: 'success' as AccessResult,
             timestamp: new Date(Date.now() - i * 1000).toISOString()
           }));
           
@@ -692,15 +689,15 @@ describe('系统性能基准测试', () => {
       
       // 执行大量操作
       const operationCount = 200;
-      const operations = [];
+      const operations: Promise<any>[] = [];
 
       for (let i = 0; i < operationCount; i++) {
         if (i % 4 === 0) {
           // 用户查询
-          operations.push(UserModel.findAll({ merchant_id: testMerchant.id }));
+          operations.push(UserModel.findAll({ merchantId: testMerchant.id }) as Promise<any>);
         } else if (i % 4 === 1) {
           // 通行记录查询
-          operations.push(AccessRecordModel.findWithPagination({ page: 1, limit: 10 }));
+          operations.push(AccessRecordModel.findAll({ page: 1, limit: 10 }) as Promise<any>);
         } else if (i % 4 === 2) {
           // 用户创建
           const randomId = Math.random().toString(36).substring(2, 11);
@@ -711,17 +708,17 @@ describe('系统性能基准测试', () => {
             status: 'active',
             merchant_id: testMerchant.id,
             open_id: `memory_test_${randomId}`
-          }));
+          }) as Promise<any>);
         } else {
           // 通行记录创建
           const randomUser = testUsers[Math.floor(Math.random() * testUsers.length)];
           operations.push(AccessRecordModel.create({
             user_id: randomUser.id,
             device_id: `memory_device_${i % 5}`,
-            direction: i % 2 === 0 ? 'in' : 'out',
-            result: 'success',
+            direction: (i % 2 === 0 ? 'in' : 'out') as AccessDirection,
+            result: 'success' as AccessResult,
             timestamp: new Date().toISOString()
-          }));
+          }) as Promise<any>);
         }
       }
 
@@ -758,21 +755,21 @@ describe('系统性能基准测试', () => {
     });
 
     it('应该测量数据库连接池效率', async () => {
-      const connectionPoolOperations = [];
+      const connectionPoolOperations: Promise<any>[] = [];
       const concurrentCount = 20;
 
       // 创建并发数据库操作
       for (let i = 0; i < concurrentCount; i++) {
         connectionPoolOperations.push(
           (async () => {
-            const operations = [];
+            const operations: Promise<any>[] = [];
             
             // 每个连接执行多个操作
             for (let j = 0; j < 5; j++) {
               if (j % 2 === 0) {
-                operations.push(UserModel.findAll({ merchant_id: testMerchant.id }));
+                operations.push(UserModel.findAll({ merchantId: testMerchant.id }) as Promise<any>);
               } else {
-                operations.push(AccessRecordModel.findWithPagination({ page: 1, limit: 5 }));
+                operations.push(AccessRecordModel.findAll({ page: 1, limit: 5 }) as Promise<any>);
               }
             }
             
@@ -863,4 +860,18 @@ describe('系统性能基准测试', () => {
           },
           system: {
             memoryEfficiency: '< 200MB increase for 200 operations',
-            connectionPool: '> 20 ops/s with 20 concurrent conne
+            connectionPool: '> 20 ops/s with 20 concurrent connections'
+          }
+        }
+      };
+
+      // 验证报告结构
+      expect(performanceReport).toBeDefined();
+      expect(performanceReport.testDate).toBeDefined();
+      expect(performanceReport.systemInfo).toBeDefined();
+      expect(performanceReport.benchmarks).toBeDefined();
+
+      console.log('✅ 性能基准报告生成完成');
+    });
+  });
+});

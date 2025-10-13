@@ -5,7 +5,7 @@
 
 import { describe, it, expect, beforeAll, afterAll, beforeEach, afterEach, vi } from 'vitest'
 import request from 'supertest'
-import { app } from '../../src/app.js'
+import app from '../../src/app.js'
 import { Database } from '../../src/utils/database.js'
 import { userFactory } from '../../../shared/test-factories/index.js'
 import { TestErrorHandler, createTestContext } from '../../../shared/test-helpers/error-handler.js'

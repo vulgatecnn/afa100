@@ -466,5 +466,145 @@ export const handlers = [
   // 网络错误Mock
   http.get('/api/v1/network-error', () => {
     return HttpResponse.error()
+  }),
+
+  // API测试专用处理器
+  http.get('/api/v1/test-auth', ({ request }) => {
+    const authHeader = request.headers.get('Authorization')
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      return HttpResponse.json({
+        success: true,
+        data: { message: 'authorized' },
+        message: '认证成功',
+        timestamp: new Date().toISOString()
+      })
+    }
+    return HttpResponse.json({
+      success: false,
+      code: 401,
+      message: '未授权',
+      data: null,
+      timestamp: new Date().toISOString()
+    }, { status: 401 })
+  }),
+
+  http.get('/api/v1/test-no-auth', ({ request }) => {
+    const authHeader = request.headers.get('Authorization')
+    if (!authHeader) {
+      return HttpResponse.json({
+        success: true,
+        data: { message: 'no auth header' },
+        message: '无认证头',
+        timestamp: new Date().toISOString()
+      })
+    }
+    return HttpResponse.json({
+      success: false,
+      code: 400,
+      message: '不应该有认证头',
+      data: null,
+      timestamp: new Date().toISOString()
+    }, { status: 400 })
+  }),
+
+  http.get('/api/v1/test-success', () => {
+    return HttpResponse.json({
+      success: true,
+      data: { id: 1, name: '测试数据' },
+      message: '操作成功',
+      timestamp: new Date().toISOString()
+    })
+  }),
+
+  http.get('/api/v1/test-401', () => {
+    return HttpResponse.json({
+      success: false,
+      code: 401,
+      message: '未授权',
+      data: null,
+      timestamp: new Date().toISOString()
+    }, { status: 401 })
+  }),
+
+  http.get('/api/v1/test-403', () => {
+    return HttpResponse.json({
+      success: false,
+      code: 403,
+      message: '权限不足',
+      data: null,
+      timestamp: new Date().toISOString()
+    }, { status: 403 })
+  }),
+
+  http.get('/api/v1/test-404', () => {
+    return HttpResponse.json({
+      success: false,
+      code: 404,
+      message: '资源不存在',
+      data: null,
+      timestamp: new Date().toISOString()
+    }, { status: 404 })
+  }),
+
+  http.get('/api/v1/test-500', () => {
+    return HttpResponse.json({
+      success: false,
+      code: 500,
+      message: '服务器内部错误',
+      data: null,
+      timestamp: new Date().toISOString()
+    }, { status: 500 })
+  }),
+
+  http.get('/api/v1/test-network-error', () => {
+    return HttpResponse.error()
+  }),
+
+  http.get('/api/v1/test-get', () => {
+    return HttpResponse.json({
+      success: true,
+      data: { method: 'GET' },
+      message: 'GET请求成功',
+      timestamp: new Date().toISOString()
+    })
+  }),
+
+  http.post('/api/v1/test-post', async ({ request }) => {
+    const body = await request.json()
+    return HttpResponse.json({
+      success: true,
+      data: { method: 'POST', received: body },
+      message: 'POST请求成功',
+      timestamp: new Date().toISOString()
+    })
+  }),
+
+  http.put('/api/v1/test-put', async ({ request }) => {
+    const body = await request.json()
+    return HttpResponse.json({
+      success: true,
+      data: { method: 'PUT', received: body },
+      message: 'PUT请求成功',
+      timestamp: new Date().toISOString()
+    })
+  }),
+
+  http.delete('/api/v1/test-delete', () => {
+    return HttpResponse.json({
+      success: true,
+      data: { method: 'DELETE' },
+      message: 'DELETE请求成功',
+      timestamp: new Date().toISOString()
+    })
+  }),
+
+  http.patch('/api/v1/test-patch', async ({ request }) => {
+    const body = await request.json()
+    return HttpResponse.json({
+      success: true,
+      data: { method: 'PATCH', received: body },
+      message: 'PATCH请求成功',
+      timestamp: new Date().toISOString()
+    })
   })
 ]

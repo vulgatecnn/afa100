@@ -27,6 +27,20 @@ export interface SeedOptions {
   visitorApplicationCount?: number;
   accessRecordCount?: number;
   includeAdminUser?: boolean;
+  // 兼容性选项
+  includeUsers?: boolean;
+  includeMerchants?: boolean;
+  includeEmployees?: boolean;
+  includeVisitors?: boolean;
+  includeProjects?: boolean;
+  includeVenues?: boolean;
+  includeFloors?: boolean;
+  includeAccessRecords?: boolean;
+  // 数量选项
+  users?: number;
+  merchants?: number;
+  visitors?: number;
+  projects?: number;
 }
 
 /**

@@ -2,6 +2,11 @@ import { chromium, FullConfig } from '@playwright/test';
 import { validateTestEnvironment } from '../config/test-environment.js';
 import { TestDataManager } from './test-data-manager.js';
 import { DatabaseManager } from './database-manager.js';
+import { config } from 'dotenv';
+import { join } from 'path';
+
+// 加载 E2E 测试环境配置
+config({ path: join(__dirname, '../.env.e2e') });
 
 /**
  * 全局测试设置
@@ -67,8 +72,8 @@ async function warmupServices() {
 
     // 预热前端页面（如果可用）
     try {
-      await page.goto('http://localhost:3001', { waitUntil: 'networkidle' });
-      await page.goto('http://localhost:3002', { waitUntil: 'networkidle' });
+      await page.goto('http://localhost:5000', { waitUntil: 'networkidle' });
+      await page.goto('http://localhost:5050', { waitUntil: 'networkidle' });
     } catch (error) {
       console.warn('前端服务预热跳过:', error);
     }
@@ -116,8 +121,8 @@ async function createAuthState(browser: any, role: string, credentials: { userna
   try {
     // 根据角色选择登录URL
     const loginUrl = role.includes('tenant') 
-      ? 'http://localhost:3001/login'
-      : 'http://localhost:3002/login';
+      ? 'http://localhost:5000/login'
+      : 'http://localhost:5050/login';
 
     await page.goto(loginUrl);
     

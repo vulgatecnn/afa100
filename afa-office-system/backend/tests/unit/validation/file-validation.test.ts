@@ -84,4 +84,54 @@ class FileValidator {
   /**
    * 验证文件大小
    */
-  static validateFileSize(size
+  static validateFileSize(size: number, maxSize: number = 10 * 1024 * 1024): ValidationResult {
+    const errors: string[] = [];
+
+    if (size > maxSize) {
+      errors.push(`文件大小超过限制，最大允许 ${maxSize / 1024 / 1024}MB`);
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors,
+    };
+  }
+}
+
+// 验证结果接口
+interface ValidationResult {
+  isValid: boolean;
+  errors: string[];
+}
+
+// 测试用例
+describe('文件验证工具测试', () => {
+  describe('文件类型验证', () => {
+    it('应该接受有效的图片类型', () => {
+      const result = FileValidator.validateFileType('image/jpeg', ['image']);
+      expect(result.isValid).toBe(true);
+      expect(result.category).toBe('image');
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('应该拒绝无效的文件类型', () => {
+      const result = FileValidator.validateFileType('application/x-executable', ['image']);
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain('不支持的文件类型: application/x-executable');
+    });
+  });
+
+  describe('文件大小验证', () => {
+    it('应该接受符合大小限制的文件', () => {
+      const result = FileValidator.validateFileSize(5 * 1024 * 1024); // 5MB
+      expect(result.isValid).toBe(true);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('应该拒绝超过大小限制的文件', () => {
+      const result = FileValidator.validateFileSize(15 * 1024 * 1024); // 15MB
+      expect(result.isValid).toBe(false);
+      expect(result.errors).toContain('文件大小超过限制，最大允许 10MB');
+    });
+  });
+});

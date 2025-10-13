@@ -47,7 +47,7 @@ export const handlers = [
   }),
 
   // 商户管理Mock
-  http.get('/api/v1/merchants', () => {
+  http.get('/api/v1/tenant/merchants', () => {
     return HttpResponse.json({
       success: true,
       data: [
@@ -79,7 +79,7 @@ export const handlers = [
     })
   }),
 
-  http.post('/api/v1/merchants', async ({ request }) => {
+  http.post('/api/v1/tenant/merchants', async ({ request }) => {
     const body = await request.json() as any
     return HttpResponse.json({
       success: true,
@@ -95,7 +95,7 @@ export const handlers = [
     })
   }),
 
-  http.put('/api/v1/merchants/:id', async ({ params, request }) => {
+  http.put('/api/v1/tenant/merchants/:id', async ({ params, request }) => {
     const body = await request.json() as any
     return HttpResponse.json({
       success: true,
@@ -109,7 +109,7 @@ export const handlers = [
     })
   }),
 
-  http.delete('/api/v1/merchants/:id', ({ params }) => {
+  http.delete('/api/v1/tenant/merchants/:id', ({ params }) => {
     return HttpResponse.json({
       success: true,
       data: null,
@@ -419,7 +419,7 @@ export const handlers = [
   }),
 
   // 访客管理Mock
-  http.get('/api/v1/visitors', () => {
+  http.get('/api/v1/tenant/visitors', () => {
     return HttpResponse.json({
       success: true,
       data: [
@@ -713,5 +713,17 @@ export const handlers = [
   // 网络错误Mock
   http.get('/api/v1/network-error', () => {
     return HttpResponse.error()
+  }),
+
+  // 通用处理器 - 处理所有未匹配的API请求
+  http.all('/api/v1/*', ({ request }) => {
+    console.warn(`Unhandled ${request.method} request to ${request.url}`)
+    return HttpResponse.json({
+      success: false,
+      code: 404,
+      message: `API endpoint not found: ${request.method} ${new URL(request.url).pathname}`,
+      data: null,
+      timestamp: new Date().toISOString()
+    }, { status: 404 })
   })
 ]

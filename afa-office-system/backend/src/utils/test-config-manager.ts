@@ -226,9 +226,10 @@ export class TestConfigManager {
       ...baseConfig,
       database: {
         ...baseConfig.database,
-        user: process.env.INTEGRATION_TEST_DB_USER || 'afa_integration_user',
-        password: process.env.INTEGRATION_TEST_DB_PASSWORD || 'afa_integration_2024',
-        database: process.env.INTEGRATION_TEST_DB_NAME || 'afa_office_integration_test',
+        host: process.env.INTEGRATION_DB_HOST || process.env.TEST_DB_HOST || 'localhost',
+        user: process.env.INTEGRATION_DB_USER || process.env.TEST_DB_USER || 'afa_test_user',
+        password: process.env.INTEGRATION_DB_PASSWORD || process.env.TEST_DB_PASSWORD || 'afa_test_2024',
+        database: process.env.INTEGRATION_DB_NAME || process.env.TEST_DB_NAME || 'afa_office_test',
         connectionLimit: 10,
         timeout: 10000,
       },

@@ -9,7 +9,7 @@ test.describe('会话管理测试', () => {
 
   test('用户登录会话创建', async ({ page }) => {
     // 登录前验证无会话状态
-    await page.goto('http://localhost:3001/dashboard');
+    await page.goto('http://localhost:5000/dashboard');
     await expect(page).toHaveURL(/.*\/login/);
     
     // 执行登录
@@ -37,7 +37,7 @@ test.describe('会话管理测试', () => {
 
   test('用户主动退出登录', async ({ page }) => {
     // 先登录
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     await page.fill('[data-testid="username"]', 'tenant_admin');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');
@@ -62,13 +62,13 @@ test.describe('会话管理测试', () => {
     expect(userInfoAfterLogout).toBeNull();
     
     // 验证无法访问需要认证的页面
-    await page.goto('http://localhost:3001/dashboard');
+    await page.goto('http://localhost:5000/dashboard');
     await expect(page).toHaveURL(/.*\/login/);
   });
 
   test('会话超时自动退出', async ({ page }) => {
     // 登录
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     await page.fill('[data-testid="username"]', 'tenant_admin');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');
@@ -94,7 +94,7 @@ test.describe('会话管理测试', () => {
   test('并发会话管理', async ({ context }) => {
     // 在第一个标签页登录
     const page1 = await context.newPage();
-    await page1.goto('http://localhost:3001/login');
+    await page1.goto('http://localhost:5000/login');
     await page1.fill('[data-testid="username"]', 'tenant_admin');
     await page1.fill('[data-testid="password"]', 'password123');
     await page1.click('[data-testid="login-button"]');
@@ -102,7 +102,7 @@ test.describe('会话管理测试', () => {
     
     // 在第二个标签页也能访问（共享会话）
     const page2 = await context.newPage();
-    await page2.goto('http://localhost:3001/dashboard');
+    await page2.goto('http://localhost:5000/dashboard');
     await expect(page2.locator('[data-testid="user-info"]')).toContainText('租务管理员');
     
     // 在第一个标签页退出登录
@@ -117,7 +117,7 @@ test.describe('会话管理测试', () => {
 
   test('记住登录状态', async ({ page }) => {
     // 登录时选择记住登录状态
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     await page.fill('[data-testid="username"]', 'tenant_admin');
     await page.fill('[data-testid="password"]', 'password123');
     await page.check('[data-testid="remember-me"]');
@@ -132,7 +132,7 @@ test.describe('会话管理测试', () => {
     await page.context().clearCookies();
     
     // 重新访问应用
-    await page.goto('http://localhost:3001/dashboard');
+    await page.goto('http://localhost:5000/dashboard');
     
     // 如果实现了记住登录，应该仍然保持登录状态
     // 或者至少保留用户名信息
@@ -144,7 +144,7 @@ test.describe('会话管理测试', () => {
 
   test('安全会话验证', async ({ page }) => {
     // 登录
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     await page.fill('[data-testid="username"]', 'tenant_admin');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');
@@ -181,7 +181,7 @@ test.describe('会话管理测试', () => {
     });
     const page1 = await context1.newPage();
     
-    await page1.goto('http://localhost:3001/login');
+    await page1.goto('http://localhost:5000/login');
     await page1.fill('[data-testid="username"]', 'tenant_admin');
     await page1.fill('[data-testid="password"]', 'password123');
     await page1.click('[data-testid="login-button"]');
@@ -193,7 +193,7 @@ test.describe('会话管理测试', () => {
     });
     const page2 = await context2.newPage();
     
-    await page2.goto('http://localhost:3001/login');
+    await page2.goto('http://localhost:5000/login');
     await page2.fill('[data-testid="username"]', 'tenant_admin');
     await page2.fill('[data-testid="password"]', 'password123');
     await page2.click('[data-testid="login-button"]');
@@ -218,7 +218,7 @@ test.describe('会话管理测试', () => {
 
   test('会话活动监控', async ({ page }) => {
     // 登录
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     await page.fill('[data-testid="username"]', 'tenant_admin');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');

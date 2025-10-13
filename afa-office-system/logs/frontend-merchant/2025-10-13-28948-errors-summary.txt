@@ -1,0 +1,104 @@
+商户管理端 测试失败摘要 (2025/10/13 09:45:31)
+============================================================
+
+失败测试数量: 8
+提取到的错误详情: 16 个
+
+1. src/services/__tests__/employeeService.test.ts
+   测试套件: employeeService
+   测试名称: batchImportEmployees > 应该成功批量导入员工
+   错误信息: Test timed out in 10000ms.
+   错误类型: test_failure
+
+2. src/services/__tests__/employeeService.test.ts
+   测试套件: employeeService
+   测试名称: batchImportEmployees > 应该处理文件格式错误
+   错误信息: Test timed out in 10000ms.
+   错误类型: test_failure
+
+3. src/services/__tests__/employeeService.test.ts
+   测试套件: employeeService
+   测试名称: batchImportEmployees > 应该处理文件过大
+   错误信息: Test timed out in 10000ms.
+   错误类型: test_failure
+
+4. src/services/__tests__/api.test.ts
+   测试套件: merchant-admin api.ts - 请求拦截器和响应拦截器测试
+   测试名称: 响应拦截器测试 - HTTP错误状态码 > 应该处理401未授权错误
+   错误信息: expected '请求失败 (401)' to be 'TIMEOUT' // Object.is equality
+   错误类型: test_failure
+
+5. src/services/__tests__/api.test.ts
+   测试套件: merchant-admin api.ts - 请求拦截器和响应拦截器测试
+   测试名称: 响应拦截器测试 - HTTP错误状态码 > 应该处理403权限不足错误
+   错误信息: expected "spy" to be called with arguments: [ '权限不足' ] | Received:
+   错误类型: test_failure
+
+6. src/services/__tests__/api.test.ts
+   测试套件: merchant-admin api.ts - 请求拦截器和响应拦截器测试
+   测试名称: 响应拦截器测试 - HTTP错误状态码 > 应该处理404资源不存在错误
+   错误信息: expected "spy" to be called with arguments: [ '请求的资源不存在' ] | Received:
+   错误类型: test_failure
+
+7. src/services/__tests__/api.test.ts
+   测试套件: merchant-admin api.ts - 请求拦截器和响应拦截器测试
+   测试名称: 响应拦截器测试 - HTTP错误状态码 > 应该处理500服务器内部错误
+   错误信息: expected "spy" to be called with arguments: [ '服务器内部错误' ] | Received:
+   错误类型: test_failure
+
+8. src/services/__tests__/api.test.ts
+   测试套件: merchant-admin api.ts - 请求拦截器和响应拦截器测试
+   测试名称: 响应拦截器测试 - 网络错误 > 应该处理网络连接失败
+   错误信息: Error: Not implemented: window.computedStyle(elt, pseudoElt)
+   错误类型: error
+
+9. src/services/__tests__/api.test.ts
+   测试套件: merchant-admin api.ts - 请求拦截器和响应拦截器测试
+   测试名称: 响应拦截器测试 - HTTP错误状态码 > 应该处理401未授权错误
+   错误信息: AssertionError: expected '请求失败 (401)' to be 'TIMEOUT' // Object.is equality
+   错误类型: assertion
+
+10. src/services/__tests__/api.test.ts
+   测试套件: merchant-admin api.ts - 请求拦截器和响应拦截器测试
+   测试名称: 响应拦截器测试 - HTTP错误状态码 > 应该处理403权限不足错误
+   错误信息: AssertionError: expected "spy" to be called with arguments: [ '权限不足' ] | Received:
+   错误类型: assertion
+
+11. src/services/__tests__/api.test.ts
+   测试套件: merchant-admin api.ts - 请求拦截器和响应拦截器测试
+   测试名称: 响应拦截器测试 - HTTP错误状态码 > 应该处理404资源不存在错误
+   错误信息: AssertionError: expected "spy" to be called with arguments: [ '请求的资源不存在' ] | Received:
+   错误类型: assertion
+
+12. src/services/__tests__/api.test.ts
+   测试套件: merchant-admin api.ts - 请求拦截器和响应拦截器测试
+   测试名称: 响应拦截器测试 - HTTP错误状态码 > 应该处理500服务器内部错误
+   错误信息: AssertionError: expected "spy" to be called with arguments: [ '服务器内部错误' ] | Received:
+   错误类型: assertion
+
+13. src/services/__tests__/api.test.ts
+   测试套件: merchant-admin api.ts - 请求拦截器和响应拦截器测试
+   测试名称: 响应拦截器测试 - 网络错误 > 应该处理网络连接失败
+   错误信息: AssertionError: expected "spy" to be called with arguments: [ '网络连接失败，请检查网络设置' ] | Received:
+   错误类型: assertion
+
+14. src/services/__tests__/employeeService.test.ts
+   测试套件: employeeService
+   测试名称: batchImportEmployees > 应该成功批量导入员工
+   错误类型: test_failure
+
+15. src/services/__tests__/employeeService.test.ts
+   测试套件: employeeService
+   测试名称: batchImportEmployees > 应该处理文件格式错误
+   错误类型: test_failure
+
+16. src/services/__tests__/employeeService.test.ts
+   测试套件: employeeService
+   测试名称: batchImportEmployees > 应该处理文件过大
+   错误信息: Error: Test timed out in 10000ms.
+   错误类型: error
+
+------------------------------------------------------------
+📄 完整测试日志: 2025-10-13-28948-test-execution.log
+📄 详细错误日志: 2025-10-13-28948-test-errors.log
+============================================================

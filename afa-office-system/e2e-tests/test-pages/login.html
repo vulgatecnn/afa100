@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AFA办公系统 - 登录</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            width: 100%;
+            max-width: 900px;
+            display: flex;
+            min-height: 500px;
+        }
+
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, #1890ff, #722ed1);
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-text {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .features {
+            position: relative;
+            z-index: 1;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 12px;
+            font-size: 12px;
+        }
+
+        .login-right {
+            flex: 1;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .login-form {
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+
+        .form-subtitle {
+            color: #666;
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .test-accounts {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .test-accounts h4 {
+            color: #495057;
+            font-size: 14px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .test-accounts h4::before {
+            content: '🧪';
+            margin-right: 8px;
+        }
+
+        .account-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border: 1px solid #dee2e6;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .account-item:hover {
+            border-color: #1890ff;
+            background: #f0f8ff;
+        }
+
+        .account-info {
+            flex: 1;
+        }
+
+        .account-role {
+            font-weight: 500;
+            color: #1890ff;
+            font-size: 13px;
+        }
+
+        .account-credentials {
+            font-size: 12px;
+            color: #666;
+            font-family: monospace;
+        }
+
+        .use-btn {
+            background: #1890ff;
+            color: white;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .use-btn:hover {
+            background: #40a9ff;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            background: #fafbfc;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #1890ff;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+        }
+
+        .form-input.error {
+            border-color: #ff4d4f;
+            background: #fff2f0;
+        }
+
+        .error-message {
+            color: #ff4d4f;
+            font-size: 12px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .form-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .remember-me {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .remember-me input {
+            margin-right: 8px;
+        }
+
+        .forgot-password {
+            color: #1890ff;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 14px;
+            background: #1890ff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-btn:hover {
+            background: #40a9ff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+        }
+
+        .login-btn:active {
+            transform: translateY(0);
+        }
+
+        .login-btn:disabled {
+            background: #d9d9d9;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .loading {
+            display: none;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 16px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.3s;
+        }
+
+        .notification.success {
+            background: #52c41a;
+        }
+
+        .notification.error {
+            background: #ff4d4f;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                margin: 20px;
+            }
+
+            .login-left {
+                padding: 30px 20px;
+            }
+
+            .login-right {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-left">
+            <div class="logo">🏢 AFA办公系统</div>
+            <div class="welcome-text">
+                智能办公通行管理平台<br>
+                让办公更安全、更便捷
+            </div>
+            <div class="features">
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <span>多角色权限管理</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <span>智能访客管理</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <span>设备统一接入</span>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">✓</div>
+                    <span>实时数据分析</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="login-right">
+            <form class="login-form" data-testid="login-form">
+                <h2 class="form-title">欢迎登录</h2>
+                <p class="form-subtitle">请选择测试账号或输入登录信息</p>
+
+                <!-- 测试账号区域 -->
+                <div class="test-accounts">
+                    <h4>测试账号</h4>
+                    <div class="account-item" data-testid="account-tenant-admin" onclick="useAccount('tenant_admin', 'Test123456')">
+                        <div class="account-info">
+                            <div class="account-role">租务管理员</div>
+                            <div class="account-credentials">tenant_admin / Test123456</div>
+                        </div>
+                        <button type="button" class="use-btn">使用</button>
+                    </div>
+                    <div class="account-item" data-testid="account-merchant-admin" onclick="useAccount('merchant_admin', 'Test123456')">
+                        <div class="account-info">
+                            <div class="account-role">商户管理员</div>
+                            <div class="account-credentials">merchant_admin / Test123456</div>
+                        </div>
+                        <button type="button" class="use-btn">使用</button>
+                    </div>
+                    <div class="account-item" data-testid="account-employee" onclick="useAccount('employee_001', 'Test123456')">
+                        <div class="account-info">
+                            <div class="account-role">商户员工</div>
+                            <div class="account-credentials">employee_001 / Test123456</div>
+                        </div>
+                        <button type="button" class="use-btn">使用</button>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="username">用户名</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username"
+                        class="form-input" 
+                        data-testid="username"
+                        placeholder="请输入用户名"
+                        required
+                    >
+                    <div class="error-message" data-testid="username-error"></div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="password">密码</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password"
+                        class="form-input" 
+                        data-testid="password"
+                        placeholder="请输入密码"
+                        required
+                    >
+                    <div class="error-message" data-testid="password-error"></div>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember-me">
+                        <input type="checkbox" data-testid="remember-me">
+                        <span>记住登录状态</span>
+                    </label>
+                    <a href="#" class="forgot-password">忘记密码？</a>
+                </div>
+
+                <button type="submit" class="login-btn" data-testid="login-button">
+                    <span class="btn-text">登录</span>
+                    <div class="loading">
+                        <div class="spinner"></div>
+                    </div>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 通知组件 -->
+    <div class="notification" data-testid="notification">
+        <span class="notification-text"></span>
+    </div>
+
+    <script>
+        // 模拟用户数据
+        const users = {
+            'tenant_admin': {
+                password: 'Test123456',
+                name: '租务管理员',
+                role: 'tenant_admin',
+                redirectUrl: '/tenant/dashboard'
+            },
+            'merchant_admin': {
+                password: 'Test123456',
+                name: '商户管理员',
+                role: 'merchant_admin',
+                redirectUrl: '/merchant/dashboard'
+            },
+            'employee_001': {
+                password: 'Test123456',
+                name: '张三',
+                role: 'merchant_employee',
+                redirectUrl: '/employee/dashboard'
+            }
+        };
+
+        // 使用测试账号
+        function useAccount(username, password) {
+            document.getElementById('username').value = username;
+            document.getElementById('password').value = password;
+            
+            // 添加视觉反馈
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            
+            usernameInput.style.background = '#e6f7ff';
+            passwordInput.style.background = '#e6f7ff';
+            
+            setTimeout(() => {
+                usernameInput.style.background = '';
+                passwordInput.style.background = '';
+            }, 1000);
+        }
+
+        // 显示通知
+        function showNotification(message, type = 'success') {
+            const notification = document.querySelector('[data-testid="notification"]');
+            const text = notification.querySelector('.notification-text');
+            
+            text.textContent = message;
+            notification.className = `notification ${type}`;
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // 显示错误信息
+        function showError(field, message) {
+            const input = document.getElementById(field);
+            const errorDiv = document.querySelector(`[data-testid="${field}-error"]`);
+            
+            input.classList.add('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        // 清除错误信息
+        function clearError(field) {
+            const input = document.getElementById(field);
+            const errorDiv = document.querySelector(`[data-testid="${field}-error"]`);
+            
+            input.classList.remove('error');
+            errorDiv.style.display = 'none';
+        }
+
+        // 清除所有错误
+        function clearAllErrors() {
+            ['username', 'password'].forEach(clearError);
+        }
+
+        // 表单验证
+        function validateForm(username, password) {
+            let isValid = true;
+            clearAllErrors();
+
+            if (!username.trim()) {
+                showError('username', '请输入用户名');
+                isValid = false;
+            }
+
+            if (!password.trim()) {
+                showError('password', '请输入密码');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        // 模拟登录API
+        async function mockLogin(username, password) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const user = users[username];
+                    if (user && user.password === password) {
+                        resolve({
+                            success: true,
+                            data: {
+                                token: 'mock_jwt_token_' + Date.now(),
+                                user: {
+                                    username: username,
+                                    name: user.name,
+                                    role: user.role
+                                },
+                                redirectUrl: user.redirectUrl
+                            },
+                            message: '登录成功'
+                        });
+                    } else {
+                        resolve({
+                            success: false,
+                            message: '用户名或密码错误'
+                        });
+                    }
+                }, 1500); // 模拟网络延迟
+            });
+        }
+
+        // 创建仪表板页面
+        function createDashboard(user, redirectUrl) {
+            document.body.innerHTML = `
+                <div style="min-height: 100vh; background: #f0f2f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                    <header style="background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 0 24px;">
+                        <div style="max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; height: 64px;">
+                            <div style="display: flex; align-items: center;">
+                                <h1 style="margin: 0; color: #1890ff; font-size: 20px;">🏢 AFA办公系统</h1>
+                                <span style="margin-left: 16px; padding: 4px 12px; background: #f0f8ff; color: #1890ff; border-radius: 12px; font-size: 12px;">${user.role === 'tenant_admin' ? '租务管理端' : user.role === 'merchant_admin' ? '商户管理端' : '员工端'}</span>
+                            </div>
+                            <div style="display: flex; align-items: center;">
+                                <span data-testid="user-name" style="margin-right: 16px; color: #333;">${user.name}</span>
+                                <span data-testid="user-role" style="margin-right: 16px; color: #666; font-size: 14px;">${user.role === 'tenant_admin' ? '租务管理员' : user.role === 'merchant_admin' ? '商户管理员' : '商户员工'}</span>
+                                <button data-testid="logout-button" onclick="logout()" style="padding: 8px 16px; background: #ff4d4f; color: white; border: none; border-radius: 4px; cursor: pointer;">退出登录</button>
+                            </div>
+                        </div>
+                    </header>
+                    
+                    <div data-testid="dashboard" style="max-width: 1200px; margin: 0 auto; padding: 24px;">
+                        <div style="background: white; border-radius: 8px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                            <h2 style="margin: 0 0 24px 0; color: #333;">欢迎回来，${user.name}！</h2>
+                            
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 32px;">
+                                <div style="background: #f0f8ff; padding: 20px; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #1890ff;">25</div>
+                                    <div style="color: #666; margin-top: 4px;">入驻商户</div>
+                                </div>
+                                <div style="background: #f6ffed; padding: 20px; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #52c41a;">342</div>
+                                    <div style="color: #666; margin-top: 4px;">注册员工</div>
+                                </div>
+                                <div style="background: #fff7e6; padding: 20px; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #fa8c16;">156</div>
+                                    <div style="color: #666; margin-top: 4px;">今日访客</div>
+                                </div>
+                                <div style="background: #f9f0ff; padding: 20px; border-radius: 8px; text-align: center;">
+                                    <div style="font-size: 24px; font-weight: bold; color: #722ed1;">18</div>
+                                    <div style="color: #666; margin-top: 4px;">在线设备</div>
+                                </div>
+                            </div>
+                            
+                            <div style="background: #fafafa; padding: 20px; border-radius: 8px; border: 1px dashed #d9d9d9;">
+                                <h3 style="margin: 0 0 16px 0; color: #333;">🎉 登录测试成功！</h3>
+                                <p style="margin: 0; color: #666; line-height: 1.6;">
+                                    您已成功登录AFA办公系统。这是一个演示页面，展示了登录后的仪表板界面。
+                                    在真实系统中，这里会显示各种管理功能和数据统计。
+                                </p>
+                                <div style="margin-top: 16px;">
+                                    <span style="background: #52c41a; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px;">✅ 登录功能正常</span>
+                                    <span style="background: #1890ff; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-left: 8px;">🔐 权限验证通过</span>
+                                    <span style="background: #722ed1; color: white; padding: 4px 8px; border-radius: 4px; font-size: 12px; margin-left: 8px;">📊 数据加载完成</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                location.reload();
+            }
+        }
+
+        // 表单提交处理
+        document.querySelector('[data-testid="login-form"]').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.querySelector('[data-testid="login-button"]');
+            const btnText = loginBtn.querySelector('.btn-text');
+            const loading = loginBtn.querySelector('.loading');
+            
+            // 表单验证
+            if (!validateForm(username, password)) {
+                return;
+            }
+            
+            // 显示加载状态
+            loginBtn.disabled = true;
+            btnText.style.opacity = '0';
+            loading.style.display = 'block';
+            
+            try {
+                // 调用登录API
+                const result = await mockLogin(username, password);
+                
+                if (result.success) {
+                    showNotification(result.message, 'success');
+                    
+                    // 延迟跳转，让用户看到成功提示
+                    setTimeout(() => {
+                        createDashboard(result.data.user, result.data.redirectUrl);
+                    }, 1000);
+                } else {
+                    showNotification(result.message, 'error');
+                    
+                    // 恢复按钮状态
+                    loginBtn.disabled = false;
+                    btnText.style.opacity = '1';
+                    loading.style.display = 'none';
+                }
+            } catch (error) {
+                showNotification('登录失败，请稍后重试', 'error');
+                
+                // 恢复按钮状态
+                loginBtn.disabled = false;
+                btnText.style.opacity = '1';
+                loading.style.display = 'none';
+            }
+        });
+
+        // 输入框焦点事件
+        document.getElementById('username').addEventListener('focus', () => clearError('username'));
+        document.getElementById('password').addEventListener('focus', () => clearError('password'));
+    </script>
+</body>
+</html>

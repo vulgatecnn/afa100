@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { testEnvironmentConfig } from '../../config/test-environment.js';
+import { TestEnvironmentManager } from '../../helpers/test-environment-manager';
 
 /**
  * 前后端集成端到端测试
@@ -7,6 +7,24 @@ import { testEnvironmentConfig } from '../../config/test-environment.js';
  */
 
 test.describe('前后端集成测试', () => {
+  let testEnvironment: TestEnvironmentManager;
+
+  test.beforeAll(async () => {
+    testEnvironment = new TestEnvironmentManager();
+    await testEnvironment.setup();
+  });
+
+  test.afterAll(async () => {
+    if (testEnvironment) {
+      await testEnvironment.cleanup();
+    }
+  });
+
+  test.afterEach(async () => {
+    if (testEnvironment) {
+      await testEnvironment.resetDatabase();
+    }
+  });
 
   test.describe('数据流完整性测试', () => {
     test.use({ 
@@ -15,7 +33,7 @@ test.describe('前后端集成测试', () => {
 
     test('用户管理完整数据流', async ({ page }) => {
       // 1. 前端请求用户列表
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       await page.waitForLoadState('networkidle');
       
       // 验证用户列表正确显示
@@ -92,12 +110,10 @@ test.describe('前后端集成测试', () => {
     });
 
     test('商户空间关联数据流', async ({ page }) => {
-      await page.goto('http://localhost:3001/merchants');
+      await page.goto('http://localhost:5000/merchants');
       
       // 选择商户进行空间管理
       const merchantRow = page.locator('[data-testid="merchant-row"]').first();
-      const merchantName = await merchantRow.locator('[data-testid="merchant-name"]').textContent();
-      
       await merchantRow.locator('[data-testid="manage-spaces-button"]').click();
       
       // 验证当前空间数据正确加载
@@ -150,7 +166,7 @@ test.describe('前后端集成测试', () => {
       
       // 在两个页面都登录
       for (const page of [page1, page2]) {
-        await page.goto('http://localhost:3001/login');
+        await page.goto('http://localhost:5000/login');
         await page.fill('[data-testid="username"]', 'tenant_admin');
         await page.fill('[data-testid="password"]', 'password123');
         await page.click('[data-testid="login-button"]');
@@ -158,10 +174,10 @@ test.describe('前后端集成测试', () => {
       }
       
       // 页面1访问用户管理
-      await page1.goto('http://localhost:3001/users');
+      await page1.goto('http://localhost:5000/users');
       
       // 页面2也访问用户管理
-      await page2.goto('http://localhost:3001/users');
+      await page2.goto('http://localhost:5000/users');
       
       // 在页面1创建用户
       await page1.click('[data-testid="add-user-button"]');
@@ -197,10 +213,10 @@ test.describe('前后端集成测试', () => {
       const merchantPage = await merchantContext.newPage();
       
       // 租务管理员查看通知
-      await tenantPage.goto('http://localhost:3001/dashboard');
+      await tenantPage.goto('http://localhost:5000/dashboard');
       
       // 商户管理员审批访客申请
-      await merchantPage.goto('http://localhost:3002/visitors');
+      await merchantPage.goto('http://localhost:5050/visitors');
       
       const applicationRow = merchantPage.locator('[data-testid="application-row"]').first();
       if (await applicationRow.count() > 0) {
@@ -232,7 +248,7 @@ test.describe('前后端集成测试', () => {
     });
 
     test('网络中断恢复测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       
       // 模拟网络中断
       await page.route('**/api/v1/**', route => {
@@ -262,7 +278,7 @@ test.describe('前后端集成测试', () => {
     });
 
     test('服务器错误处理测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       
       // 模拟服务器500错误
       await page.route('**/api/v1/users', route => {
@@ -295,7 +311,7 @@ test.describe('前后端集成测试', () => {
     });
 
     test('数据验证错误处理', async ({ page }) => {
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       
       // 模拟后端验证错误
       await page.route('**/api/v1/users', route => {
@@ -340,7 +356,7 @@ test.describe('前后端集成测试', () => {
       // 测试用户管理页面加载性能
       const startTime = Date.now();
       
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       await page.waitForLoadState('networkidle');
       
       const loadTime = Date.now() - startTime;
@@ -362,7 +378,7 @@ test.describe('前后端集成测试', () => {
     });
 
     test('大数据量处理测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       
       // 测试分页加载
       const pagination = page.locator('[data-testid="pagination"]');
@@ -386,10 +402,10 @@ test.describe('前后端集成测试', () => {
     });
 
     test('并发操作用户体验', async ({ page }) => {
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       
       // 同时触发多个操作
-      const operations = [];
+      const operations: Array<() => Promise<void>> = [];
       
       // 搜索操作
       operations.push(async () => {
@@ -429,7 +445,7 @@ test.describe('前后端集成测试', () => {
       
       const mobilePage = await mobileContext.newPage();
       
-      await mobilePage.goto('http://localhost:3001/dashboard');
+      await mobilePage.goto('http://localhost:5000/dashboard');
       
       // 验证移动端导航
       await expect(mobilePage.locator('[data-testid="mobile-menu-button"]')).toBeVisible();
@@ -464,7 +480,7 @@ test.describe('前后端集成测试', () => {
       
       const touchPage = await touchContext.newPage();
       
-      await touchPage.goto('http://localhost:3001/users');
+      await touchPage.goto('http://localhost:5000/users');
       
       // 测试滑动操作
       const userRow = touchPage.locator('[data-testid="user-row"]').first();

@@ -85,27 +85,8 @@ export default defineConfig({
     }
   ],
 
-  /* 测试服务器配置 */
-  webServer: [
-    {
-      command: 'pnpm --filter backend dev',
-      url: testEnvironmentConfig.backend.baseUrl,
-      reuseExistingServer: !process.env.CI,
-      timeout: 120000
-    },
-    {
-      command: 'pnpm --filter tenant-admin dev',
-      url: testEnvironmentConfig.frontend.tenantAdmin.baseUrl,
-      reuseExistingServer: !process.env.CI,
-      timeout: 120000
-    },
-    {
-      command: 'pnpm --filter merchant-admin dev',
-      url: testEnvironmentConfig.frontend.merchantAdmin.baseUrl,
-      reuseExistingServer: !process.env.CI,
-      timeout: 120000
-    }
-  ],
+  /* 测试服务器配置 - 由环境管理器统一管理 */
+  // webServer 配置已移至 E2ETestRunner，避免重复启动服务
 
   /* 输出目录 */
   outputDir: '../reports/test-results',

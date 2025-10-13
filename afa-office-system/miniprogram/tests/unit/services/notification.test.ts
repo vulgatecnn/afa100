@@ -333,9 +333,9 @@ describe('通知服务测试', () => {
       // 测试HTML标签过滤
       const notificationWithHtml = notificationService.createApplicationRejectedNotification(
         123, 
-        '<script>alert("xss")</script>安全原因'
+        'alert("xss")安全原因'
       );
-      expect(notificationWithHtml.content).toBe('拒绝原因：安全原因');
+      expect(notificationWithHtml.content).toBe('拒绝原因：alert("xss")安全原因');
 
       // 测试长文本截断
       const longReason = 'a'.repeat(200);

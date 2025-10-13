@@ -322,8 +322,10 @@ describe('日期工具函数测试', () => {
     });
 
     it('应该处理空值和undefined', () => {
-      expect(() => DateUtils.format(null as any)).toThrow();
-      expect(() => DateUtils.format(undefined as any)).toThrow();
+      expect(() => DateUtils.format(null as any)).not.toThrow();
+      expect(() => DateUtils.format(undefined as any)).not.toThrow();
+      expect(DateUtils.format(null as any)).toBe('');
+      expect(DateUtils.format(undefined as any)).toBe('');
     });
   });
 });

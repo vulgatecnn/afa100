@@ -94,11 +94,11 @@ export class AuthController {
       res.json(response);
     } catch (error) {
       const errorMessage = (error as Error).message;
-      
+
       if (errorMessage.includes('微信')) {
         throw new AppError(errorMessage, 400, ErrorCodes.EXTERNAL_SERVICE_ERROR);
       }
-      
+
       throw error;
     }
   });

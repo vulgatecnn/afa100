@@ -417,6 +417,32 @@ export class ApiTestClient {
   // ==================== 通用请求方法 ====================
 
   /**
+   * 通用请求方法
+   */
+  async request<T = any>(method: string, url: string, data?: any, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {
+    const normalizedMethod = method.toLowerCase();
+    
+    switch (normalizedMethod) {
+      case 'get':
+        return this.get<T>(url, config);
+      case 'post':
+        return this.post<T>(url, data, config);
+      case 'put':
+        return this.put<T>(url, data, config);
+      case 'delete':
+        return this.delete<T>(url, config);
+      case 'patch':
+        return this.requestWithRetry(() => this.axiosInstance.patch<T>(url, data, config));
+      case 'head':
+        return this.requestWithRetry(() => this.axiosInstance.head<T>(url, config));
+      case 'options':
+        return this.requestWithRetry(() => this.axiosInstance.options<T>(url, config));
+      default:
+        throw new Error(`不支持的HTTP方法: ${method}`);
+    }
+  }
+
+  /**
    * 发送GET请求
    */
   async get<T = any>(url: string, config?: AxiosRequestConfig): Promise<AxiosResponse<T>> {

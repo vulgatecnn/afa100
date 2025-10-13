@@ -1,0 +1,148 @@
+{
+  "config": {
+    "configFile": "D:\\vulgate\\code\\kiro\\afa100\\afa-office-system\\backend\\tests\\e2e\\config\\playwright.config.ts",
+    "rootDir": "D:/vulgate/code/kiro/afa100/afa-office-system/backend/tests/e2e/specs",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "D:\\vulgate\\code\\kiro\\afa100\\afa-office-system\\backend\\tests\\e2e\\helpers\\global-setup.ts",
+    "globalTeardown": "D:\\vulgate\\code\\kiro\\afa100\\afa-office-system\\backend\\tests\\e2e\\helpers\\global-teardown.ts",
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {},
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "../reports/playwright-report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "../reports/test-results.json"
+        }
+      ],
+      [
+        "junit",
+        {
+          "outputFile": "../reports/junit-results.xml"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "D:/vulgate/code/kiro/afa100/afa-office-system/backend/tests/e2e/reports/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "setup",
+        "name": "setup",
+        "testDir": "D:/vulgate/code/kiro/afa100/afa-office-system/backend/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/setup.e2e.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/vulgate/code/kiro/afa100/afa-office-system/backend/tests/e2e/reports/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "cleanup",
+        "name": "cleanup",
+        "testDir": "D:/vulgate/code/kiro/afa100/afa-office-system/backend/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/cleanup.e2e.ts"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/vulgate/code/kiro/afa100/afa-office-system/backend/tests/e2e/reports/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "D:/vulgate/code/kiro/afa100/afa-office-system/backend/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.e2e.{ts,js}"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/vulgate/code/kiro/afa100/afa-office-system/backend/tests/e2e/reports/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "D:/vulgate/code/kiro/afa100/afa-office-system/backend/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.e2e.{ts,js}"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/vulgate/code/kiro/afa100/afa-office-system/backend/tests/e2e/reports/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "D:/vulgate/code/kiro/afa100/afa-office-system/backend/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.e2e.{ts,js}"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "D:/vulgate/code/kiro/afa100/afa-office-system/backend/tests/e2e/reports/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {},
+        "id": "mobile-chrome",
+        "name": "mobile-chrome",
+        "testDir": "D:/vulgate/code/kiro/afa100/afa-office-system/backend/tests/e2e/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.e2e.{ts,js}"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.0",
+    "workers": 6,
+    "webServer": null
+  },
+  "suites": [],
+  "errors": [
+    {
+      "message": "Error: Process from config.webServer exited early.",
+      "stack": "Error: Process from config.webServer exited early."
+    }
+  ],
+  "stats": {
+    "startTime": "2025-10-12T14:36:50.978Z",
+    "duration": 934.971,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -116,9 +116,21 @@ describe('验证工具函数测试', () => {
         '1101011990030777777', // 多一位
         '010101199003077777',  // 以0开头
         '110101199013077777',  // 无效月份
-        '110101199002307777',  // 无效日期
+        '110101199002327777',  // 无效日期 (2月32日)
         '110101199003077abc'   // 包含字母（除了X/x）
       ];
+
+      // 测试每个身份证号，找出哪个通过了验证
+      const validResults = invalidIdCards.map(idCard => ({
+        idCard,
+        isValid: ValidationUtils.isValidIdCard(idCard)
+      }));
+
+      // 找出被错误认为有效的身份证号
+      const wronglyValid = validResults.filter(r => r.isValid);
+      if (wronglyValid.length > 0) {
+        console.log('被错误认为有效的身份证号:', wronglyValid);
+      }
 
       invalidIdCards.forEach(idCard => {
         expect(ValidationUtils.isValidIdCard(idCard)).toBe(false);

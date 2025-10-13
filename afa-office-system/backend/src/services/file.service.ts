@@ -7,10 +7,10 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { FileModel } from '../models/file.model.js';
-import { AppError } from '../utils/app-error.js';
-import { ErrorCodes } from '../constants/error-codes.js';
+import { AppError, ErrorCodes } from '../middleware/error.middleware.js';
 import { appConfig } from '../config/app.config.js';
 import type { UploadedFile } from '../types/index.js';
+import type { Express } from 'express';
 
 export interface FileMetadata {
   userId: number;
@@ -56,7 +56,7 @@ export class FileService {
   /**
    * 上传文件
    */
-  async uploadFile(file: UploadedFile, metadata: FileMetadata): Promise<FileInfo> {
+  async uploadFile(file: Express.Multer.File, metadata: FileMetadata): Promise<FileInfo> {
     // 验证文件类型
     this.validateFileType(file.mimetype);
     
@@ -77,7 +77,7 @@ export class FileService {
       await fs.writeFile(filePath, file.buffer);
 
       // 保存文件信息到数据库
-      const fileInfo = await this.fileModel.create({
+      const fileInfo = await FileModel.create({
         id: fileId,
         originalName: file.originalname,
         fileName,
@@ -117,7 +117,7 @@ export class FileService {
    * 获取文件信息
    */
   async getFileInfo(fileId: string): Promise<FileInfo | null> {
-    const fileRecord = await this.fileModel.findById(fileId);
+    const fileRecord = await FileModel.findById(fileId);
     if (!fileRecord) {
       return null;
     }
@@ -140,7 +140,7 @@ export class FileService {
    * 获取文件路径
    */
   async getFilePath(fileId: string): Promise<string> {
-    const fileRecord = await this.fileModel.findById(fileId);
+    const fileRecord = await FileModel.findById(fileId);
     if (!fileRecord) {
       throw new AppError('文件不存在', 404, ErrorCodes.NOT_FOUND);
     }
@@ -160,7 +160,7 @@ export class FileService {
    * 检查文件访问权限
    */
   async checkFileAccess(fileId: string, userId: number): Promise<boolean> {
-    const fileRecord = await this.fileModel.findById(fileId);
+    const fileRecord = await FileModel.findById(fileId);
     if (!fileRecord) {
       return false;
     }
@@ -183,7 +183,7 @@ export class FileService {
    * 检查文件删除权限
    */
   async checkFileDeletePermission(fileId: string, userId: number): Promise<boolean> {
-    const fileRecord = await this.fileModel.findById(fileId);
+    const fileRecord = await FileModel.findById(fileId);
     if (!fileRecord) {
       return false;
     }
@@ -196,7 +196,7 @@ export class FileService {
    * 删除文件
    */
   async deleteFile(fileId: string): Promise<void> {
-    const fileRecord = await this.fileModel.findById(fileId);
+    const fileRecord = await FileModel.findById(fileId);
     if (!fileRecord) {
       throw new AppError('文件不存在', 404, ErrorCodes.NOT_FOUND);
     }
@@ -210,7 +210,7 @@ export class FileService {
     }
 
     // 删除数据库记录
-    await this.fileModel.delete(fileId);
+    await FileModel.delete(fileId);
   }
 
   /**
@@ -220,7 +220,7 @@ export class FileService {
     const { page, limit, type } = options;
     const offset = (page - 1) * limit;
 
-    const result = await this.fileModel.findByUserId(userId, {
+    const result = await FileModel.findByUserId(userId, {
       limit,
       offset,
       mimeType: type

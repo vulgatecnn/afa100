@@ -16,10 +16,10 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3002,
+    port: process.env.VITE_PORT ? parseInt(process.env.VITE_PORT) : 5050,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: process.env.VITE_API_BASE_URL?.replace('/api/v1', '') || 'http://localhost:5100',
         changeOrigin: true
       }
     }
@@ -27,7 +27,44 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'jsdom',
-    setupFiles: './src/test/setup.ts',
-    testTimeout: 15000 // 增加测试超时时间
+    setupFiles: ['./src/test/setup.ts'],
+    testTimeout: 10000,
+    hookTimeout: 10000,
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'json', 'html', 'lcov'],
+      reportsDirectory: './coverage',
+      exclude: [
+        'node_modules/',
+        'src/test/',
+        'tests/',
+        'dist/',
+        'build/',
+        '**/*.config.*',
+        '**/*.test.*',
+        '**/*.spec.*',
+        '**/*.d.ts',
+        '**/types.ts',
+        'src/main.tsx',
+        'src/vite-env.d.ts'
+      ],
+      thresholds: {
+        global: {
+          branches: 80,
+          functions: 80,
+          lines: 80,
+          statements: 80,
+        },
+      },
+      skipFull: false,
+      include: ['src/**/*.ts', 'src/**/*.tsx'],
+      all: true
+    },
   }
 })

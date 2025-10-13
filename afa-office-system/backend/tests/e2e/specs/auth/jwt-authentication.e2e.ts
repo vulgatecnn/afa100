@@ -10,7 +10,7 @@ test.describe('JWT认证测试', () => {
 
   test('JWT令牌生成和验证', async ({ page }) => {
     // 登录获取JWT令牌
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     await page.fill('[data-testid="username"]', 'tenant_admin');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');
@@ -35,7 +35,7 @@ test.describe('JWT认证测试', () => {
 
   test('API请求自动携带JWT令牌', async ({ page }) => {
     // 使用预设的认证状态
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     await page.fill('[data-testid="username"]', 'tenant_admin');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');
@@ -64,7 +64,7 @@ test.describe('JWT认证测试', () => {
 
   test('JWT令牌过期处理', async ({ page }) => {
     // 登录获取令牌
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     await page.fill('[data-testid="username"]', 'tenant_admin');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');
@@ -89,7 +89,7 @@ test.describe('JWT认证测试', () => {
 
   test('无效JWT令牌处理', async ({ page }) => {
     // 设置无效的JWT令牌
-    await page.goto('http://localhost:3001/dashboard');
+    await page.goto('http://localhost:5000/dashboard');
     
     await page.evaluate(() => {
       localStorage.setItem('auth_token', 'invalid.jwt.token');
@@ -107,7 +107,7 @@ test.describe('JWT认证测试', () => {
 
   test('JWT令牌自动刷新', async ({ page }) => {
     // 登录获取令牌
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     await page.fill('[data-testid="username"]', 'tenant_admin');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');
@@ -134,7 +134,7 @@ test.describe('JWT认证测试', () => {
   test('多标签页会话同步', async ({ context }) => {
     // 在第一个标签页登录
     const page1 = await context.newPage();
-    await page1.goto('http://localhost:3001/login');
+    await page1.goto('http://localhost:5000/login');
     await page1.fill('[data-testid="username"]', 'tenant_admin');
     await page1.fill('[data-testid="password"]', 'password123');
     await page1.click('[data-testid="login-button"]');
@@ -142,7 +142,7 @@ test.describe('JWT认证测试', () => {
     
     // 在第二个标签页访问需要认证的页面
     const page2 = await context.newPage();
-    await page2.goto('http://localhost:3001/dashboard');
+    await page2.goto('http://localhost:5000/dashboard');
     
     // 验证第二个标签页也能正常访问（共享认证状态）
     await expect(page2.locator('[data-testid="user-info"]')).toContainText('租务管理员');
@@ -158,14 +158,14 @@ test.describe('JWT认证测试', () => {
 
   test('跨域认证状态', async ({ page }) => {
     // 在租务管理端登录
-    await page.goto('http://localhost:3001/login');
+    await page.goto('http://localhost:5000/login');
     await page.fill('[data-testid="username"]', 'tenant_admin');
     await page.fill('[data-testid="password"]', 'password123');
     await page.click('[data-testid="login-button"]');
     await expect(page).toHaveURL(/.*\/dashboard/);
     
     // 尝试访问商户管理端（不同端口）
-    await page.goto('http://localhost:3002/dashboard');
+    await page.goto('http://localhost:5050/dashboard');
     
     // 验证需要重新登录（因为是不同的应用）
     await expect(page).toHaveURL(/.*\/login/);

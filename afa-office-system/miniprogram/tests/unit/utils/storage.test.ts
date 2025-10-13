@@ -271,6 +271,9 @@ describe('本地存储工具函数测试', () => {
       const mockDate = new Date('2024-01-01T10:00:00.000Z');
       vi.setSystemTime(mockDate);
       
+      // 确保 setStorageSync 不抛出异常
+      global.wx.setStorageSync = vi.fn().mockImplementation(() => {});
+      
       const result = StorageUtils.setWithExpire('test-key', 'value', 3600000); // 1小时
       
       expect(result).toBe(true);
@@ -372,6 +375,9 @@ describe('本地存储工具函数测试', () => {
 
   describe('setBatch 方法', () => {
     it('应该成功批量设置数据', () => {
+      // 确保 setStorageSync 不抛出异常
+      global.wx.setStorageSync = vi.fn().mockImplementation(() => {});
+      
       const data = {
         key1: 'value1',
         key2: 'value2',

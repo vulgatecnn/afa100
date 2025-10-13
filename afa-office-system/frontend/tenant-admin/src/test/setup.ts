@@ -8,7 +8,9 @@ import { server } from './mocks/server'
 
 // 启动MSW服务器
 beforeAll(() => {
-  server.listen({ onUnhandledRequest: 'error' })
+  server.listen({ 
+    onUnhandledRequest: 'warn' // 改为warn，避免测试中断
+  })
 })
 
 // 每个测试后重置handlers

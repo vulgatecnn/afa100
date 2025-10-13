@@ -36,23 +36,29 @@ export interface TestEnvironmentConfig {
 
 export const testEnvironmentConfig: TestEnvironmentConfig = {
   backend: {
-    baseUrl: process.env.E2E_BACKEND_URL || 'http://localhost:3000',
-    port: parseInt(process.env.E2E_BACKEND_PORT || '3000'),
+    baseUrl: process.env.E2E_BACKEND_URL || 'http://localhost:5100',
+    port: parseInt(process.env.E2E_BACKEND_PORT || '5100'),
     healthEndpoint: '/api/v1/health'
   },
   frontend: {
     tenantAdmin: {
-      baseUrl: process.env.E2E_TENANT_ADMIN_URL || 'http://localhost:3001',
-      port: parseInt(process.env.E2E_TENANT_ADMIN_PORT || '3001')
+      baseUrl: process.env.E2E_TENANT_ADMIN_URL || 'http://localhost:5000',
+      port: parseInt(process.env.E2E_TENANT_ADMIN_PORT || '5000')
     },
     merchantAdmin: {
-      baseUrl: process.env.E2E_MERCHANT_ADMIN_URL || 'http://localhost:3002',
-      port: parseInt(process.env.E2E_MERCHANT_ADMIN_PORT || '3002')
+      baseUrl: process.env.E2E_MERCHANT_ADMIN_URL || 'http://localhost:5050',
+      port: parseInt(process.env.E2E_MERCHANT_ADMIN_PORT || '5050')
     }
   },
   database: {
-    type: (process.env.E2E_DB_TYPE as 'sqlite' | 'mysql') || 'sqlite',
-    path: process.env.E2E_DB_PATH || './tests/e2e/fixtures/test.db'
+    type: (process.env.E2E_DB_TYPE as 'sqlite' | 'mysql') || 'mysql',
+    config: {
+      host: process.env.E2E_TEST_DB_HOST || 'localhost',
+      port: parseInt(process.env.E2E_TEST_DB_PORT || '3306'),
+      database: process.env.E2E_TEST_DB_NAME || 'afa_office_e2e_test',
+      user: process.env.E2E_TEST_DB_USER || 'root',
+      password: process.env.E2E_TEST_DB_PASSWORD || '',
+    }
   },
   timeouts: {
     default: 30000,

@@ -86,7 +86,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.attached();
+      statusBadgeComponent.attached.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         displayText: '已通过',
@@ -119,7 +119,7 @@ describe('状态徽章组件测试', () => {
 
       const consoleSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-      statusBadgeComponent.ready();
+      statusBadgeComponent.ready.call(statusBadgeComponent);
 
       expect(consoleSpy).toHaveBeenCalledWith('未知的状态类型: invalid_status');
 
@@ -236,7 +236,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.computeBadgeClass();
+      statusBadgeComponent.methods.computeBadgeClass.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         badgeClass: 'status-badge status-badge--success status-badge--normal'
@@ -269,7 +269,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.computeBadgeClass();
+      statusBadgeComponent.methods.computeBadgeClass.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         badgeClass: 'status-badge status-badge--primary status-badge--small status-badge--round'
@@ -298,7 +298,7 @@ describe('状态徽章组件测试', () => {
         currentTarget: { dataset: {} }
       };
 
-      statusBadgeComponent.methods.onTap(mockEvent);
+      statusBadgeComponent.methods.onTap.call(statusBadgeComponent, mockEvent);
 
       expect(statusBadgeComponent.triggerEvent).toHaveBeenCalledWith('tap', {
         status: 'pending',
@@ -325,7 +325,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.onTap({});
+      statusBadgeComponent.methods.onTap.call(statusBadgeComponent, {});
 
       expect(statusBadgeComponent.triggerEvent).not.toHaveBeenCalled();
     });
@@ -391,7 +391,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.mergeConfig();
+      statusBadgeComponent.methods.mergeConfig.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         statusConfig: {
@@ -424,7 +424,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.updateDisplayText();
+      statusBadgeComponent.methods.updateDisplayText.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         displayText: '已通过'
@@ -452,7 +452,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.updateDisplayText();
+      statusBadgeComponent.methods.updateDisplayText.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         displayText: '审核通过'
@@ -478,7 +478,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.updateDisplayText();
+      statusBadgeComponent.methods.updateDisplayText.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         displayText: 'unknown_status'
@@ -505,7 +505,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.updateVisibility();
+      statusBadgeComponent.methods.updateVisibility.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         visible: true
@@ -530,7 +530,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.updateVisibility();
+      statusBadgeComponent.methods.updateVisibility.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         visible: false

@@ -40,7 +40,7 @@ test.describe('API集成测试', () => {
       });
 
       // 1. 获取用户列表
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       await page.waitForLoadState('networkidle');
       
       // 验证用户列表API调用
@@ -129,7 +129,7 @@ test.describe('API集成测试', () => {
         }
       });
 
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       
       // 尝试创建重复用户名的用户
       await page.click('[data-testid="add-user-button"]');
@@ -169,7 +169,7 @@ test.describe('API集成测试', () => {
         }
       });
 
-      await page.goto('http://localhost:3001/merchants');
+      await page.goto('http://localhost:5000/merchants');
       
       // 选择商户进行空间管理
       const merchantRow = page.locator('[data-testid="merchant-row"]').first();
@@ -212,7 +212,7 @@ test.describe('API集成测试', () => {
         }
       });
 
-      await page.goto('http://localhost:3001/merchants');
+      await page.goto('http://localhost:5000/merchants');
       
       // 进入员工管理
       const merchantRow = page.locator('[data-testid="merchant-row"]').first();
@@ -273,7 +273,7 @@ test.describe('API集成测试', () => {
         }
       });
 
-      await page.goto('http://localhost:3002/visitors');
+      await page.goto('http://localhost:5050/visitors');
       
       // 获取待审批申请
       const getPendingRequest = apiRequests.find(req => 
@@ -327,7 +327,7 @@ test.describe('API集成测试', () => {
       expect(responseData.data.accessMethod).toBe('qr_code');
       
       // 验证通行记录在前端显示
-      await page.goto('http://localhost:3002/access-records');
+      await page.goto('http://localhost:5050/access-records');
       await expect(page.locator('[data-testid="access-record-row"]').filter({ hasText: 'API测试通行记录' })).toBeVisible();
     });
   });
@@ -355,10 +355,10 @@ test.describe('API集成测试', () => {
       });
       
       // 租务管理员页面
-      await page1.goto('http://localhost:3001/dashboard');
+      await page1.goto('http://localhost:5000/dashboard');
       
       // 商户管理员页面
-      await page2.goto('http://localhost:3002/visitors');
+      await page2.goto('http://localhost:5050/visitors');
       
       // 等待WebSocket连接建立
       await page1.waitForTimeout(2000);
@@ -371,7 +371,7 @@ test.describe('API集成测试', () => {
         await page2.click('[data-testid="confirm-approval-button"]');
         
         // 验证租务管理端实时收到更新
-        await page1.goto('http://localhost:3001/visitor-applications');
+        await page1.goto('http://localhost:5000/visitor-applications');
         await expect(page1.locator('[data-testid="application-row"]').filter({ hasText: '实时同步测试' })).toBeVisible();
       }
       
@@ -400,7 +400,7 @@ test.describe('API集成测试', () => {
       });
 
       // 测试用户列表API响应时间
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       await page.waitForLoadState('networkidle');
       
       const getUsersTime = apiTimes.find(t => t.url.includes('/api/v1/users'));
@@ -408,7 +408,7 @@ test.describe('API集成测试', () => {
       expect(getUsersTime.responseTime).toBeLessThan(2000); // 2秒内响应
       
       // 测试商户列表API响应时间
-      await page.goto('http://localhost:3001/merchants');
+      await page.goto('http://localhost:5000/merchants');
       await page.waitForLoadState('networkidle');
       
       const getMerchantsTime = apiTimes.find(t => t.url.includes('/api/v1/merchants'));
@@ -416,7 +416,7 @@ test.describe('API集成测试', () => {
       expect(getMerchantsTime.responseTime).toBeLessThan(2000);
       
       // 测试访客申请API响应时间
-      await page.goto('http://localhost:3001/visitor-applications');
+      await page.goto('http://localhost:5000/visitor-applications');
       await page.waitForLoadState('networkidle');
       
       const getApplicationsTime = apiTimes.find(t => t.url.includes('/api/v1/visitor-applications'));
@@ -425,7 +425,7 @@ test.describe('API集成测试', () => {
     });
 
     test('API并发请求测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/dashboard');
+      await page.goto('http://localhost:5000/dashboard');
       
       // 并发发起多个API请求
       const promises = [];
@@ -454,7 +454,7 @@ test.describe('API集成测试', () => {
     });
 
     test('API错误恢复测试', async ({ page }) => {
-      await page.goto('http://localhost:3001/users');
+      await page.goto('http://localhost:5000/users');
       
       // 模拟网络错误
       await page.route('**/api/v1/users', route => {
@@ -484,7 +484,7 @@ test.describe('API集成测试', () => {
       // 测试跨域请求
       const response = await page.request.get(`${testEnvironmentConfig.backend.baseUrl}/api/v1/health`, {
         headers: {
-          'Origin': 'http://localhost:3001'
+          'Origin': 'http://localhost:5000'
         }
       });
       
@@ -517,7 +517,7 @@ test.describe('API集成测试', () => {
       expect(invalidTokenResponse.status()).toBe(401);
       
       // 测试有效令牌
-      await page.goto('http://localhost:3001/login');
+      await page.goto('http://localhost:5000/login');
       await page.fill('[data-testid="username"]', 'tenant_admin');
       await page.fill('[data-testid="password"]', 'password123');
       await page.click('[data-testid="login-button"]');

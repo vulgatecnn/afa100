@@ -14,7 +14,7 @@ test.describe('用户管理流程测试', () => {
 
   test.beforeEach(async ({ page }) => {
     // 导航到用户管理页面
-    await page.goto('http://localhost:3001/dashboard');
+    await page.goto('http://localhost:5000/dashboard');
     await page.click('[data-testid="nav-users"]');
     await expect(page).toHaveURL(/.*\/users/);
   });

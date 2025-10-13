@@ -17,10 +17,10 @@ export default defineConfig({
     }
   },
   server: {
-    port: 3001,
+    port: process.env.VITE_PORT ? parseInt(process.env.VITE_PORT) : 5000,
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: process.env.VITE_API_BASE_URL?.replace('/api/v1', '') || 'http://localhost:5100',
         changeOrigin: true
       }
     }
@@ -31,6 +31,12 @@ export default defineConfig({
     setupFiles: ['./src/test/setup.ts'],
     testTimeout: 10000,
     hookTimeout: 10000,
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
     coverage: {
       provider: 'v8',
       reporter: ['text', 'json', 'html', 'lcov'],

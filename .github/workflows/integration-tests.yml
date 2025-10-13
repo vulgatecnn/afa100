@@ -53,11 +53,6 @@ env:
   MYSQL_DATABASE: 'afa_office_test'
   MYSQL_USER: 'afa_test'
   MYSQL_PASSWORD: 'test_password'
-  PNPM_VERSION: '8'
-  MYSQL_ROOT_PASSWORD: 'test_password'
-  MYSQL_DATABASE: 'afa_office_test'
-  MYSQL_USER: 'afa_test'
-  MYSQL_PASSWORD: 'test_password'
 
 jobs:
   # 环境准备和依赖安装

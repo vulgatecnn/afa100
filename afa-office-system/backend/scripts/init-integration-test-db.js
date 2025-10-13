@@ -25,19 +25,19 @@ const __dirname = path.dirname(__filename);
 
 // 数据库配置
 const adminConfig = {
-  host: process.env.MYSQL_ADMIN_HOST || '127.0.0.1',
-  port: parseInt(process.env.MYSQL_ADMIN_PORT || '3306'),
+  host: process.env.MYSQL_ADMIN_HOST || process.env.DB_HOST || '127.0.0.1',
+  port: parseInt(process.env.MYSQL_ADMIN_PORT || process.env.DB_PORT || '3306'),
   user: process.env.MYSQL_ADMIN_USER || 'root',
-  password: process.env.MYSQL_ADMIN_PASSWORD || '111111',
+  password: process.env.MYSQL_ADMIN_PASSWORD || process.env.DB_ROOT_PASSWORD || process.env.MYSQL_ROOT_PASSWORD || 'test_password',
   multipleStatements: true
 };
 
 const integrationTestConfig = {
-  host: process.env.INTEGRATION_TEST_DB_HOST || '127.0.0.1',
-  port: parseInt(process.env.INTEGRATION_TEST_DB_PORT || '3306'),
-  user: process.env.INTEGRATION_TEST_DB_USER || 'afa_integration_user',
-  password: process.env.INTEGRATION_TEST_DB_PASSWORD || 'afa_integration_2024',
-  database: process.env.INTEGRATION_TEST_DB_NAME || 'afa_office_integration_test'
+  host: process.env.INTEGRATION_TEST_DB_HOST || process.env.DB_HOST || '127.0.0.1',
+  port: parseInt(process.env.INTEGRATION_TEST_DB_PORT || process.env.DB_PORT || '3306'),
+  user: process.env.INTEGRATION_TEST_DB_USER || process.env.DB_USER || process.env.MYSQL_USER || 'afa_test',
+  password: process.env.INTEGRATION_TEST_DB_PASSWORD || process.env.DB_PASSWORD || process.env.MYSQL_PASSWORD || 'test_password',
+  database: process.env.INTEGRATION_TEST_DB_NAME || process.env.DB_NAME || process.env.MYSQL_DATABASE || 'afa_office_test'
 };
 
 /**

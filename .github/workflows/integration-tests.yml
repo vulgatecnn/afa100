@@ -53,6 +53,11 @@ env:
   MYSQL_DATABASE: 'afa_office_test'
   MYSQL_USER: 'afa_test'
   MYSQL_PASSWORD: 'test_password'
+  PNPM_VERSION: '8'
+  MYSQL_ROOT_PASSWORD: 'test_password'
+  MYSQL_DATABASE: 'afa_office_test'
+  MYSQL_USER: 'afa_test'
+  MYSQL_PASSWORD: 'test_password'
 
 jobs:
   # 环境准备和依赖安装
@@ -124,13 +129,15 @@ jobs:
           MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
           MYSQL_USER: ${{ env.MYSQL_USER }}
           MYSQL_PASSWORD: ${{ env.MYSQL_PASSWORD }}
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'no'
         ports:
           - 3306:3306
         options: >-
-          --health-cmd="mysqladmin ping"
+          --health-cmd="mysqladmin ping -h localhost"
           --health-interval=10s
           --health-timeout=5s
-          --health-retries=3
+          --health-retries=5
+          --default-authentication-plugin=mysql_native_password
 
     steps:
       - name: 检出代码
@@ -171,6 +178,14 @@ jobs:
 
       - name: 初始化测试数据库
         working-directory: afa-office-system/backend
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ env.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ env.MYSQL_PASSWORD }}
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}
         run: |
           cp .env.test .env
           pnpm db:integration:init
@@ -256,6 +271,10 @@ jobs:
           key: ${{ needs.setup.outputs.cache-key }}
 
       - name: 安装依赖
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 安装前端项目依赖
+        working-directory: afa-office-system/frontend/${{ matrix.frontend }}
         run: pnpm install --no-frozen-lockfile
 
       - name: 代码质量检查

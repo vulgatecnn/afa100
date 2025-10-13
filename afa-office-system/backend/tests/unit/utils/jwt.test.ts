@@ -128,25 +128,19 @@ describe('JwtUtils', () => {
   });
 
   describe('isTokenExpiringSoon', () => {
-    it('应该检测即将过期的token', () => {
-      // 创建一个短期token用于测试
-      vi.doMock('../../../src/config/app.config.js', () => ({
-        appConfig: {
-          jwt: {
-            secret: 'test-secret-key-for-jwt-testing',
-            expiresIn: '1s', // 1秒过期
-            refreshExpiresIn: '7d',
-          },
-        },
-      }));
-
-      const token = JwtUtils.generateAccessToken(mockUser);
+    it('应该检测即将过期的token', async () => {
+      // 创建一个即将过期的token（29分钟后过期）
+      const jwt = require('jsonwebtoken');
+      const configModule = await import('../../../src/config/app.config.js');
       
-      // 等待一段时间让token接近过期
-      setTimeout(() => {
-        const isExpiring = JwtUtils.isTokenExpiringSoon(token);
-        expect(isExpiring).toBe(true);
-      }, 500);
+      const token = jwt.sign(
+        { userId: mockUser.id, userType: mockUser.user_type },
+        configModule.appConfig.jwt.secret,
+        { expiresIn: '29m' } // 29分钟后过期，应该被认为是即将过期
+      );
+      
+      const isExpiring = JwtUtils.isTokenExpiringSoon(token);
+      expect(isExpiring).toBe(true);
     });
 
     it('应该返回false对于新token', () => {

@@ -1,0 +1,42 @@
+[
+  {
+    "id": 1,
+    "name": "A座1001室",
+    "floor": "10F",
+    "capacity": 20,
+    "merchant_id": 1,
+    "status": "active",
+    "created_at": "2024-01-01T00:00:00Z",
+    "updated_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": 2,
+    "name": "A座1002室", 
+    "floor": "10F",
+    "capacity": 15,
+    "merchant_id": 1,
+    "status": "active",
+    "created_at": "2024-01-01T00:00:00Z",
+    "updated_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": 3,
+    "name": "B座2001室",
+    "floor": "20F", 
+    "capacity": 30,
+    "merchant_id": 2,
+    "status": "active",
+    "created_at": "2024-01-01T00:00:00Z",
+    "updated_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": 4,
+    "name": "C座501室",
+    "floor": "5F",
+    "capacity": 10,
+    "merchant_id": 3,
+    "status": "active",
+    "created_at": "2024-01-01T00:00:00Z",
+    "updated_at": "2024-01-01T00:00:00Z"
+  }
+]

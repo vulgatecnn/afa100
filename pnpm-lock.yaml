@@ -63,6 +63,9 @@ importers:
         specifier: ^0.18.5
         version: 0.18.5
     devDependencies:
+      '@playwright/test':
+        specifier: ^1.56.0
+        version: 1.56.0
       '@types/bcryptjs':
         specifier: ^2.4.6
         version: 2.4.6
@@ -5611,7 +5614,7 @@ snapshots:
       std-env: 3.9.0
       strip-literal: 2.1.1
       test-exclude: 6.0.0
-      vitest: 1.6.1(@types/node@24.7.1)(@vitest/ui@1.6.1)(jsdom@23.2.0)(terser@5.44.0)
+      vitest: 1.6.1(@types/node@20.19.20)(@vitest/ui@1.6.1)(jsdom@23.2.0)(terser@5.44.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -5646,7 +5649,7 @@ snapshots:
       pathe: 1.1.2
       picocolors: 1.1.1
       sirv: 2.0.4
-      vitest: 1.6.1(@types/node@24.7.1)(@vitest/ui@1.6.1)(jsdom@23.2.0)(terser@5.44.0)
+      vitest: 1.6.1(@types/node@20.19.20)(@vitest/ui@1.6.1)(jsdom@23.2.0)(terser@5.44.0)
 
   '@vitest/utils@1.6.1':
     dependencies:

@@ -1,4 +1,4 @@
-import api from './api'
+import { api } from './api'
 
 export interface Project {
   id: number
@@ -67,7 +67,7 @@ class SpaceService {
    */
   async getSpaceTree(): Promise<SpaceTreeNode[]> {
     const response = await api.get('/tenant/spaces/tree')
-    return response
+    return response.data
   }
 
   /**
@@ -75,7 +75,7 @@ class SpaceService {
    */
   async getProjects(): Promise<Project[]> {
     const response = await api.get('/tenant/spaces/projects')
-    return response
+    return response.data
   }
 
   /**
@@ -83,7 +83,7 @@ class SpaceService {
    */
   async getVenues(projectId: number): Promise<Venue[]> {
     const response = await api.get(`/tenant/spaces/projects/${projectId}/venues`)
-    return response
+    return response.data
   }
 
   /**
@@ -91,7 +91,7 @@ class SpaceService {
    */
   async getFloors(venueId: number): Promise<Floor[]> {
     const response = await api.get(`/tenant/spaces/venues/${venueId}/floors`)
-    return response
+    return response.data
   }
 
   /**
@@ -99,7 +99,7 @@ class SpaceService {
    */
   async createProject(data: CreateProjectData): Promise<Project> {
     const response = await api.post('/tenant/spaces/projects', data)
-    return response
+    return response.data
   }
 
   /**
@@ -107,7 +107,7 @@ class SpaceService {
    */
   async createVenue(data: CreateVenueData): Promise<Venue> {
     const response = await api.post('/tenant/spaces/venues', data)
-    return response
+    return response.data
   }
 
   /**
@@ -115,7 +115,7 @@ class SpaceService {
    */
   async createFloor(data: CreateFloorData): Promise<Floor> {
     const response = await api.post('/tenant/spaces/floors', data)
-    return response
+    return response.data
   }
 
   /**
@@ -123,7 +123,7 @@ class SpaceService {
    */
   async updateProject(id: number, data: Partial<CreateProjectData>): Promise<Project> {
     const response = await api.put(`/tenant/spaces/projects/${id}`, data)
-    return response
+    return response.data
   }
 
   /**
@@ -131,7 +131,7 @@ class SpaceService {
    */
   async updateVenue(id: number, data: Partial<CreateVenueData>): Promise<Venue> {
     const response = await api.put(`/tenant/spaces/venues/${id}`, data)
-    return response
+    return response.data
   }
 
   /**
@@ -139,7 +139,7 @@ class SpaceService {
    */
   async updateFloor(id: number, data: Partial<CreateFloorData>): Promise<Floor> {
     const response = await api.put(`/tenant/spaces/floors/${id}`, data)
-    return response
+    return response.data
   }
 
   /**

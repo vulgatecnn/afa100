@@ -1,7 +1,5 @@
 import { Database } from '../utils/database.js';
-import { Merchant } from '../models/merchant.model.js';
-import { User } from '../models/user.model.js';
-import { Permission } from '../models/permission.model.js';
+import type { Merchant, User, Permission } from '../types/index.js';
 import { AppError, ErrorCodes } from '../middleware/error.middleware.js';
 import type { 
   CreateMerchantData, 

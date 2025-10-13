@@ -235,3 +235,26 @@ CREATE TABLE IF NOT EXISTS `access_records` (
     FOREIGN KEY (`venue_id`) REFERENCES `venues`(`id`) ON DELETE SET NULL,
     FOREIGN KEY (`floor_id`) REFERENCES `floors`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-
+-- 文件表
+CREATE TABLE IF NOT EXISTS `files` (
+    `id` VARCHAR(36) PRIMARY KEY,
+    `original_name` VARCHAR(255) NOT NULL,
+    `file_name` VARCHAR(255) NOT NULL,
+    `mime_type` VARCHAR(100) NOT NULL,
+    `size` BIGINT NOT NULL,
+    `user_id` INT NOT NULL,
+    `category` VARCHAR(50),
+    `description` TEXT,
+    `is_public` BOOLEAN NOT NULL DEFAULT FALSE,
+    `file_path` VARCHAR(500) NOT NULL,
+    `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    
+    FOREIGN KEY (`user_id`) REFERENCES `users`(`id`) ON DELETE CASCADE,
+    
+    INDEX `idx_files_user_id` (`user_id`),
+    INDEX `idx_files_mime_type` (`mime_type`),
+    INDEX `idx_files_category` (`category`),
+    INDEX `idx_files_created_at` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

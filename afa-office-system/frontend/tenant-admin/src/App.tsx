@@ -2,6 +2,7 @@ import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { Layout } from 'antd'
 import { AuthProvider } from './contexts/AuthContext'
+import { ErrorProvider } from './contexts/ErrorContext'
 import { useAuth } from './hooks/useAuth'
 import LoginPage from './pages/Login'
 import ProtectedRoute from './components/ProtectedRoute'
@@ -52,9 +53,15 @@ const AppContent: React.FC = () => {
 
 const App: React.FC = () => {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    <ErrorProvider
+      showNetworkStatus={true}
+      enableAutoRetry={true}
+      enableUserFeedback={true}
+    >
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </ErrorProvider>
   )
 }
 

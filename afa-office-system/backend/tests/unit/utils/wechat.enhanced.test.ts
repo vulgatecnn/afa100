@@ -98,10 +98,12 @@ describe('WechatUtils Enhanced Tests', () => {
     });
 
     it('应该处理网络错误', async () => {
-      mockedAxios.get.mockRejectedValue(new Error('Network Error'));
+      const networkError = new Error('Network Error');
+      mockedAxios.get.mockRejectedValue(networkError);
+      mockedAxios.isAxiosError.mockReturnValue(false);
 
       await expect(WechatUtils.getSessionByCode('test-code')).rejects.toThrow(
-        '微信API调用失败: Network Error'
+        'Network Error'
       );
     });
 
@@ -704,22 +706,23 @@ describe('WechatUtils Enhanced Tests', () => {
       expect(result.errors).toEqual([]);
     });
 
-    it('应该检测缺少的配置', () => {
-      // Mock缺少配置的情况
-      vi.doMock('../../../src/config/app.config.js', () => ({
-        appConfig: {
-          wechat: {
-            appId: '',
-            appSecret: '',
-          },
-        },
-      }));
+    it('应该检测缺少的配置', async () => {
+      // 动态导入并修改配置
+      const configModule = await import('../../../src/config/app.config.js');
+      const originalWechatConfig = { ...configModule.appConfig.wechat };
+      
+      // 临时修改配置
+      configModule.appConfig.wechat.appId = '';
+      configModule.appConfig.wechat.appSecret = '';
 
       const result = WechatUtils.validateConfig();
 
       expect(result.isValid).toBe(false);
       expect(result.errors).toContain('微信AppID未配置');
       expect(result.errors).toContain('微信AppSecret未配置');
+      
+      // 恢复原始配置
+      configModule.appConfig.wechat = originalWechatConfig;
     });
   });
 

@@ -6,7 +6,7 @@
 import database from './database.js';
 import { enhancedTestDataFactory } from './enhanced-test-data-factory.js';
 import { timeoutManager } from './timeout-manager.js';
-import { testEnvironmentManager } from './test-environment-manager.js';
+import { TestEnvironmentManager } from './test-environment-manager.js';
 
 export interface DatabasePerformanceMetrics {
   queryCount: number;

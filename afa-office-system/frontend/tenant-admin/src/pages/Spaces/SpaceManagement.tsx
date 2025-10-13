@@ -101,14 +101,13 @@ const SpaceManagement: React.FC = () => {
             <Space>
               {icon}
               <span>{node.title}</span>
-              <Tag color={node.status === 'active' ? 'green' : 'red'} size="small">
+              <Tag color={node.status === 'active' ? 'green' : 'red'}>
                 {node.status === 'active' ? '启用' : '停用'}
               </Tag>
             </Space>
             <Dropdown
               menu={{ items: getContextMenuItems(node) }}
               trigger={['click']}
-              onClick={(e) => e.stopPropagation()}
             >
               <Button 
                 type="text" 
@@ -305,16 +304,19 @@ const SpaceManagement: React.FC = () => {
         </div>
 
         <div style={{ minHeight: 400 }}>
-          <Tree
-            treeData={treeData}
-            loading={loading}
-            selectedKeys={selectedKeys}
-            expandedKeys={expandedKeys}
-            onSelect={setSelectedKeys}
-            onExpand={setExpandedKeys}
-            showLine={{ showLeafIcon: false }}
-            blockNode
-          />
+          {loading ? (
+            <div style={{ textAlign: 'center', padding: '50px' }}>加载中...</div>
+          ) : (
+            <Tree
+              treeData={treeData}
+              selectedKeys={selectedKeys}
+              expandedKeys={expandedKeys}
+              onSelect={(selectedKeys) => setSelectedKeys(selectedKeys.map(key => String(key)))}
+              onExpand={(expandedKeys) => setExpandedKeys(expandedKeys.map(key => String(key)))}
+              showLine={{ showLeafIcon: false }}
+              blockNode
+            />
+          )}
         </div>
       </Card>
 

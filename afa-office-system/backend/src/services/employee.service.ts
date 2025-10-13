@@ -67,7 +67,7 @@ export class EmployeeService {
     }
 
     // 创建员工
-    const userId = await UserModel.create({
+    const newEmployee = await UserModel.create({
       name: employeeData.name,
       phone: employeeData.phone || '',
       open_id: employeeData.open_id || '',
@@ -77,12 +77,6 @@ export class EmployeeService {
       status: employeeData.status || 'active',
       merchant_id: merchantId
     });
-
-    // 使用一致性查询确保能读取到刚创建的数据
-    const newEmployee = await UserModel.findById(userId);
-    if (!newEmployee) {
-      throw new Error('创建员工后查询失败');
-    }
 
     return newEmployee;
   }  /*

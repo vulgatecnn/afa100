@@ -190,4 +190,26 @@ CREATE TABLE IF NOT EXISTS access_records (
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL,
     FOREIGN KEY (venue_id) REFERENCES venues(id) ON DELETE SET NULL,
     FOREIGN KEY (floor_id) REFERENCES floors(id) ON DELETE SET NULL
+);-
+-- 文件表
+CREATE TABLE IF NOT EXISTS files (
+    id TEXT PRIMARY KEY,
+    original_name TEXT NOT NULL,
+    file_name TEXT NOT NULL,
+    mime_type TEXT NOT NULL,
+    size INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    category TEXT,
+    description TEXT,
+    is_public INTEGER NOT NULL DEFAULT 0,
+    file_path TEXT NOT NULL,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now')),
+    
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
+
+CREATE INDEX IF NOT EXISTS idx_files_user_id ON files(user_id);
+CREATE INDEX IF NOT EXISTS idx_files_mime_type ON files(mime_type);
+CREATE INDEX IF NOT EXISTS idx_files_category ON files(category);
+CREATE INDEX IF NOT EXISTS idx_files_created_at ON files(created_at);

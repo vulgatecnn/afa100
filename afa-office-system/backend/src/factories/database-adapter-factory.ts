@@ -6,7 +6,6 @@
 import { DatabaseAdapter, DatabaseAdapterFactory } from '../interfaces/database-adapter';
 import { DatabaseConfig, DatabaseType } from '../config/database-config-manager';
 import { MySQLAdapter } from '../adapters/mysql-adapter';
-import { SQLiteAdapter } from '../adapters/sqlite-adapter';
 
 /**
  * 数据库适配器工厂实现
@@ -43,9 +42,6 @@ export class DatabaseAdapterFactoryImpl implements DatabaseAdapterFactory {
       case DatabaseType.MYSQL:
         adapter = new MySQLAdapter();
         break;
-      case DatabaseType.SQLITE:
-        adapter = new SQLiteAdapter();
-        break;
       default:
         throw new Error(`不支持的数据库类型: ${(config as any).type}`);
     }
@@ -73,8 +69,6 @@ export class DatabaseAdapterFactoryImpl implements DatabaseAdapterFactory {
       switch (config.type) {
         case DatabaseType.MYSQL:
           return this.validateMySQLConfig(config as any);
-        case DatabaseType.SQLITE:
-          return this.validateSQLiteConfig(config as any);
         default:
           return false;
       }
@@ -99,12 +93,7 @@ export class DatabaseAdapterFactoryImpl implements DatabaseAdapterFactory {
     );
   }
 
-  /**
-   * 验证SQLite配置
-   */
-  private validateSQLiteConfig(config: any): boolean {
-    return !!(config.path && typeof config.path === 'string');
-  }
+
 
   /**
    * 创建适配器并测试连接
@@ -151,7 +140,7 @@ export class DatabaseAdapterFactoryImpl implements DatabaseAdapterFactory {
    * 获取支持的数据库类型列表
    */
   getSupportedDatabaseTypes(): DatabaseType[] {
-    return [DatabaseType.MYSQL, DatabaseType.SQLITE];
+    return [DatabaseType.MYSQL];
   }
 
   /**

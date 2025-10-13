@@ -42,6 +42,17 @@ const createMockConnection = (): PooledConnection => {
         }
       }, 10);
     }),
+    query: vi.fn((sql, params) => {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          if (sql.includes('FAIL')) {
+            reject(new Error('模拟SQL错误'));
+          } else {
+            resolve({ rows: [{ id: 1, value: 'test' }], rowCount: 1 });
+          }
+        }, 10);
+      });
+    }),
   };
 
   return {

@@ -94,7 +94,7 @@ export class MySQLAdapter implements DatabaseAdapter {
       
       // 提供更详细的错误信息
       if (error instanceof Error) {
-        if (error.message.includes('ECONNREFUSED') || error.code === 'ECONNREFUSED') {
+        if (error.message.includes('ECONNREFUSED') || (error as any).code === 'ECONNREFUSED') {
           throw new Error(`MySQL服务器连接失败: ${this.config.host}:${this.config.port}。请确保MySQL服务正在运行。`);
         } else if (error.message.includes('ER_ACCESS_DENIED_ERROR') || (error as any).code === 'ER_ACCESS_DENIED_ERROR') {
           throw new Error(`MySQL认证失败: 用户名或密码错误 (${this.config.user})`);

@@ -1,30 +1,23 @@
-// import database from '../src/utils/database.js';
-import { unlinkSync, existsSync } from 'fs';
 import { getCurrentDbConfig } from '../src/config/database.config.js';
 import { initDatabase } from './init.js';
 
 /**
- * 通过删除所有表并重新创建架构来重置数据库
+ * 通过删除所有表并重新创建架构来重置MySQL数据库
  */
 async function resetDatabase(): Promise<void> {
   try {
-    console.log('🔄 开始重置数据库...');
+    console.log('🔄 开始重置MySQL数据库...');
     
     const config = getCurrentDbConfig();
+    console.log(`📊 使用数据库配置: ${config.host}:${config.port}/${config.database}`);
     
-    // 对于基于文件的数据库，删除文件
-    if (config.path !== ':memory:' && existsSync(config.path)) {
-      unlinkSync(config.path);
-      console.log('🗑️  删除现有数据库文件');
-    }
-    
-    // 重新初始化数据库
+    // 重新初始化数据库（MySQL数据库通过删除表和重新创建来重置）
     await initDatabase();
     
-    console.log('✅ 数据库重置完成');
+    console.log('✅ MySQL数据库重置完成');
     
   } catch (error) {
-    console.error('❌ 数据库重置失败:', (error as Error).message);
+    console.error('❌ MySQL数据库重置失败:', (error as Error).message);
     process.exit(1);
   }
 }

@@ -3,7 +3,7 @@
  * 提供连接状态监控、健康检查和详细错误报告功能
  */
 
-import mysql from 'mysql2/promise';
+import * as mysql from 'mysql2/promise';
 import { EventEmitter } from 'events';
 import { MySQLConfig } from '../config/database-config-manager';
 
@@ -92,7 +92,7 @@ export class MySQLConnectionMonitor extends EventEmitter {
 
   constructor(config: MySQLConfig, monitorConfig?: Partial<MonitorConfig>) {
     super();
-    
+
     this.config = config;
     this.monitorConfig = {
       healthCheckInterval: 30000,      // 30秒
@@ -135,20 +135,20 @@ export class MySQLConnectionMonitor extends EventEmitter {
   async initialize(pool: mysql.Pool): Promise<void> {
     this.pool = pool;
     this.health.status = ConnectionStatus.CONNECTING;
-    
+
     try {
       // 设置连接池事件监听
       this.setupPoolEventListeners();
-      
+
       // 执行初始健康检查
       await this.performHealthCheck();
-      
+
       // 启动定期健康检查
       this.startHealthCheck();
-      
+
       this.health.status = ConnectionStatus.CONNECTED;
       this.emit('connected', this.health);
-      
+
       if (this.monitorConfig.enableDetailedLogging) {
         console.log('✅ MySQL连接监控器已启动');
       }
@@ -171,29 +171,24 @@ export class MySQLConnectionMonitor extends EventEmitter {
     this.pool.on('acquire', (connection) => {
       this.statistics.acquiredConnections++;
       this.statistics.activeConnections++;
-      this.emit('connection:acquired', { connectionId: connection.threadId });
+      this.emit('connection:acquired', { connectionId: (connection as any).threadId });
     });
 
     // 监听连接释放事件
     this.pool.on('release', (connection) => {
       this.statistics.releasedConnections++;
       this.statistics.activeConnections = Math.max(0, this.statistics.activeConnections - 1);
-      this.emit('connection:released', { connectionId: connection.threadId });
+      this.emit('connection:released', { connectionId: (connection as any).threadId });
     });
 
     // 监听连接创建事件
     this.pool.on('connection', (connection) => {
       this.statistics.createdConnections++;
       this.statistics.totalConnections++;
-      this.emit('connection:created', { connectionId: connection.threadId });
+      this.emit('connection:created', { connectionId: (connection as any).threadId });
     });
 
-    // 监听连接销毁事件
-    this.pool.on('destroy', (connection) => {
-      this.statistics.destroyedConnections++;
-      this.statistics.totalConnections = Math.max(0, this.statistics.totalConnections - 1);
-      this.emit('connection:destroyed', { connectionId: connection.threadId });
-    });
+    // 注意：mysql2 Pool 没有 'destroy' 事件，这里移除该监听器
 
     // 监听入队事件
     this.pool.on('enqueue', () => {
@@ -211,34 +206,34 @@ export class MySQLConnectionMonitor extends EventEmitter {
     }
 
     const startTime = Date.now();
-    
+
     try {
       // 执行简单的ping查询
       const connection = await this.pool.getConnection();
       try {
         await connection.ping();
         const responseTime = Date.now() - startTime;
-        
+
         // 更新健康状态
         this.health.lastCheck = new Date();
         this.health.responseTime = responseTime;
         this.health.uptime = Date.now() - this.startTime.getTime();
         this.health.status = ConnectionStatus.CONNECTED;
-        
+
         // 获取连接池状态
         await this.updatePoolStatistics();
-        
+
         // 检查慢查询
         if (responseTime > this.monitorConfig.slowQueryThreshold) {
           this.emit('slow:query', { responseTime, threshold: this.monitorConfig.slowQueryThreshold });
         }
-        
+
         // 重置错误计数
         if (this.health.errorCount > 0) {
           this.health.errorCount = 0;
           this.emit('health:recovered', this.health);
         }
-        
+
         return this.health;
       } finally {
         connection.release();
@@ -248,13 +243,13 @@ export class MySQLConnectionMonitor extends EventEmitter {
       this.health.lastError = error as Error;
       this.health.status = ConnectionStatus.ERROR;
       this.recordError(error as Error);
-      
+
       // 检查是否需要重连
       if (this.health.errorCount >= this.monitorConfig.maxErrorCount) {
         this.emit('health:critical', this.health);
         await this.attemptReconnect();
       }
-      
+
       throw error;
     }
   }
@@ -271,7 +266,7 @@ export class MySQLConnectionMonitor extends EventEmitter {
       try {
         const [rows] = await connection.execute('SHOW STATUS LIKE "Threads_%"');
         const statusRows = rows as any[];
-        
+
         for (const row of statusRows) {
           switch (row.Variable_name) {
             case 'Threads_connected':
@@ -282,7 +277,7 @@ export class MySQLConnectionMonitor extends EventEmitter {
               break;
           }
         }
-        
+
         // 更新健康状态中的连接信息
         this.health.connectionCount = this.statistics.totalConnections;
       } finally {
@@ -300,33 +295,33 @@ export class MySQLConnectionMonitor extends EventEmitter {
    */
   private async attemptReconnect(): Promise<void> {
     if (this.reconnectAttempts >= this.monitorConfig.maxReconnectAttempts) {
-      this.emit('reconnect:failed', { 
-        attempts: this.reconnectAttempts, 
-        maxAttempts: this.monitorConfig.maxReconnectAttempts 
+      this.emit('reconnect:failed', {
+        attempts: this.reconnectAttempts,
+        maxAttempts: this.monitorConfig.maxReconnectAttempts
       });
       return;
     }
 
     this.health.status = ConnectionStatus.RECONNECTING;
     this.reconnectAttempts++;
-    
-    this.emit('reconnect:attempt', { 
-      attempt: this.reconnectAttempts, 
-      maxAttempts: this.monitorConfig.maxReconnectAttempts 
+
+    this.emit('reconnect:attempt', {
+      attempt: this.reconnectAttempts,
+      maxAttempts: this.monitorConfig.maxReconnectAttempts
     });
 
     try {
       // 等待重连延迟
       await new Promise(resolve => setTimeout(resolve, this.monitorConfig.reconnectDelay));
-      
+
       // 尝试健康检查
       await this.performHealthCheck();
-      
+
       // 重连成功
       this.reconnectAttempts = 0;
       this.health.status = ConnectionStatus.CONNECTED;
       this.emit('reconnect:success', this.health);
-      
+
     } catch (error) {
       this.emit('reconnect:error', { error, attempt: this.reconnectAttempts });
       // 递归尝试重连
@@ -353,7 +348,7 @@ export class MySQLConnectionMonitor extends EventEmitter {
 
     this.errorHistory.push(connectionError);
     this.statistics.errors++;
-    
+
     // 保持错误历史记录在合理范围内
     if (this.errorHistory.length > 100) {
       this.errorHistory = this.errorHistory.slice(-50);
@@ -495,12 +490,12 @@ export class MySQLConnectionMonitor extends EventEmitter {
    */
   updateConfig(newConfig: Partial<MonitorConfig>): void {
     this.monitorConfig = { ...this.monitorConfig, ...newConfig };
-    
+
     // 重启健康检查以应用新的间隔
     if (newConfig.healthCheckInterval) {
       this.startHealthCheck();
     }
-    
+
     this.emit('config:updated', this.monitorConfig);
   }
 
@@ -512,7 +507,7 @@ export class MySQLConnectionMonitor extends EventEmitter {
     this.removeAllListeners();
     this.pool = null;
     this.health.status = ConnectionStatus.DISCONNECTED;
-    
+
     if (this.monitorConfig.enableDetailedLogging) {
       console.log('🔌 MySQL连接监控器已销毁');
     }
@@ -523,7 +518,7 @@ export class MySQLConnectionMonitor extends EventEmitter {
  * 创建MySQL连接监控器
  */
 export function createMySQLConnectionMonitor(
-  config: MySQLConfig, 
+  config: MySQLConfig,
   monitorConfig?: Partial<MonitorConfig>
 ): MySQLConnectionMonitor {
   return new MySQLConnectionMonitor(config, monitorConfig);
@@ -565,9 +560,9 @@ export class MySQLConnectionMonitorFactory {
    * 销毁所有监控器实例
    */
   static destroyAllMonitors(): void {
-    for (const [key, monitor] of this.monitors) {
+    Array.from(this.monitors.entries()).forEach(([key, monitor]) => {
       monitor.destroy();
-    }
+    });
     this.monitors.clear();
   }
 
@@ -576,9 +571,9 @@ export class MySQLConnectionMonitorFactory {
    */
   static getAllMonitorStatus(): Record<string, ConnectionHealth> {
     const status: Record<string, ConnectionHealth> = {};
-    for (const [key, monitor] of this.monitors) {
+    Array.from(this.monitors.entries()).forEach(([key, monitor]) => {
       status[key] = monitor.getHealth();
-    }
+    });
     return status;
   }
 }

@@ -14,14 +14,14 @@ export class JwtUtils {
     const payload: JwtPayload = {
       userId: user.id,
       userType: user.user_type,
-      ...(user.merchant_id && { merchantId: user.merchant_id }),
+      ...(user.merchant_id !== null && user.merchant_id !== undefined && { merchantId: user.merchant_id }),
     };
 
     return jwt.sign(payload, appConfig.jwt.secret, {
       expiresIn: appConfig.jwt.expiresIn,
       issuer: 'afa-office-system',
       audience: 'afa-office-client',
-    });
+    } as any);
   }
 
   /**
@@ -31,14 +31,14 @@ export class JwtUtils {
     const payload: JwtPayload = {
       userId: user.id,
       userType: user.user_type,
-      ...(user.merchant_id && { merchantId: user.merchant_id }),
+      ...(user.merchant_id !== null && user.merchant_id !== undefined && { merchantId: user.merchant_id }),
     };
 
     return jwt.sign(payload, appConfig.jwt.secret, {
       expiresIn: appConfig.jwt.refreshExpiresIn,
       issuer: 'afa-office-system',
       audience: 'afa-office-refresh',
-    });
+    } as any);
   }
 
   /**

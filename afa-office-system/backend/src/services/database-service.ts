@@ -58,7 +58,7 @@ export class DatabaseService {
   private constructor() {
     this.health = {
       status: ConnectionStatus.DISCONNECTED,
-      databaseType: DatabaseType.SQLITE,
+      databaseType: DatabaseType.MYSQL,
       lastPing: null,
       errorCount: 0,
       lastError: null,
@@ -116,26 +116,12 @@ export class DatabaseService {
 
     } catch (primaryError) {
       const error = primaryError as Error;
-      console.warn(`⚠️ 主数据库连接失败: ${error.message}`);
+      console.error(`❌ MySQL数据库连接失败: ${error.message}`);
       
-      // 如果启用了回退机制，尝试回退到SQLite
-      if (this.serviceConfig.enableFallback && databaseConfigManager.getDatabaseType() === DatabaseType.MYSQL) {
-        try {
-          const fallbackAdapter = await this.fallbackToSQLite(error.message);
-          return fallbackAdapter;
-        } catch (fallbackError) {
-          const fbError = fallbackError as Error;
-          this.status = ConnectionStatus.ERROR;
-          this.health.status = ConnectionStatus.ERROR;
-          this.health.lastError = `主数据库和回退数据库都连接失败: ${fbError.message}`;
-          throw new Error(`数据库连接完全失败: 主数据库(${error.message}), 回退数据库(${fbError.message})`);
-        }
-      } else {
-        this.status = ConnectionStatus.ERROR;
-        this.health.status = ConnectionStatus.ERROR;
-        this.health.lastError = error.message;
-        throw error;
-      }
+      this.status = ConnectionStatus.ERROR;
+      this.health.status = ConnectionStatus.ERROR;
+      this.health.lastError = error.message;
+      throw error;
     }
   }
 
@@ -169,42 +155,17 @@ export class DatabaseService {
   }
 
   /**
-   * 回退到SQLite数据库
+   * 处理数据库连接失败（不再支持SQLite回退）
    */
-  private async fallbackToSQLite(primaryErrorMessage: string): Promise<DatabaseAdapter> {
-    console.log('🔄 正在回退到SQLite数据库...');
-
-    const fallbackConfig: DatabaseConfig = {
-      type: DatabaseType.SQLITE,
-      path: process.env.DB_TEST_PATH || ':memory:',
-      pragmas: {
-        foreign_keys: 'ON',
-        journal_mode: 'DELETE',
-        synchronous: 'FULL',
-        cache_size: 5000,
-        temp_store: 'MEMORY',
-        busy_timeout: 10000
-      }
-    };
-
-    const adapter = await databaseAdapterFactory.createAndTestAdapter(fallbackConfig);
+  private async handleConnectionFailure(primaryErrorMessage: string): Promise<never> {
+    console.error('❌ MySQL数据库连接失败，无可用的回退选项');
+    console.error(`📝 失败原因: ${primaryErrorMessage}`);
     
-    this.adapter = adapter;
-    this.config = fallbackConfig;
-    this.status = ConnectionStatus.FALLBACK;
-    this.health.status = ConnectionStatus.FALLBACK;
-    this.health.databaseType = DatabaseType.SQLITE;
-    this.health.errorCount = 0;
-    this.health.lastError = null;
-    this.health.fallbackReason = primaryErrorMessage;
-
-    // 启动健康检查
-    this.startHealthCheck();
-
-    console.log(`✅ 已回退到SQLite数据库: ${databaseConfigManager.getConfigSummary(fallbackConfig)}`);
-    console.log(`📝 回退原因: ${primaryErrorMessage}`);
+    this.status = ConnectionStatus.ERROR;
+    this.health.status = ConnectionStatus.ERROR;
+    this.health.lastError = primaryErrorMessage;
     
-    return adapter;
+    throw new Error(`数据库连接失败: ${primaryErrorMessage}`);
   }
 
   /**

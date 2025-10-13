@@ -3,7 +3,7 @@
  * 集成连接监控、健康检查和错误处理的综合连接管理解决方案
  */
 
-import mysql from 'mysql2/promise';
+import * as mysql from 'mysql2/promise';
 import { MySQLConfig } from '../config/database-config-manager';
 import { 
   MySQLConnectionMonitor, 
@@ -120,23 +120,30 @@ export class MySQLConnectionManager {
       password: this.config.password,
       database: this.config.database,
       connectionLimit: this.config.connectionLimit || 10,
-      acquireTimeout: this.config.acquireTimeout || 60000,
-      timeout: this.config.timeout || 60000,
+      // acquireTimeout and timeout are not valid PoolOptions properties in mysql2
+      // Using connectTimeout instead for connection timeout
+      connectTimeout: this.config.acquireTimeout || this.config.connectTimeout || 60000,
       multipleStatements: this.config.multipleStatements !== false,
       
       // 优化配置
-      charset: 'utf8mb4',
-      timezone: '+00:00',
-      supportBigNumbers: true,
-      bigNumberStrings: true,
-      dateStrings: false,
+      charset: this.config.charset || 'utf8mb4',
+      timezone: this.config.timezone || '+00:00',
+      supportBigNumbers: this.config.supportBigNumbers !== false,
+      bigNumberStrings: this.config.bigNumberStrings !== false,
+      dateStrings: this.config.dateStrings || false,
       
       // 连接池优化
-      queueLimit: 0,
-      idleTimeout: 300000,
+      queueLimit: this.config.queueLimit || 0,
+      idleTimeout: this.config.idleTimeout || 300000,
+      waitForConnections: this.config.waitForConnections !== false,
+      maxIdle: this.config.maxIdle,
       
       // SSL配置
-      ssl: this.config.ssl || false
+      ssl: this.config.ssl === true ? {} : (this.config.ssl || undefined),
+      
+      // 调试配置
+      debug: this.config.debug || false,
+      trace: this.config.trace || false
     };
 
     this.pool = mysql.createPool(poolConfig);
@@ -560,9 +567,9 @@ export class MySQLConnectionManagerFactory {
    */
   static getAllManagerStatus(): Record<string, ConnectionManagerStatus> {
     const status: Record<string, ConnectionManagerStatus> = {};
-    for (const [key, manager] of this.managers) {
+    Array.from(this.managers.entries()).forEach(([key, manager]) => {
       status[key] = manager.getStatus();
-    }
+    });
     return status;
   }
 

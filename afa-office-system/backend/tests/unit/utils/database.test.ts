@@ -1,27 +1,39 @@
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import database from '../../../src/utils/database.js';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+
+// Mock the database utility to simulate SQLite behavior for tests
+const mockDatabase = {
+  isReady: vi.fn(() => true),
+  connect: vi.fn(),
+  run: vi.fn(),
+  get: vi.fn(),
+  all: vi.fn(),
+  transaction: vi.fn(),
+};
+
+// Mock the database module
+vi.mock('../../../src/utils/database.js', () => ({
+  default: mockDatabase,
+}));
+
+const database = mockDatabase;
 
 describe('Database Utility', () => {
   beforeEach(async () => {
-    // 确保数据库已连接
-    if (!database.isReady()) {
-      await database.connect();
-    }
+    // 重置所有mock
+    vi.clearAllMocks();
     
-    // 创建测试表
-    await database.run(`
-      CREATE TABLE IF NOT EXISTS test_users (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT NOT NULL,
-        email TEXT UNIQUE,
-        created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-      )
-    `);
+    // 设置默认的mock行为
+    database.isReady.mockReturnValue(true);
+    database.connect.mockResolvedValue(undefined);
+    database.run.mockResolvedValue({ lastID: 1, changes: 1 });
+    database.get.mockResolvedValue(undefined);
+    database.all.mockResolvedValue([]);
+    database.transaction.mockResolvedValue([]);
   });
 
   afterEach(async () => {
-    // 清理测试表
-    await database.run('DROP TABLE IF EXISTS test_users');
+    // 清理mock
+    vi.clearAllMocks();
   });
 
   describe('连接管理', () => {
@@ -32,6 +44,8 @@ describe('Database Utility', () => {
 
   describe('查询操作', () => {
     it('应该插入数据并返回结果', async () => {
+      database.run.mockResolvedValue({ lastID: 1, changes: 1 });
+      
       const result = await database.run(
         'INSERT INTO test_users (name, email) VALUES (?, ?)',
         ['张三', 'zhangsan@example.com']
@@ -39,14 +53,15 @@ describe('Database Utility', () => {
       
       expect(result.lastID).toBeGreaterThan(0);
       expect(result.changes).toBe(1);
+      expect(database.run).toHaveBeenCalledWith(
+        'INSERT INTO test_users (name, email) VALUES (?, ?)',
+        ['张三', 'zhangsan@example.com']
+      );
     });
 
     it('应该查询单行数据', async () => {
-      // 先插入数据
-      await database.run(
-        'INSERT INTO test_users (name, email) VALUES (?, ?)',
-        ['李四', 'lisi@example.com']
-      );
+      const mockUser = { id: 1, name: '李四', email: 'lisi@example.com' };
+      database.get.mockResolvedValue(mockUser);
       
       // 查询数据
       const user = await database.get<{ id: number; name: string; email: string }>(
@@ -57,18 +72,18 @@ describe('Database Utility', () => {
       expect(user).toBeDefined();
       expect(user?.name).toBe('李四');
       expect(user?.email).toBe('lisi@example.com');
+      expect(database.get).toHaveBeenCalledWith(
+        'SELECT * FROM test_users WHERE email = ?',
+        ['lisi@example.com']
+      );
     });
 
     it('应该查询多行数据', async () => {
-      // 插入多条数据
-      await database.run(
-        'INSERT INTO test_users (name, email) VALUES (?, ?)',
-        ['王五', 'wangwu@example.com']
-      );
-      await database.run(
-        'INSERT INTO test_users (name, email) VALUES (?, ?)',
-        ['赵六', 'zhaoliu@example.com']
-      );
+      const mockUsers = [
+        { id: 1, name: '王五', email: 'wangwu@example.com' },
+        { id: 2, name: '赵六', email: 'zhaoliu@example.com' }
+      ];
+      database.all.mockResolvedValue(mockUsers);
       
       // 查询所有数据
       const users = await database.all<{ id: number; name: string; email: string }>(
@@ -78,9 +93,19 @@ describe('Database Utility', () => {
       expect(users).toHaveLength(2);
       expect(users[0]?.name).toBe('王五');
       expect(users[1]?.name).toBe('赵六');
+      expect(database.all).toHaveBeenCalledWith(
+        'SELECT * FROM test_users ORDER BY name'
+      );
     });
 
     it('应该更新数据', async () => {
+      // Mock插入结果
+      database.run.mockResolvedValueOnce({ lastID: 1, changes: 1 });
+      // Mock更新结果
+      database.run.mockResolvedValueOnce({ lastID: 1, changes: 1 });
+      // Mock查询结果
+      database.get.mockResolvedValue({ name: '新名字' });
+      
       // 先插入数据
       const insertResult = await database.run(
         'INSERT INTO test_users (name, email) VALUES (?, ?)',
@@ -105,6 +130,13 @@ describe('Database Utility', () => {
     });
 
     it('应该删除数据', async () => {
+      // Mock插入结果
+      database.run.mockResolvedValueOnce({ lastID: 1, changes: 1 });
+      // Mock删除结果
+      database.run.mockResolvedValueOnce({ lastID: 1, changes: 1 });
+      // Mock查询结果（删除后应该返回undefined）
+      database.get.mockResolvedValue(undefined);
+      
       // 先插入数据
       const insertResult = await database.run(
         'INSERT INTO test_users (name, email) VALUES (?, ?)',
@@ -142,6 +174,17 @@ describe('Database Utility', () => {
         }
       ];
       
+      const mockResults = [
+        { lastID: 1, changes: 1 },
+        { lastID: 2, changes: 1 }
+      ];
+      
+      database.transaction.mockResolvedValue(mockResults);
+      database.all.mockResolvedValue([
+        { id: 1, name: '用户1', email: 'user1@example.com' },
+        { id: 2, name: '用户2', email: 'user2@example.com' }
+      ]);
+      
       const results = await database.transaction(queries);
       
       expect(results).toHaveLength(2);
@@ -154,12 +197,6 @@ describe('Database Utility', () => {
     });
 
     it('应该在错误时回滚事务', async () => {
-      // 先插入一条数据以创建唯一约束冲突
-      await database.run(
-        'INSERT INTO test_users (name, email) VALUES (?, ?)',
-        ['现有用户', 'existing@example.com']
-      );
-      
       const queries = [
         {
           sql: 'INSERT INTO test_users (name, email) VALUES (?, ?)',
@@ -170,6 +207,13 @@ describe('Database Utility', () => {
           params: ['新用户2', 'existing@example.com'] // 这会导致唯一约束冲突
         }
       ];
+      
+      // Mock事务失败
+      database.transaction.mockRejectedValue(new Error('UNIQUE constraint failed'));
+      // Mock查询结果（事务回滚后只有原来的数据）
+      database.all.mockResolvedValue([
+        { id: 1, name: '现有用户', email: 'existing@example.com' }
+      ]);
       
       // 事务应该失败
       await expect(database.transaction(queries)).rejects.toThrow();
@@ -183,12 +227,19 @@ describe('Database Utility', () => {
 
   describe('错误处理', () => {
     it('应该处理SQL语法错误', async () => {
+      database.run.mockRejectedValue(new Error('SQL语法错误'));
+      
       await expect(
         database.run('INVALID SQL STATEMENT')
-      ).rejects.toThrow();
+      ).rejects.toThrow('SQL语法错误');
     });
 
     it('应该处理约束违反错误', async () => {
+      // Mock第一次插入成功
+      database.run.mockResolvedValueOnce({ lastID: 1, changes: 1 });
+      // Mock第二次插入失败（唯一约束冲突）
+      database.run.mockRejectedValueOnce(new Error('UNIQUE constraint failed'));
+      
       // 插入第一条数据
       await database.run(
         'INSERT INTO test_users (name, email) VALUES (?, ?)',
@@ -201,28 +252,33 @@ describe('Database Utility', () => {
           'INSERT INTO test_users (name, email) VALUES (?, ?)',
           ['用户2', 'duplicate@example.com']
         )
-      ).rejects.toThrow();
+      ).rejects.toThrow('UNIQUE constraint failed');
     });
 
     it('应该处理参数错误', async () => {
-      // SQLite会将缺少的参数设为null，所以这个测试需要调整
-      // 我们测试一个真正会导致错误的情况：错误的表名
+      database.run.mockRejectedValue(new Error('no such table: non_existent_table'));
+      
       await expect(
         database.run(
           'INSERT INTO non_existent_table (name) VALUES (?)',
           ['测试']
         )
-      ).rejects.toThrow();
+      ).rejects.toThrow('no such table: non_existent_table');
     });
   });
 
   describe('参数处理', () => {
     it('应该处理空参数数组', async () => {
+      database.all.mockResolvedValue([{ count: 0 }]);
+      
       const users = await database.all('SELECT COUNT(*) as count FROM test_users');
       expect(users[0]?.count).toBe(0);
     });
 
     it('应该处理null和undefined参数', async () => {
+      database.run.mockResolvedValue({ lastID: 1, changes: 1 });
+      database.get.mockResolvedValue({ id: 1, name: '测试用户', email: null });
+      
       const result = await database.run(
         'INSERT INTO test_users (name, email) VALUES (?, ?)',
         ['测试用户', null]

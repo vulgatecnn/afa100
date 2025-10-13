@@ -105,21 +105,83 @@ export class AccessRecordService {
    * 获取通行记录列表
    */
   static async getAccessRecords(query: AccessRecordQuery): Promise<PaginatedResponse<AccessRecord>> {
-    return await AccessRecordModel.findAll(query);
+    const { page = 1, limit = 10 } = query;
+    const records = await AccessRecordModel.findAll(query);
+    
+    // 获取总数用于分页
+    const total = await AccessRecordModel.count({
+      userId: query.userId,
+      deviceId: query.deviceId,
+      result: query.result,
+      startDate: query.startDate,
+      endDate: query.endDate
+    });
+    
+    return {
+      data: records,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
   }
 
   /**
    * 获取用户通行记录
    */
   static async getUserAccessRecords(userId: number, query: Omit<AccessRecordQuery, 'userId'>): Promise<PaginatedResponse<AccessRecord>> {
-    return await AccessRecordModel.findAll({ ...query, userId });
+    const { page = 1, limit = 10 } = query;
+    const fullQuery = { ...query, userId };
+    const records = await AccessRecordModel.findAll(fullQuery);
+    
+    // 获取总数用于分页
+    const total = await AccessRecordModel.count({
+      userId,
+      deviceId: query.deviceId,
+      result: query.result,
+      startDate: query.startDate,
+      endDate: query.endDate
+    });
+    
+    return {
+      data: records,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
   }
 
   /**
    * 获取设备通行记录
    */
   static async getDeviceAccessRecords(deviceId: string, query: Omit<AccessRecordQuery, 'deviceId'>): Promise<PaginatedResponse<AccessRecord>> {
-    return await AccessRecordModel.findAll({ ...query, deviceId });
+    const { page = 1, limit = 10 } = query;
+    const fullQuery = { ...query, deviceId };
+    const records = await AccessRecordModel.findAll(fullQuery);
+    
+    // 获取总数用于分页
+    const total = await AccessRecordModel.count({
+      userId: query.userId,
+      deviceId,
+      result: query.result,
+      startDate: query.startDate,
+      endDate: query.endDate
+    });
+    
+    return {
+      data: records,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    };
   }
 
   /**
@@ -166,7 +228,7 @@ export class AccessRecordService {
       byHour: [], // 简化实现
       byDevice: [], // 简化实现
       byUserType: [], // 简化实现
-      recentActivity: Array.isArray(recentActivity) ? recentActivity : (recentActivity?.data || []),
+      recentActivity: Array.isArray(recentActivity) ? recentActivity : [],
     };
 
     // 如果查询中有明确的日期范围，添加period字段

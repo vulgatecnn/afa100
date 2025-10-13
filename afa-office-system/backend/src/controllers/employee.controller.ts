@@ -392,4 +392,168 @@ export class EmployeeController {
       } as ApiResponse);
     }
   });
+
+  /**
+   * Excel批量导入员工
+   */
+  importEmployeesFromExcel = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    try {
+      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+
+      // 验证商户ID
+      if (isNaN(merchantId) || merchantId <= 0) {
+        res.status(400).json({
+          success: false,
+          message: '商户ID无效',
+          timestamp: new Date().toISOString()
+        } as ApiResponse);
+        return;
+      }
+
+      // TODO: 实现Excel导入逻辑
+      res.status(501).json({
+        success: false,
+        message: 'Excel导入功能暂未实现',
+        timestamp: new Date().toISOString()
+      } as ApiResponse);
+    } catch (error) {
+      console.error('Excel导入员工失败:', error);
+      res.status(500).json({
+        success: false,
+        message: error instanceof Error ? error.message : 'Excel导入员工失败',
+        timestamp: new Date().toISOString()
+      } as ApiResponse);
+    }
+  });
+
+  /**
+   * 获取员工统计信息
+   */
+  getEmployeeStats = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    try {
+      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+
+      // 验证商户ID
+      if (isNaN(merchantId) || merchantId <= 0) {
+        res.status(400).json({
+          success: false,
+          message: '商户ID无效',
+          timestamp: new Date().toISOString()
+        } as ApiResponse);
+        return;
+      }
+
+      // TODO: 实现员工统计逻辑
+      const stats = {
+        total: 0,
+        active: 0,
+        inactive: 0,
+        pending: 0
+      };
+
+      res.status(200).json({
+        success: true,
+        data: stats,
+        message: '获取员工统计成功',
+        timestamp: new Date().toISOString()
+      } as ApiResponse);
+    } catch (error) {
+      console.error('获取员工统计失败:', error);
+      res.status(500).json({
+        success: false,
+        message: error instanceof Error ? error.message : '获取员工统计失败',
+        timestamp: new Date().toISOString()
+      } as ApiResponse);
+    }
+  });
+
+  /**
+   * 分配员工权限
+   */
+  assignEmployeePermissions = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    try {
+      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+      const employeeId = req.params.employeeId ? parseInt(req.params.employeeId) : NaN;
+      const { permissions } = req.body;
+
+      // 验证参数
+      if (isNaN(merchantId) || merchantId <= 0) {
+        res.status(400).json({
+          success: false,
+          message: '商户ID无效',
+          timestamp: new Date().toISOString()
+        } as ApiResponse);
+        return;
+      }
+
+      if (isNaN(employeeId) || employeeId <= 0) {
+        res.status(400).json({
+          success: false,
+          message: '员工ID无效',
+          timestamp: new Date().toISOString()
+        } as ApiResponse);
+        return;
+      }
+
+      // TODO: 实现权限分配逻辑
+      res.status(501).json({
+        success: false,
+        message: '权限分配功能暂未实现',
+        timestamp: new Date().toISOString()
+      } as ApiResponse);
+    } catch (error) {
+      console.error('分配员工权限失败:', error);
+      res.status(500).json({
+        success: false,
+        message: error instanceof Error ? error.message : '分配员工权限失败',
+        timestamp: new Date().toISOString()
+      } as ApiResponse);
+    }
+  });
+
+  /**
+   * 获取员工权限
+   */
+  getEmployeePermissions = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+    try {
+      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+      const employeeId = req.params.employeeId ? parseInt(req.params.employeeId) : NaN;
+
+      // 验证参数
+      if (isNaN(merchantId) || merchantId <= 0) {
+        res.status(400).json({
+          success: false,
+          message: '商户ID无效',
+          timestamp: new Date().toISOString()
+        } as ApiResponse);
+        return;
+      }
+
+      if (isNaN(employeeId) || employeeId <= 0) {
+        res.status(400).json({
+          success: false,
+          message: '员工ID无效',
+          timestamp: new Date().toISOString()
+        } as ApiResponse);
+        return;
+      }
+
+      // TODO: 实现获取权限逻辑
+      const permissions: string[] = [];
+
+      res.status(200).json({
+        success: true,
+        data: permissions,
+        message: '获取员工权限成功',
+        timestamp: new Date().toISOString()
+      } as ApiResponse);
+    } catch (error) {
+      console.error('获取员工权限失败:', error);
+      res.status(500).json({
+        success: false,
+        message: error instanceof Error ? error.message : '获取员工权限失败',
+        timestamp: new Date().toISOString()
+      } as ApiResponse);
+    }
+  });
 }

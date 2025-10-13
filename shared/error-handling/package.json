@@ -1,0 +1,23 @@
+{
+  "name": "@afa-office/error-handling",
+  "version": "1.0.0",
+  "description": "统一的错误处理和用户反馈系统，提供错误捕获、分类、用户通知和网络监控功能",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "test": "vitest",
+    "test:coverage": "vitest --coverage"
+  },
+  "keywords": [
+    "error-handling",
+    "user-feedback",
+    "notifications",
+    "network-monitoring",
+    "typescript"
+  ],
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}

@@ -16,6 +16,7 @@ router.get('/', (_req, res) => {
       visitor: '/api/v1/visitor',
       employee: '/api/v1/employee',
       access: '/api/v1/access',
+      files: '/api/v1/files',
     },
     timestamp: new Date().toISOString(),
   });
@@ -30,6 +31,7 @@ import employeeApplicationRoutes from './employee-application.routes.js';
 import visitorRoutes from './visitor.routes.js';
 import tenantRoutes from './tenant.routes.js';
 import accessRoutes from './access.routes.js';
+import fileRoutes from './file.routes.js';
 
 router.use('/auth', authRoutes);
 router.use('/merchants', merchantRoutes);
@@ -41,5 +43,6 @@ router.use('/visitor', visitorRoutes);
 router.use('/space', spaceRoutes);
 router.use('/tenant', tenantRoutes);
 router.use('/access', accessRoutes);
+router.use('/files', fileRoutes);
 
 export default router;

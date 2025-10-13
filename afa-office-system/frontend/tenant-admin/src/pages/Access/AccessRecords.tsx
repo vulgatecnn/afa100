@@ -139,8 +139,7 @@ const AccessRecords: React.FC = () => {
         <div>
           <div>{record.userName}</div>
           <Tag 
-            color={record.userType === 'employee' ? 'blue' : 'orange'} 
-            size="small"
+            color={record.userType === 'employee' ? 'blue' : 'orange'}
           >
             {record.userType === 'employee' ? '员工' : '访客'}
           </Tag>
@@ -279,7 +278,7 @@ const AccessRecords: React.FC = () => {
             <RangePicker
               placeholder={['开始日期', '结束日期']}
               value={dateRange}
-              onChange={setDateRange}
+              onChange={(dates) => setDateRange(dates as [dayjs.Dayjs, dayjs.Dayjs] | null)}
               style={{ width: 240 }}
             />
           </Space>

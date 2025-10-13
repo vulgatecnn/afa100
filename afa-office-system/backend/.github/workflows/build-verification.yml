@@ -1,0 +1,186 @@
+name: 构建修复验证
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/build-verification.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/build-verification.yml'
+  schedule:
+    # 每天凌晨2点运行一次
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+    inputs:
+      run_full_verification:
+        description: '运行完整验证'
+        required: false
+        default: 'true'
+        type: boolean
+
+jobs:
+  build-verification:
+    name: 构建修复验证
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x, 20.x]
+
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: 设置pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8
+
+      - name: 获取pnpm存储目录
+        id: pnpm-cache
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path)" >> $GITHUB_OUTPUT
+
+      - name: 设置pnpm缓存
+        uses: actions/cache@v3
+        with:
+          path: ${{ steps.pnpm-cache.outputs.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: 安装依赖
+        run: pnpm install --frozen-lockfile
+
+      - name: 环境信息
+        run: |
+          echo "Node.js版本: $(node --version)"
+          echo "pnpm版本: $(pnpm --version)"
+          echo "工作目录: $(pwd)"
+
+      - name: 代码质量检查
+        run: |
+          echo "::group::ESLint检查"
+          pnpm lint
+          echo "::endgroup::"
+
+          echo "::group::Prettier格式检查"
+          npx prettier --check "src/**/*.{ts,js,json}"
+          echo "::endgroup::"
+
+          echo "::group::TypeScript类型检查"
+          pnpm type-check
+          echo "::endgroup::"
+
+      - name: 构建项目
+        run: |
+          echo "::group::清理构建目录"
+          rm -rf dist
+          echo "::endgroup::"
+
+          echo "::group::TypeScript编译"
+          pnpm build
+          echo "::endgroup::"
+
+          echo "::group::验证构建产物"
+          ls -la dist/
+          test -f dist/app.js || (echo "主应用文件不存在" && exit 1)
+          echo "::endgroup::"
+
+      - name: 运行测试
+        run: |
+          echo "::group::单元测试"
+          pnpm test
+          echo "::endgroup::"
+
+          echo "::group::测试覆盖率"
+          pnpm test:coverage
+          echo "::endgroup::"
+
+      - name: 运行验证测试
+        run: |
+          echo "::group::构建修复验证测试"
+          pnpm test:verification
+          echo "::endgroup::"
+
+      - name: 安全检查
+        run: |
+          echo "::group::依赖安全审计"
+          pnpm audit --audit-level moderate || echo "发现中等风险漏洞，但继续执行"
+          echo "::endgroup::"
+
+      - name: 运行时验证
+        run: |
+          echo "::group::应用语法检查"
+          node --check dist/app.js
+          echo "::endgroup::"
+
+          echo "::group::模块加载测试"
+          find dist -name "*.js" -type f -exec node --check {} \;
+          echo "::endgroup::"
+
+      - name: 性能检查
+        run: |
+          echo "::group::构建产物大小"
+          du -sh dist/
+          du -sh node_modules/
+          echo "::endgroup::"
+
+          echo "::group::构建时间测试"
+          time pnpm build
+          echo "::endgroup::"
+
+      - name: 完整验证脚本
+        if: ${{ github.event.inputs.run_full_verification == 'true' || github.event_name == 'schedule' }}
+        run: |
+          echo "::group::运行完整验证脚本"
+          node scripts/verify-build-fix.js
+          echo "::endgroup::"
+
+      - name: 上传验证报告
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: verification-report-node-${{ matrix.node-version }}
+          path: |
+            backend/verification-report.json
+            backend/coverage/
+          retention-days: 30
+
+      - name: 上传构建产物
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-artifacts-node-${{ matrix.node-version }}
+          path: backend/dist/
+          retention-days: 7
+
+  notification:
+    name: 通知
+    runs-on: ubuntu-latest
+    needs: build-verification
+    if: always()
+
+    steps:
+      - name: 验证结果通知
+        run: |
+          if [ "${{ needs.build-verification.result }}" == "success" ]; then
+            echo "✅ 构建修复验证通过"
+          else
+            echo "❌ 构建修复验证失败"
+            exit 1
+          fi

@@ -155,18 +155,26 @@ describe('MerchantController', () => {
     it('应该在缺少ID时抛出错误', async () => {
       mockReq.params = {};
 
-      await expect(
-        merchantController.getMerchantById(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('商户ID不能为空');
+      try {
+        await merchantController.getMerchantById(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('商户ID不能为空');
+        expect(error.statusCode).toBe(400);
+      }
     });
 
     it('应该在商户不存在时抛出错误', async () => {
       mockReq.params = { id: '999' };
       mockMerchantService.getMerchantById.mockResolvedValue(null);
 
-      await expect(
-        merchantController.getMerchantById(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('商户不存在');
+      try {
+        await merchantController.getMerchantById(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('商户不存在');
+        expect(error.statusCode).toBe(404);
+      }
     });
   });
 
@@ -201,9 +209,13 @@ describe('MerchantController', () => {
     it('应该在缺少必填字段时抛出错误', async () => {
       mockReq.body = { name: '商户名' }; // 缺少 code
 
-      await expect(
-        merchantController.createMerchant(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('商户名称和编码不能为空');
+      try {
+        await merchantController.createMerchant(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('商户名称和编码不能为空');
+        expect(error.statusCode).toBe(400);
+      }
     });
 
     it('应该在商户编码已存在时抛出错误', async () => {
@@ -215,9 +227,13 @@ describe('MerchantController', () => {
       mockReq.body = merchantData;
       mockMerchantService.getMerchantByCode.mockResolvedValue(mockMerchant);
 
-      await expect(
-        merchantController.createMerchant(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('商户编码已存在');
+      try {
+        await merchantController.createMerchant(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('商户编码已存在');
+        expect(error.statusCode).toBe(400);
+      }
     });
   });
 
@@ -252,9 +268,13 @@ describe('MerchantController', () => {
       mockReq.params = {};
       mockReq.body = { name: '新名称' };
 
-      await expect(
-        merchantController.updateMerchant(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('商户ID不能为空');
+      try {
+        await merchantController.updateMerchant(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('商户ID不能为空');
+        expect(error.statusCode).toBe(400);
+      }
     });
 
     it('应该在商户不存在时抛出错误', async () => {
@@ -262,9 +282,13 @@ describe('MerchantController', () => {
       mockReq.body = { name: '新名称' };
       mockMerchantService.getMerchantById.mockResolvedValue(null);
 
-      await expect(
-        merchantController.updateMerchant(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('商户不存在');
+      try {
+        await merchantController.updateMerchant(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('商户不存在');
+        expect(error.statusCode).toBe(404);
+      }
     });
 
     it('应该检查更新的编码是否已被其他商户使用', async () => {
@@ -276,9 +300,13 @@ describe('MerchantController', () => {
       mockMerchantService.getMerchantById.mockResolvedValue(mockMerchant);
       mockMerchantService.getMerchantByCode.mockResolvedValue(existingMerchantWithCode);
 
-      await expect(
-        merchantController.updateMerchant(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('商户编码已存在');
+      try {
+        await merchantController.updateMerchant(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('商户编码已存在');
+        expect(error.statusCode).toBe(400);
+      }
     });
   });
 
@@ -304,18 +332,26 @@ describe('MerchantController', () => {
     it('应该在缺少ID时抛出错误', async () => {
       mockReq.params = {};
 
-      await expect(
-        merchantController.deleteMerchant(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('商户ID不能为空');
+      try {
+        await merchantController.deleteMerchant(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('商户ID不能为空');
+        expect(error.statusCode).toBe(400);
+      }
     });
 
     it('应该在商户不存在时抛出错误', async () => {
       mockReq.params = { id: '999' };
       mockMerchantService.getMerchantById.mockResolvedValue(null);
 
-      await expect(
-        merchantController.deleteMerchant(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('商户不存在');
+      try {
+        await merchantController.deleteMerchant(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('商户不存在');
+        expect(error.statusCode).toBe(404);
+      }
     });
 
     it('应该在商户有员工时拒绝删除', async () => {
@@ -323,9 +359,13 @@ describe('MerchantController', () => {
       mockMerchantService.getMerchantById.mockResolvedValue(mockMerchant);
       mockMerchantService.hasEmployees.mockResolvedValue(true);
 
-      await expect(
-        merchantController.deleteMerchant(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('商户下存在员工，无法删除');
+      try {
+        await merchantController.deleteMerchant(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('商户下存在员工，无法删除');
+        expect(error.statusCode).toBe(400);
+      }
     });
   });
 
@@ -350,9 +390,13 @@ describe('MerchantController', () => {
     it('应该在缺少ID时抛出错误', async () => {
       mockReq.params = {};
 
-      await expect(
-        merchantController.enableMerchant(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('商户ID不能为空');
+      try {
+        await merchantController.enableMerchant(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('商户ID不能为空');
+        expect(error.statusCode).toBe(400);
+      }
     });
   });
 
@@ -399,9 +443,13 @@ describe('MerchantController', () => {
     it('应该在缺少ID时抛出错误', async () => {
       mockReq.params = {};
 
-      await expect(
-        merchantController.getMerchantPermissions(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('商户ID不能为空');
+      try {
+        await merchantController.getMerchantPermissions(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('商户ID不能为空');
+        expect(error.statusCode).toBe(400);
+      }
     });
   });
 
@@ -429,18 +477,26 @@ describe('MerchantController', () => {
       mockReq.params = {};
       mockReq.body = { permissionIds: [1, 2] };
 
-      await expect(
-        merchantController.assignMerchantPermissions(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('商户ID不能为空');
+      try {
+        await merchantController.assignMerchantPermissions(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('商户ID不能为空');
+        expect(error.statusCode).toBe(400);
+      }
     });
 
     it('应该在权限ID列表格式无效时抛出错误', async () => {
       mockReq.params = { id: '1' };
       mockReq.body = { permissionIds: 'invalid' };
 
-      await expect(
-        merchantController.assignMerchantPermissions(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('权限ID列表格式无效');
+      try {
+        await merchantController.assignMerchantPermissions(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('权限ID列表格式无效');
+        expect(error.statusCode).toBe(400);
+      }
     });
 
     it('应该在商户不存在时抛出错误', async () => {
@@ -448,9 +504,13 @@ describe('MerchantController', () => {
       mockReq.body = { permissionIds: [1, 2] };
       mockMerchantService.getMerchantById.mockResolvedValue(null);
 
-      await expect(
-        merchantController.assignMerchantPermissions(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('商户不存在');
+      try {
+        await merchantController.assignMerchantPermissions(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('商户不存在');
+        expect(error.statusCode).toBe(404);
+      }
     });
   });
 
@@ -476,9 +536,13 @@ describe('MerchantController', () => {
       mockReq.params = { id: '1' };
       mockReq.body = { permissionIds: 'invalid' };
 
-      await expect(
-        merchantController.removeMerchantPermissions(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('权限ID列表格式无效');
+      try {
+        await merchantController.removeMerchantPermissions(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('权限ID列表格式无效');
+        expect(error.statusCode).toBe(400);
+      }
     });
   });
 
@@ -507,9 +571,13 @@ describe('MerchantController', () => {
     it('应该在缺少ID时抛出错误', async () => {
       mockReq.params = {};
 
-      await expect(
-        merchantController.getMerchantStats(mockReq as Request, mockRes as Response)
-      ).rejects.toThrow('商户ID不能为空');
+      try {
+        await merchantController.getMerchantStats(mockReq as Request, mockRes as Response);
+        expect.fail('应该抛出错误');
+      } catch (error: any) {
+        expect(error.message).toBe('商户ID不能为空');
+        expect(error.statusCode).toBe(400);
+      }
     });
   });
 

@@ -3,10 +3,9 @@
  */
 
 import request from 'supertest'
-import { app } from '../../src/app'
-import { BackendTestFactory } from '../../../shared/test-factories/backend-adapter'
-import { MySQLAdapter } from '../../src/adapters/mysql-adapter'
-import { DatabaseConfigManager, DatabaseType } from '../../src/config/database-config-manager'
+import app from '../../src/app.js'
+import { TestDataFactory } from './test-data-factory.js'
+import { MySQLAdapter } from '../../src/adapters/mysql-adapter.js'
 
 export interface AuthenticatedRequest {
   user: any
@@ -26,7 +25,7 @@ export class ApiTestHelper {
     const adapter = await this.getMySQLAdapter()
     
     // 创建测试用户数据
-    const userData = BackendTestFactory.createUser({
+    const userData = TestDataFactory.createUser({
       user_type: 'tenant_admin',
       status: 'active',
       ...userOverrides
@@ -74,10 +73,16 @@ export class ApiTestHelper {
    * 获取MySQL适配器实例
    */
   private static async getMySQLAdapter(): Promise<MySQLAdapter> {
-    const configManager = new DatabaseConfigManager()
-    const config = configManager.getConfig(DatabaseType.MYSQL, 'test')
-    
     const adapter = new MySQLAdapter()
+    // 使用测试数据库配置
+    const config = {
+      host: process.env.DB_HOST || 'localhost',
+      port: parseInt(process.env.DB_PORT || '3306'),
+      user: process.env.DB_USER || 'root',
+      password: process.env.DB_PASSWORD || '',
+      database: process.env.DB_NAME_TEST || 'afa_office_test'
+    }
+    
     if (!adapter.isReady()) {
       await adapter.connect(config)
     }
@@ -189,7 +194,7 @@ export class ApiTestHelper {
    */
   static async createTestMerchant(overrides = {}) {
     const adapter = await this.getMySQLAdapter()
-    const merchantData = BackendTestFactory.createMerchant(overrides)
+    const merchantData = TestDataFactory.createMerchant(overrides)
     
     const result = await adapter.run(
       `INSERT INTO merchants (name, code, contact_person, phone, email, status, space_ids, created_at, updated_at)
@@ -215,7 +220,7 @@ export class ApiTestHelper {
    */
   static async createTestVisitorApplication(overrides = {}) {
     const adapter = await this.getMySQLAdapter()
-    const applicationData = BackendTestFactory.createVisitorApplication(overrides)
+    const applicationData = TestDataFactory.createVisitorApplication(overrides)
     
     const result = await adapter.run(
       `INSERT INTO visitor_applications (visitor_name, phone, company, purpose, visit_date, duration, status, merchant_id, applicant_id, created_at, updated_at)

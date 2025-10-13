@@ -1,4 +1,4 @@
-import api from './api'
+import { api } from './api'
 
 export interface Merchant {
   id: number
@@ -48,7 +48,7 @@ class MerchantService {
    */
   async getMerchants(params: MerchantListParams = {}): Promise<MerchantListResponse> {
     const response = await api.get('/tenant/merchants', { params })
-    return response
+    return response.data
   }
 
   /**
@@ -56,7 +56,7 @@ class MerchantService {
    */
   async getMerchant(id: number): Promise<Merchant> {
     const response = await api.get(`/tenant/merchants/${id}`)
-    return response
+    return response.data
   }
 
   /**
@@ -64,7 +64,7 @@ class MerchantService {
    */
   async createMerchant(data: CreateMerchantData): Promise<Merchant> {
     const response = await api.post('/tenant/merchants', data)
-    return response
+    return response.data
   }
 
   /**
@@ -72,7 +72,7 @@ class MerchantService {
    */
   async updateMerchant(id: number, data: UpdateMerchantData): Promise<Merchant> {
     const response = await api.put(`/tenant/merchants/${id}`, data)
-    return response
+    return response.data
   }
 
   /**
@@ -94,7 +94,7 @@ class MerchantService {
    */
   async toggleMerchantStatus(id: number, status: 'active' | 'inactive'): Promise<Merchant> {
     const response = await api.patch(`/tenant/merchants/${id}/status`, { status })
-    return response
+    return response.data
   }
 }
 

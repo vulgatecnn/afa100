@@ -184,9 +184,13 @@ describe('SpaceController', () => {
             mockRequest.body = invalidData;
 
             // Act & Assert - 这里会抛出异常，由asyncHandler处理
-            await expect(
-                spaceController.createVenue(mockRequest as Request, mockResponse as Response)
-            ).rejects.toThrow('场地名称、编码和项目ID不能为空');
+            try {
+                await spaceController.createVenue(mockRequest as Request, mockResponse as Response);
+                expect.fail('应该抛出错误');
+            } catch (error: any) {
+                expect(error.message).toBe('场地名称、编码和项目ID不能为空');
+                expect(error.statusCode).toBe(400);
+            }
         });
 
         it('应该处理项目不存在的情况', async () => {
@@ -200,9 +204,13 @@ describe('SpaceController', () => {
             mockSpaceService.getProjectById.mockResolvedValue(null);
 
             // Act & Assert
-            await expect(
-                spaceController.createVenue(mockRequest as Request, mockResponse as Response)
-            ).rejects.toThrow('项目不存在');
+            try {
+                await spaceController.createVenue(mockRequest as Request, mockResponse as Response);
+                expect.fail('应该抛出错误');
+            } catch (error: any) {
+                expect(error.message).toBe('项目不存在');
+                expect(error.statusCode).toBe(404);
+            }
         });
 
         it('应该处理场地编码已存在的情况', async () => {
@@ -217,9 +225,13 @@ describe('SpaceController', () => {
             mockSpaceService.getVenueByCode.mockResolvedValue({ id: 2, code: 'VN001' });
 
             // Act & Assert
-            await expect(
-                spaceController.createVenue(mockRequest as Request, mockResponse as Response)
-            ).rejects.toThrow('场地编码在该项目内已存在');
+            try {
+                await spaceController.createVenue(mockRequest as Request, mockResponse as Response);
+                expect.fail('应该抛出错误');
+            } catch (error: any) {
+                expect(error.message).toBe('场地编码在该项目内已存在');
+                expect(error.statusCode).toBe(400);
+            }
         });
     });
 

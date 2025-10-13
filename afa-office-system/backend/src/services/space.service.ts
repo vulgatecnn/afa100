@@ -1,7 +1,5 @@
 import { Database } from '../utils/database.js';
-import { Project } from '../models/project.model.js';
-import { Venue } from '../models/venue.model.js';
-import { Floor } from '../models/floor.model.js';
+import type { Project, Venue, Floor } from '../types/index.js';
 import { AppError, ErrorCodes } from '../middleware/error.middleware.js';
 import type { 
   CreateProjectData, 

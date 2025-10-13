@@ -1,4 +1,4 @@
-import api from './api'
+import { api } from './api'
 
 export interface AccessRecord {
   id: number
@@ -50,7 +50,7 @@ class AccessService {
    */
   async getAccessRecords(params: AccessRecordsParams = {}): Promise<AccessRecordsResponse> {
     const response = await api.get('/tenant/access-records', { params })
-    return response
+    return response.data
   }
 
   /**
@@ -58,7 +58,7 @@ class AccessService {
    */
   async getAccessRecord(id: number): Promise<AccessRecord> {
     const response = await api.get(`/tenant/access-records/${id}`)
-    return response
+    return response.data
   }
 
   /**
@@ -68,7 +68,7 @@ class AccessService {
     const response = await api.post('/tenant/access-records/export', params, {
       responseType: 'blob'
     })
-    return response
+    return response.data
   }
 
   /**
@@ -89,7 +89,7 @@ class AccessService {
     }>
   }> {
     const response = await api.get('/tenant/access-records/statistics', { params })
-    return response
+    return response.data
   }
 
   /**
@@ -102,7 +102,7 @@ class AccessService {
     todayRecords: number
   }> {
     const response = await api.get('/tenant/access-records/realtime')
-    return response
+    return response.data
   }
 }
 

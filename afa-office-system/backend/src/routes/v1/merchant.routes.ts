@@ -89,8 +89,8 @@ const querySchema = Joi.object({
 router.get(
   '/',
   authenticate,
-  requirePermission('merchant:read'),
-  validate(querySchema, 'query'),
+  requirePermission('merchant', 'read'),
+  validate(querySchema),
   merchantController.getMerchants
 );
 
@@ -98,7 +98,7 @@ router.get(
 router.get(
   '/:id',
   authenticate,
-  requirePermission('merchant:read'),
+  requirePermission('merchant', 'read'),
   merchantController.getMerchantById
 );
 
@@ -106,7 +106,7 @@ router.get(
 router.post(
   '/',
   authenticate,
-  requirePermission('merchant:create'),
+  requirePermission('merchant', 'write'),
   validate(createMerchantSchema),
   merchantController.createMerchant
 );
@@ -115,7 +115,7 @@ router.post(
 router.put(
   '/:id',
   authenticate,
-  requirePermission('merchant:update'),
+  requirePermission('merchant', 'write'),
   validate(updateMerchantSchema),
   merchantController.updateMerchant
 );
@@ -124,7 +124,7 @@ router.put(
 router.delete(
   '/:id',
   authenticate,
-  requirePermission('merchant:delete'),
+  requirePermission('merchant', 'delete'),
   merchantController.deleteMerchant
 );
 
@@ -132,7 +132,7 @@ router.delete(
 router.post(
   '/:id/enable',
   authenticate,
-  requirePermission('merchant:update'),
+  requirePermission('merchant', 'write'),
   merchantController.enableMerchant
 );
 
@@ -140,7 +140,7 @@ router.post(
 router.post(
   '/:id/disable',
   authenticate,
-  requirePermission('merchant:update'),
+  requirePermission('merchant', 'write'),
   merchantController.disableMerchant
 );
 
@@ -148,7 +148,7 @@ router.post(
 router.get(
   '/:id/permissions',
   authenticate,
-  requirePermission('merchant:read'),
+  requirePermission('merchant', 'read'),
   merchantController.getMerchantPermissions
 );
 
@@ -156,7 +156,7 @@ router.get(
 router.post(
   '/:id/permissions',
   authenticate,
-  requirePermission('merchant:permission:assign'),
+  requirePermission('merchant', 'manage'),
   validate(assignPermissionsSchema),
   merchantController.assignMerchantPermissions
 );
@@ -165,7 +165,7 @@ router.post(
 router.delete(
   '/:id/permissions',
   authenticate,
-  requirePermission('merchant:permission:remove'),
+  requirePermission('merchant', 'manage'),
   validate(assignPermissionsSchema),
   merchantController.removeMerchantPermissions
 );
@@ -174,7 +174,7 @@ router.delete(
 router.get(
   '/:id/stats',
   authenticate,
-  requirePermission('merchant:read'),
+  requirePermission('merchant', 'read'),
   merchantController.getMerchantStats
 );
 

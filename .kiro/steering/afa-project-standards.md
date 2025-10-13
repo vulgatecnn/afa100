@@ -7,7 +7,7 @@ inclusion: always
 ## 技术栈约束
 
 **必须使用的技术栈:**
-- 后端: Node.js + TypeScript + Express.js + SQLite/MySQL + Vitest
+- 后端: Node.js + TypeScript + Express.js + MySQL + Vitest
 - 前端: React 18+ + TypeScript + Ant Design + Vite
 - 小程序: 微信原生小程序
 - 包管理: pnpm (严格要求)
@@ -162,9 +162,9 @@ try {
 ## 环境配置
 
 **数据库环境:**
-- 开发: SQLite
-- 测试: 内存数据库
-- 生产: MySQL/PostgreSQL
+- 开发: MySQL
+- 测试: MySQL测试数据库
+- 生产: MySQL
 
 **配置管理:**
 - 使用环境变量存储敏感信息

@@ -1,0 +1,26 @@
+{
+  "name": "@afa-office/api-validation",
+  "version": "1.0.0",
+  "description": "API 验证和连通性测试工具，提供端点测试、响应验证和集成测试功能",
+  "main": "index.ts",
+  "types": "index.ts",
+  "scripts": {
+    "test": "vitest",
+    "test:coverage": "vitest --coverage"
+  },
+  "keywords": [
+    "api-testing",
+    "connectivity",
+    "validation",
+    "integration-testing",
+    "typescript"
+  ],
+  "dependencies": {
+    "@afa-office/api-client": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^1.0.0"
+  }
+}

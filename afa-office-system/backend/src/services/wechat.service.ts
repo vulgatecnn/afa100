@@ -35,10 +35,7 @@ export interface WechatLoginResult {
  * 处理微信小程序相关的业务逻辑
  */
 export class WechatService {
-  private userModel: UserModel;
-
   constructor() {
-    this.userModel = new UserModel();
   }
 
   /**
@@ -55,7 +52,7 @@ export class WechatService {
     const wechatUserInfo = await WechatUtils.getSessionByCode(code);
 
     // 查找现有用户
-    let user = await this.userModel.findByOpenId(wechatUserInfo.openid);
+    let user = await UserModel.findByOpenId(wechatUserInfo.openid);
     let isNewUser = false;
 
     if (!user) {
@@ -72,8 +69,7 @@ export class WechatService {
         userData.union_id = wechatUserInfo.unionid;
       }
 
-      const userId = await this.userModel.create(userData);
-      user = await this.userModel.findById(userId);
+      user = await UserModel.create(userData);
       
       if (!user) {
         throw new Error('用户创建失败');
@@ -106,7 +102,7 @@ export class WechatService {
     const { openId, unionId, userType, userInfo, merchantId } = registrationData;
 
     // 检查用户是否已存在
-    const existingUser = await this.userModel.findByOpenId(openId);
+    const existingUser = await UserModel.findByOpenId(openId);
     if (existingUser) {
       throw new Error('用户已存在');
     }
@@ -135,8 +131,7 @@ export class WechatService {
       userData.merchant_id = merchantId;
     }
 
-    const userId = await this.userModel.create(userData);
-    const user = await this.userModel.findById(userId);
+    const user = await UserModel.create(userData);
     
     if (!user) {
       throw new Error('用户创建失败');
@@ -172,14 +167,14 @@ export class WechatService {
 
     if (Object.keys(updateData).length === 0) {
       // 没有需要更新的数据，直接返回当前用户
-      const user = await this.userModel.findById(userId);
+      const user = await UserModel.findById(userId);
       if (!user) {
         throw new Error('用户不存在');
       }
       return user;
     }
 
-    return await this.userModel.update(userId, updateData);
+    return await UserModel.update(userId, updateData);
   }
 
   /**

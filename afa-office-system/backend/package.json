@@ -11,6 +11,18 @@
     "test": "vitest --config vitest.config.simple.js --run",
     "test:watch": "vitest --config vitest.config.simple.js",
     "test:coverage": "vitest --config vitest.config.simple.js --coverage --run",
+    "test:e2e": "playwright test --config tests/e2e/config/playwright.config.ts",
+    "test:e2e:ui": "playwright test --config tests/e2e/config/playwright.config.ts --ui",
+    "test:e2e:headed": "playwright test --config tests/e2e/config/playwright.config.ts --headed",
+    "test:e2e:report": "playwright show-report tests/e2e/reports/playwright-report",
+    "test:e2e:setup": "bash tests/e2e/scripts/setup-test-environment.sh",
+    "test:e2e:setup:windows": "powershell -ExecutionPolicy Bypass -File tests/e2e/scripts/setup-test-environment.ps1",
+    "test:verification": "vitest --config vitest.verification.config.js --run",
+    "test:verification:watch": "vitest --config vitest.verification.config.js",
+    "test:verification:run": "node scripts/run-verification-tests.js",
+    "verify:build": "pnpm test:verification --reporter=verbose",
+    "verify:all": "pnpm lint && pnpm type-check && pnpm build && pnpm test && pnpm test:verification",
+    "verify:complete": "node scripts/verify-build-fix.js",
     "lint": "eslint src/**/*.ts",
     "lint:fix": "eslint src/**/*.ts --fix",
     "format": "prettier --write src/**/*.ts",
@@ -31,7 +43,12 @@
     "mysql:cleanup-stats": "node scripts/cleanup-test-databases.js --stats",
     "test:mysql": "vitest --config vitest.mysql-adapter.config.js --run",
     "test:mysql-config": "vitest --config vitest.mysql-config.config.js --run",
-    "test:mysql-tools": "vitest --config vitest.mysql-tools.config.js --run"
+    "test:mysql-tools": "vitest --config vitest.mysql-tools.config.js --run",
+    "db:integration:init": "node scripts/init-integration-test-db.js init",
+    "db:integration:reset": "node scripts/init-integration-test-db.js reset",
+    "db:integration:clean": "node scripts/init-integration-test-db.js clean",
+    "db:integration:drop": "node scripts/init-integration-test-db.js drop",
+    "db:integration:verify": "node scripts/init-integration-test-db.js verify"
   },
   "keywords": [
     "office",
@@ -58,6 +75,7 @@
     "xlsx": "^0.18.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/commander": "2.12.5",
     "@types/cors": "^2.8.17",

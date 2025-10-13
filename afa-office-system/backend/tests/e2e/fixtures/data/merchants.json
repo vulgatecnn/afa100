@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "name": "测试科技有限公司",
+    "contact_person": "张经理",
+    "contact_phone": "13800138001",
+    "contact_email": "zhang@testtech.com",
+    "status": "active",
+    "created_at": "2024-01-01T00:00:00Z",
+    "updated_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": 2,
+    "name": "创新软件公司",
+    "contact_person": "李总监",
+    "contact_phone": "13800138002", 
+    "contact_email": "li@innovation.com",
+    "status": "active",
+    "created_at": "2024-01-01T00:00:00Z",
+    "updated_at": "2024-01-01T00:00:00Z"
+  },
+  {
+    "id": 3,
+    "name": "数字营销工作室",
+    "contact_person": "王主管",
+    "contact_phone": "13800138003",
+    "contact_email": "wang@digital.com", 
+    "status": "active",
+    "created_at": "2024-01-01T00:00:00Z",
+    "updated_at": "2024-01-01T00:00:00Z"
+  }
+]

@@ -3,7 +3,7 @@
  * 专门处理MySQL数据库的配置管理、验证和优化
  */
 
-import dotenv from 'dotenv';
+import * as dotenv from 'dotenv';
 import { MySQLConfig, DatabaseType } from './database-config-manager';
 
 dotenv.config();

@@ -9,11 +9,9 @@ import type { ApiResponse, AuthenticatedRequest } from '../types/index.js';
  */
 export class EmployeeApplicationController {
   private employeeApplicationService: EmployeeApplicationService;
-  private merchantModel: MerchantModel;
 
   constructor() {
     this.employeeApplicationService = new EmployeeApplicationService();
-    this.merchantModel = new MerchantModel();
   }
 
   /**
@@ -22,7 +20,7 @@ export class EmployeeApplicationController {
   async getMerchants(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
       // 获取所有活跃的商户
-      const merchants = await this.merchantModel.findAll({
+      const merchants = await MerchantModel.findAll({
         status: 'active',
         page: 1,
         limit: 1000 // 获取所有商户
@@ -30,7 +28,7 @@ export class EmployeeApplicationController {
 
       res.status(200).json({
         success: true,
-        data: merchants.merchants.map(merchant => ({
+        data: merchants.map(merchant => ({
           id: merchant.id,
           name: merchant.name,
           code: merchant.code,

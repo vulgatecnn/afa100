@@ -1,4 +1,4 @@
-import api from './api'
+import { api } from './api'
 
 export interface LoginCredentials {
   email: string
@@ -28,7 +28,7 @@ class AuthService {
    */
   async login(credentials: LoginCredentials): Promise<LoginResponse> {
     const response = await api.post('/auth/login', credentials)
-    return response
+    return response.data
   }
 
   /**
@@ -36,7 +36,7 @@ class AuthService {
    */
   async getCurrentUser(): Promise<User> {
     const response = await api.get('/auth/me')
-    return response
+    return response.data
   }
 
   /**
@@ -44,7 +44,7 @@ class AuthService {
    */
   async refreshToken(): Promise<{ token: string }> {
     const response = await api.post('/auth/refresh')
-    return response
+    return response.data
   }
 
   /**

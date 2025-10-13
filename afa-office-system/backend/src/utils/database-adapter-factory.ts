@@ -1,13 +1,10 @@
 /**
  * 数据库适配器工厂
- * 负责创建和管理数据库适配器，包含错误处理和自动回退机制
+ * 负责创建和管理MySQL数据库适配器，包含错误处理和重试机制
  */
 
 import { DatabaseAdapter, DatabaseConfigManager, DatabaseConnectionConfig, ConnectionError } from './database-adapter.js';
 import { MySQLAdapter } from './mysql-adapter.js';
-
-// 动态导入SQLite适配器以避免循环依赖
-let SQLiteAdapter: any;
 
 /**
  * 数据库适配器工厂类
@@ -19,22 +16,22 @@ export class DatabaseAdapterFactory {
   private static retryDelay = 1000; // 1秒
 
   /**
-   * 创建数据库适配器
+   * 创建数据库适配器（仅支持MySQL）
    */
   static async createAdapter(config?: DatabaseConnectionConfig): Promise<DatabaseAdapter> {
     const dbConfig = config || DatabaseConfigManager.getTestConfig();
     
-    console.log(`🔧 尝试创建${dbConfig.type.toUpperCase()}数据库适配器...`);
+    console.log(`🔧 创建MySQL数据库适配器...`);
 
-    if (dbConfig.type === 'mysql') {
-      return await this.createMySQLAdapter(dbConfig);
-    } else {
-      return await this.createSQLiteAdapter(dbConfig);
+    if (dbConfig.type !== 'mysql') {
+      throw new Error(`不支持的数据库类型: ${dbConfig.type}，仅支持MySQL`);
     }
+
+    return await this.createMySQLAdapter(dbConfig);
   }
 
   /**
-   * 创建MySQL适配器（带重试和回退机制）
+   * 创建MySQL适配器（带重试机制）
    */
   private static async createMySQLAdapter(config: DatabaseConnectionConfig): Promise<DatabaseAdapter> {
     const adapter = new MySQLAdapter();
@@ -45,34 +42,9 @@ export class DatabaseAdapterFactory {
       this.retryCount = 0; // 重置重试计数
       return adapter;
     } catch (error) {
-      console.warn('⚠️ MySQL连接失败，尝试回退到SQLite:', (error as Error).message);
-      
-      // 自动回退到SQLite
-      const sqliteConfig = { type: 'sqlite' as const, path: ':memory:' };
-      return await this.createSQLiteAdapter(sqliteConfig);
+      console.error('❌ MySQL连接失败:', (error as Error).message);
+      throw error;
     }
-  }
-
-  /**
-   * 创建SQLite适配器
-   */
-  private static async createSQLiteAdapter(config: DatabaseConnectionConfig): Promise<DatabaseAdapter> {
-    // 动态导入SQLite适配器
-    if (!SQLiteAdapter) {
-      try {
-        const module = await import('./sqlite-adapter.js');
-        SQLiteAdapter = module.SQLiteAdapter;
-      } catch (error) {
-        // 如果SQLite适配器不存在，使用现有的database.js
-        const module = await import('./database.js');
-        SQLiteAdapter = module.default;
-      }
-    }
-
-    const adapter = new SQLiteAdapter();
-    await adapter.connect(config);
-    console.log('✅ SQLite数据库适配器创建成功');
-    return adapter;
   }
 
   /**
@@ -164,7 +136,7 @@ export class DatabaseAdapterFactory {
    */
   static async testConnection(config?: DatabaseConnectionConfig): Promise<{
     success: boolean;
-    type: 'mysql' | 'sqlite';
+    type: 'mysql';
     connectionInfo: string;
     error?: string;
   }> {
@@ -174,7 +146,7 @@ export class DatabaseAdapterFactory {
       const adapter = await this.createAdapter(dbConfig);
       const result = {
         success: true,
-        type: adapter.getType(),
+        type: 'mysql' as const,
         connectionInfo: adapter.getConnectionInfo()
       };
       
@@ -185,7 +157,7 @@ export class DatabaseAdapterFactory {
     } catch (error) {
       return {
         success: false,
-        type: dbConfig.type,
+        type: 'mysql' as const,
         connectionInfo: DatabaseConfigManager.getConnectionString(dbConfig),
         error: (error as Error).message
       };
@@ -196,13 +168,8 @@ export class DatabaseAdapterFactory {
    * 获取推荐的数据库配置
    */
   static getRecommendedConfig(): DatabaseConnectionConfig {
-    // 检查环境变量，优先使用MySQL
-    if (process.env.TEST_DB_TYPE === 'mysql' || process.env.NODE_ENV === 'development') {
-      return DatabaseConfigManager.getTestConfig();
-    }
-    
-    // 默认使用SQLite
-    return { type: 'sqlite', path: ':memory:' };
+    // 仅支持MySQL
+    return DatabaseConfigManager.getTestConfig();
   }
 
   /**

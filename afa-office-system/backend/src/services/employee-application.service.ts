@@ -10,14 +10,10 @@ import type { EmployeeApplication } from '../types/index.js';
  */
 export class EmployeeApplicationService {
   private employeeApplicationModel: EmployeeApplicationModel;
-  private userModel: UserModel;
-  private merchantModel: MerchantModel;
   private employeeService: EmployeeService;
 
   constructor() {
     this.employeeApplicationModel = new EmployeeApplicationModel();
-    this.userModel = new UserModel();
-    this.merchantModel = new MerchantModel();
     this.employeeService = new EmployeeService();
   }
 
@@ -41,13 +37,13 @@ export class EmployeeApplicationService {
     }
   ): Promise<EmployeeApplication> {
     // 验证申请人是否存在
-    const applicant = await this.userModel.findById(applicantId);
+    const applicant = await UserModel.findById(applicantId);
     if (!applicant) {
       throw new Error('申请人不存在');
     }
 
     // 验证商户是否存在且状态正常
-    const merchant = await this.merchantModel.findById(applicationData.merchantId);
+    const merchant = await MerchantModel.findById(applicationData.merchantId);
     if (!merchant) {
       throw new Error('目标商户不存在');
     }
@@ -171,7 +167,7 @@ export class EmployeeApplicationService {
     limit: number;
   }> {
     // 验证商户是否存在
-    const merchant = await this.merchantModel.findById(merchantId);
+    const merchant = await MerchantModel.findById(merchantId);
     if (!merchant) {
       throw new Error('商户不存在');
     }
@@ -202,14 +198,14 @@ export class EmployeeApplicationService {
     }
 
     // 验证审批人权限
-    const approver = await this.userModel.findById(approvedBy);
+    const approver = await UserModel.findById(approvedBy);
     if (!approver) {
       throw new Error('审批人不存在');
     }
 
     // 检查审批人是否有权限审批该商户的申请
-    if (approver.userType !== 'tenant_admin' && 
-        (approver.userType !== 'merchant_admin' || approver.merchantId !== application.merchantId)) {
+    if (approver.user_type !== 'tenant_admin' && 
+        (approver.user_type !== 'merchant_admin' || approver.merchant_id !== application.merchantId)) {
       throw new Error('您没有权限审批此申请');
     }
 
@@ -253,15 +249,15 @@ export class EmployeeApplicationService {
    */
   private async createEmployeeFromApplication(application: EmployeeApplication): Promise<void> {
     // 获取申请人信息
-    const applicant = await this.userModel.findById(application.applicantId);
+    const applicant = await UserModel.findById(application.applicantId);
     if (!applicant) {
       throw new Error('申请人不存在');
     }
 
     // 更新用户类型为员工，并关联到商户
-    await this.userModel.update(application.applicantId, {
-      userType: 'employee',
-      merchantId: application.merchantId,
+    await UserModel.update(application.applicantId, {
+      user_type: 'employee',
+      merchant_id: application.merchantId,
       name: application.name,
       phone: application.phone,
       status: 'active'
@@ -269,11 +265,9 @@ export class EmployeeApplicationService {
 
     // 创建员工记录
     await this.employeeService.createEmployee(application.merchantId, {
-      userId: application.applicantId,
       name: application.name,
       phone: application.phone,
-      department: application.department,
-      position: application.position,
+      user_type: 'employee',
       status: 'active'
     });
   }
@@ -323,7 +317,7 @@ export class EmployeeApplicationService {
   ): Promise<{ verified: boolean; message?: string }> {
     try {
       // 获取申请人的微信信息
-      const applicant = await this.userModel.findById(applicantId);
+      const applicant = await UserModel.findById(applicantId);
       if (!applicant) {
         return { verified: false, message: '用户不存在' };
       }

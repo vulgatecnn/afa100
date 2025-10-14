@@ -74,6 +74,8 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+        with:
+          fetch-depth: 0
 
       - name: 设置Node.js
         uses: actions/setup-node@v4
@@ -142,6 +144,8 @@ jobs:
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: 设置Node.js
         uses: actions/setup-node@v4
@@ -225,8 +229,58 @@ jobs:
         run: |
           cp .env.test .env
           echo "初始化测试数据库结构..."
-          # 使用修复后的脚本初始化数据库
-          node ../../../scripts/fix-mysql-connection.cjs || {
+          # 直接在工作流中执行数据库初始化
+          npm install mysql2 dotenv
+          node -e "
+            const mysql = require('mysql2/promise');
+            async function initDB() {
+              try {
+                console.log('🔧 开始初始化测试数据库...');
+                
+                // 创建连接
+                const connection = await mysql.createConnection({
+                  host: process.env.DB_HOST,
+                  port: parseInt(process.env.DB_PORT),
+                  user: 'root',
+                  password: process.env.MYSQL_ROOT_PASSWORD
+                });
+                
+                // 创建测试数据库
+                await connection.execute(\`CREATE DATABASE IF NOT EXISTS \`\${process.env.MYSQL_DATABASE}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci\`);
+                console.log('✅ 测试数据库创建成功');
+                
+                // 创建测试用户
+                await connection.execute(\`CREATE USER IF NOT EXISTS '\${process.env.MYSQL_USER}'@'%' IDENTIFIED BY '\${process.env.MYSQL_PASSWORD}'\`);
+                console.log('✅ 测试用户创建成功');
+                
+                // 授予权限
+                await connection.execute(\`GRANT ALL PRIVILEGES ON \`\${process.env.MYSQL_DATABASE}\`.* TO '\${process.env.MYSQL_USER}'@'%'\`);
+                await connection.execute('FLUSH PRIVILEGES');
+                console.log('✅ 权限授予成功');
+                
+                // 验证连接
+                const testConnection = await mysql.createConnection({
+                  host: process.env.DB_HOST,
+                  port: parseInt(process.env.DB_PORT),
+                  user: process.env.MYSQL_USER,
+                  password: process.env.MYSQL_PASSWORD,
+                  database: process.env.MYSQL_DATABASE
+                });
+                
+                await testConnection.execute('SELECT 1 as test');
+                console.log('✅ 测试用户连接验证成功');
+                
+                await testConnection.end();
+                await connection.end();
+                
+                console.log('🎉 数据库初始化完成!');
+              } catch (error) {
+                console.error('❌ 数据库初始化失败:', error.message);
+                process.exit(1);
+              }
+            }
+            initDB();
+          " || {
             echo "数据库初始化失败"
             exit 1
           }
@@ -298,6 +352,8 @@ jobs:
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: 设置Node.js
         uses: actions/setup-node@v4
@@ -410,6 +466,8 @@ jobs:
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: 设置Node.js
         uses: actions/setup-node@v4
@@ -552,6 +610,8 @@ jobs:
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: 设置Node.js
         uses: actions/setup-node@v4
@@ -641,6 +701,8 @@ jobs:
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: 下载所有测试报告
         uses: actions/download-artifact@v4

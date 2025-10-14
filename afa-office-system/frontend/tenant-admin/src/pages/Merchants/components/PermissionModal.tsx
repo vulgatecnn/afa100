@@ -56,7 +56,7 @@ const PermissionModal: React.FC<PermissionModalProps> = ({
     return nodes.map(node => ({
       key: `${node.type}_${node.id}`,
       title: `${node.title} (${node.type === 'project' ? '项目' : node.type === 'venue' ? '场地' : '楼层'})`,
-      children: node.children ? convertToTreeData(node.children) : undefined,
+      children: node.children ? convertToTreeData(node.children) : [],
       disabled: node.status === 'inactive'
     }))
   }

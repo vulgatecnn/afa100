@@ -29,10 +29,10 @@ export interface UpdateMerchantData extends Partial<CreateMerchantData> {
 }
 
 export interface MerchantListParams {
-  page?: number
-  pageSize?: number
-  search?: string
-  status?: 'active' | 'inactive'
+  page?: number | undefined
+  pageSize?: number | undefined
+  search?: string | undefined
+  status?: 'active' | 'inactive' | undefined
 }
 
 export interface MerchantListResponse {

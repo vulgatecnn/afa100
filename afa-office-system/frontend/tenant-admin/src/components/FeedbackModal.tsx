@@ -46,7 +46,7 @@ interface FeedbackModalProps {
   onCancel: () => void
   onSubmit?: (feedback: UserFeedback) => void
   initialType?: 'bug' | 'suggestion' | 'complaint' | 'praise'
-  errorContext?: Record<string, any>
+  errorContext?: Record<string, any> | undefined
 }
 
 export const FeedbackModal: React.FC<FeedbackModalProps> = ({
@@ -155,14 +155,16 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({
     try {
       // 处理上传的文件
       let screenshot = ''
-      if (fileList.length > 0 && fileList[0].originFileObj) {
+      if (fileList.length > 0 && fileList[0]?.originFileObj) {
         // 将图片转换为 base64
         const file = fileList[0].originFileObj
-        const reader = new FileReader()
-        screenshot = await new Promise((resolve) => {
-          reader.onload = () => resolve(reader.result as string)
-          reader.readAsDataURL(file)
-        })
+        if (file) {
+          const reader = new FileReader()
+          screenshot = await new Promise((resolve) => {
+            reader.onload = () => resolve(reader.result as string)
+            reader.readAsDataURL(file)
+          })
+        }
       }
 
       const feedback: UserFeedback = {

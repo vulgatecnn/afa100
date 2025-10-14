@@ -179,7 +179,7 @@ export class ErrorBoundary extends Component<Props, State> {
               </Paragraph>
 
               {/* 开发环境显示详细错误信息 */}
-              {process.env.NODE_ENV === 'development' && this.state.error && (
+              {process.env['NODE_ENV'] === 'development' && this.state.error && (
                 <Collapse ghost>
                   <Panel header="错误详情（开发模式）" key="error-details">
                     <Paragraph>

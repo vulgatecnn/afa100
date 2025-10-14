@@ -76,12 +76,17 @@ export const uploadFile = async (
   const formData = new FormData()
   formData.append('file', file)
 
-  return apiClient.post('/upload', formData, {
+  const config: AxiosRequestConfig = {
     headers: {
       'Content-Type': 'multipart/form-data'
-    },
-    onUploadProgress: onProgress
-  })
+    }
+  };
+
+  if (onProgress) {
+    config.onUploadProgress = onProgress;
+  }
+
+  return apiClient.post('/upload', formData, config)
 }
 
 // 批量上传

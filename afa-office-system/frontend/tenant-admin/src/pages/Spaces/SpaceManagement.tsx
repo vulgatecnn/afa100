@@ -106,7 +106,7 @@ const SpaceManagement: React.FC = () => {
               </Tag>
             </Space>
             <Dropdown
-              menu={{ items: getContextMenuItems(node) }}
+              menu={{ items: getContextMenuItems(node) || [] }}
               trigger={['click']}
             >
               <Button 
@@ -118,7 +118,7 @@ const SpaceManagement: React.FC = () => {
             </Dropdown>
           </div>
         ),
-        children: node.children ? convertToTreeData(node.children) : undefined,
+        children: node.children ? convertToTreeData(node.children) : [],
         isLeaf: !node.children || node.children.length === 0
       }
     })

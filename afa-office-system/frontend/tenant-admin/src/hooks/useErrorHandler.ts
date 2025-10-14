@@ -49,6 +49,9 @@ export function useErrorHandler(options: UseErrorHandlerOptions = {}): ErrorHand
         window.removeEventListener('offline', updateNetworkStatus)
       }
     }
+    
+    // 添加默认返回值
+    return () => {}
   }, [showNetworkStatus])
 
   // 处理错误

@@ -20,16 +20,16 @@ export interface AccessRecord {
 }
 
 export interface AccessRecordsParams {
-  page?: number
-  pageSize?: number
-  search?: string
-  userType?: 'employee' | 'visitor'
-  result?: 'success' | 'failed'
-  direction?: 'in' | 'out'
-  startDate?: string
-  endDate?: string
-  sortBy?: string
-  sortOrder?: 'asc' | 'desc'
+  page?: number | undefined
+  pageSize?: number | undefined
+  search?: string | undefined
+  userType?: 'employee' | 'visitor' | undefined
+  result?: 'success' | 'failed' | undefined
+  direction?: 'in' | 'out' | undefined
+  startDate?: string | undefined
+  endDate?: string | undefined
+  sortBy?: string | undefined
+  sortOrder?: 'asc' | 'desc' | undefined
 }
 
 export interface AccessRecordsResponse {

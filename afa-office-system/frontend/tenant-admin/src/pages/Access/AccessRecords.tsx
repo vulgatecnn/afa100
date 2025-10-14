@@ -45,13 +45,13 @@ const AccessRecords: React.FC = () => {
       
       const params: AccessRecordsParams = {
         page: currentPage,
-        pageSize,
+        pageSize: pageSize,
         search: searchText || undefined,
-        userType: userTypeFilter,
-        result: resultFilter,
-        direction: directionFilter,
-        startDate: dateRange?.[0]?.toISOString(),
-        endDate: dateRange?.[1]?.toISOString()
+        userType: userTypeFilter || undefined,
+        result: resultFilter || undefined,
+        direction: directionFilter || undefined,
+        startDate: dateRange?.[0]?.toISOString() || undefined,
+        endDate: dateRange?.[1]?.toISOString() || undefined
       }
       
       const response = await accessService.getAccessRecords(params)

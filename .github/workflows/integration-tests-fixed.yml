@@ -226,7 +226,7 @@ jobs:
           cp .env.test .env
           echo "初始化测试数据库结构..."
           # 使用修复后的脚本初始化数据库
-          node ../../scripts/fix-mysql-connection.js || {
+          node ../../../scripts/fix-mysql-connection.cjs || {
             echo "数据库初始化失败"
             exit 1
           }
@@ -455,7 +455,7 @@ jobs:
         run: |
           cp .env.e2e .env
           # 修复MySQL连接问题
-          node ../../scripts/fix-mysql-connection.js
+          node ../../../scripts/fix-mysql-connection.cjs
 
       - name: 构建应用
         run: |
@@ -584,7 +584,7 @@ jobs:
         run: |
           cp .env.e2e .env
           # 修复MySQL连接问题
-          node ../../scripts/fix-mysql-connection.js
+          node ../../../scripts/fix-mysql-connection.cjs
 
       - name: 构建应用
         working-directory: afa-office-system/backend

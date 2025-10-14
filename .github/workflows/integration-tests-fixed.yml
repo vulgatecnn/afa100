@@ -58,7 +58,7 @@ env:
   DB_NAME: 'afa_office_test'
   DB_USER: 'afa_test'
   DB_PASSWORD: 'test_password'
-  DB_ROOT_PASSWORD: 'test_password'
+  MYSQL_ROOT_USER: 'root'
 
 jobs:
   # 环境准备和依赖安装
@@ -72,8 +72,6 @@ jobs:
     steps:
       - name: 检出代码
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
         with:
           fetch-depth: 0
 
@@ -245,7 +243,7 @@ jobs:
             echo "测试用户连接验证失败"
             exit 1
           }
-          
+
           echo "✅ 数据库初始化完成!"
 
       - name: 代码质量检查
@@ -349,7 +347,7 @@ jobs:
           echo "清理可能的缓存..."
           rm -rf node_modules package-lock.json || true
           echo "安装依赖..."
-          pnpm install --no-frozen-lockfile
+          pnpm install --no-frozen-lockfile --force
           echo "检查关键依赖:"
           ls -la node_modules/@typescript-eslint/ || echo "@typescript-eslint 依赖未安装"
           ls -la node_modules/eslint/ || echo "eslint 依赖未安装"
@@ -382,7 +380,16 @@ jobs:
         run: |
           if [ -f "package.json" ] && grep -q "test" package.json; then
             echo "::group::前端单元测试"
-            pnpm test --run --reporter=verbose
+            pnpm test --reporter=verbose
+            echo "::endgroup::"
+          fi
+
+      - name: 生成前端测试覆盖率报告
+        working-directory: afa-office-system/frontend/${{ matrix.frontend }}
+        run: |
+          if [ -f "package.json" ] && grep -q "test:coverage" package.json; then
+            echo "::group::前端测试覆盖率"
+            pnpm test:coverage --reporter=verbose
             echo "::endgroup::"
           fi
 

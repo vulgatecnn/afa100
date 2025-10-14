@@ -18,17 +18,17 @@ async function fixMySQLConnection() {
   const mysqlConfig = {
     host: process.env.DB_HOST || '127.0.0.1',
     port: parseInt(process.env.DB_PORT || '3306'),
-    user: process.env.MYSQL_ADMIN_USER || process.env.DB_USER || 'root',
-    password: process.env.MYSQL_ADMIN_PASSWORD || process.env.DB_PASSWORD || 'test_password',
+    user: process.env.MYSQL_ROOT_USER || process.env.MYSQL_ADMIN_USER || process.env.DB_USER || 'root',
+    password: process.env.MYSQL_ROOT_PASSWORD || process.env.MYSQL_ADMIN_PASSWORD || process.env.DB_PASSWORD || 'test_password',
     database: process.env.DB_NAME || 'afa_office_test'
   };
   
   const testUserConfig = {
     host: process.env.DB_HOST || '127.0.0.1',
     port: parseInt(process.env.DB_PORT || '3306'),
-    user: process.env.TEST_DB_USER || 'afa_test',
-    password: process.env.TEST_DB_PASSWORD || 'test_password',
-    database: process.env.TEST_DB_NAME || 'afa_office_test'
+    user: process.env.TEST_DB_USER || process.env.DB_USER || process.env.MYSQL_USER || 'afa_test',
+    password: process.env.TEST_DB_PASSWORD || process.env.DB_PASSWORD || process.env.MYSQL_PASSWORD || 'test_password',
+    database: process.env.TEST_DB_NAME || process.env.DB_NAME || process.env.MYSQL_DATABASE || 'afa_office_test'
   };
   
   console.log('📋 管理员配置:', {

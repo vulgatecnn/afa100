@@ -40,14 +40,14 @@ export interface DatabaseConfig {
 // 环境特定的MySQL数据库配置
 export const dbConfig: Record<string, DatabaseConfig> = {
   development: {
-    host: process.env.APP_DB_HOST || '127.0.0.1',
-    port: parseInt(process.env.APP_DB_PORT || '3306'),
-    user: process.env.APP_DB_USER || 'afa_app_user',
-    password: process.env.APP_DB_PASSWORD || 'afa_app_2024',
-    database: process.env.APP_DB_NAME || 'afa_office',
-    connectionLimit: parseInt(process.env.APP_DB_CONNECTION_LIMIT || '10'),
-    acquireTimeout: parseInt(process.env.APP_DB_ACQUIRE_TIMEOUT || '60000'),
-    timeout: parseInt(process.env.APP_DB_TIMEOUT || '60000'),
+    host: process.env.APP_DB_HOST || process.env['DB_HOST'] || '127.0.0.1',
+    port: parseInt(process.env.APP_DB_PORT || process.env['DB_PORT'] || '3306'),
+    user: process.env.APP_DB_USER || process.env['DB_USER'] || 'afa_app_user',
+    password: process.env.APP_DB_PASSWORD || process.env['DB_PASSWORD'] || 'afa_app_2024',
+    database: process.env.APP_DB_NAME || process.env['DB_NAME'] || 'afa_office',
+    connectionLimit: parseInt(process.env.APP_DB_CONNECTION_LIMIT || process.env['DB_CONNECTION_LIMIT'] || '10'),
+    acquireTimeout: parseInt(process.env.APP_DB_ACQUIRE_TIMEOUT || process.env['DB_ACQUIRE_TIMEOUT'] || '60000'),
+    timeout: parseInt(process.env.APP_DB_TIMEOUT || process.env['DB_TIMEOUT'] || '60000'),
     multipleStatements: true,
     charset: 'utf8mb4',
     timezone: '+00:00',
@@ -73,14 +73,14 @@ export const dbConfig: Record<string, DatabaseConfig> = {
     },
   },
   test: {
-    host: process.env['TEST_DB_HOST'] || '127.0.0.1',
-    port: parseInt(process.env['TEST_DB_PORT'] || '3306'),
-    user: process.env['TEST_DB_USER'] || 'afa_test_user',
-    password: process.env['TEST_DB_PASSWORD'] || 'afa_test_2024',
-    database: process.env['TEST_DB_NAME'] || 'afa_office_test',
-    connectionLimit: parseInt(process.env['TEST_DB_CONNECTION_LIMIT'] || '5'),
-    acquireTimeout: parseInt(process.env['TEST_DB_ACQUIRE_TIMEOUT'] || '30000'),
-    timeout: parseInt(process.env['TEST_DB_TIMEOUT'] || '30000'),
+    host: process.env['TEST_DB_HOST'] || process.env['DB_HOST'] || '127.0.0.1',
+    port: parseInt(process.env['TEST_DB_PORT'] || process.env['DB_PORT'] || '3306'),
+    user: process.env['TEST_DB_USER'] || process.env['DB_USER'] || process.env['MYSQL_USER'] || 'afa_test_user',
+    password: process.env['TEST_DB_PASSWORD'] || process.env['DB_PASSWORD'] || process.env['MYSQL_PASSWORD'] || 'afa_test_2024',
+    database: process.env['TEST_DB_NAME'] || process.env['DB_NAME'] || process.env['MYSQL_DATABASE'] || 'afa_office_test',
+    connectionLimit: parseInt(process.env['TEST_DB_CONNECTION_LIMIT'] || process.env['DB_CONNECTION_LIMIT'] || '5'),
+    acquireTimeout: parseInt(process.env['TEST_DB_ACQUIRE_TIMEOUT'] || process.env['DB_ACQUIRE_TIMEOUT'] || '30000'),
+    timeout: parseInt(process.env['TEST_DB_TIMEOUT'] || process.env['DB_TIMEOUT'] || '30000'),
     multipleStatements: true,
     charset: 'utf8mb4',
     timezone: '+00:00',
@@ -106,14 +106,14 @@ export const dbConfig: Record<string, DatabaseConfig> = {
     },
   },
   production: {
-    host: process.env.APP_DB_HOST || '127.0.0.1',
-    port: parseInt(process.env.APP_DB_PORT || '3306'),
-    user: process.env.APP_DB_USER || 'afa_app_user',
-    password: process.env.APP_DB_PASSWORD || 'afa_app_2024',
-    database: process.env.APP_DB_NAME || 'afa_office',
-    connectionLimit: parseInt(process.env.APP_DB_CONNECTION_LIMIT || '20'),
-    acquireTimeout: parseInt(process.env.APP_DB_ACQUIRE_TIMEOUT || '60000'),
-    timeout: parseInt(process.env.APP_DB_TIMEOUT || '60000'),
+    host: process.env.APP_DB_HOST || process.env['DB_HOST'] || '127.0.0.1',
+    port: parseInt(process.env.APP_DB_PORT || process.env['DB_PORT'] || '3306'),
+    user: process.env.APP_DB_USER || process.env['DB_USER'] || process.env['MYSQL_USER'] || 'afa_app_user',
+    password: process.env.APP_DB_PASSWORD || process.env['DB_PASSWORD'] || process.env['MYSQL_PASSWORD'] || 'afa_app_2024',
+    database: process.env.APP_DB_NAME || process.env['DB_NAME'] || process.env['MYSQL_DATABASE'] || 'afa_office',
+    connectionLimit: parseInt(process.env.APP_DB_CONNECTION_LIMIT || process.env['DB_CONNECTION_LIMIT'] || '20'),
+    acquireTimeout: parseInt(process.env.APP_DB_ACQUIRE_TIMEOUT || process.env['DB_ACQUIRE_TIMEOUT'] || '60000'),
+    timeout: parseInt(process.env.APP_DB_TIMEOUT || process.env['DB_TIMEOUT'] || '60000'),
     multipleStatements: true,
     charset: 'utf8mb4',
     timezone: '+00:00',
@@ -151,20 +151,20 @@ export const getCurrentDbConfig = (): DatabaseConfig => {
   const dynamicConfig: DatabaseConfig = {
     ...baseConfig,
     host: env === 'test' 
-      ? (process.env['TEST_DB_HOST'] || baseConfig.host)
-      : (process.env.APP_DB_HOST || baseConfig.host),
+      ? (process.env['TEST_DB_HOST'] || process.env['DB_HOST'] || baseConfig.host)
+      : (process.env.APP_DB_HOST || process.env['DB_HOST'] || baseConfig.host),
     port: env === 'test'
-      ? parseInt(process.env['TEST_DB_PORT'] || baseConfig.port.toString())
-      : parseInt(process.env.APP_DB_PORT || baseConfig.port.toString()),
+      ? parseInt(process.env['TEST_DB_PORT'] || process.env['DB_PORT'] || baseConfig.port.toString())
+      : parseInt(process.env.APP_DB_PORT || process.env['DB_PORT'] || baseConfig.port.toString()),
     user: env === 'test'
-      ? (process.env['TEST_DB_USER'] || baseConfig.user)
-      : (process.env.APP_DB_USER || baseConfig.user),
+      ? (process.env['TEST_DB_USER'] || process.env['DB_USER'] || process.env['MYSQL_USER'] || baseConfig.user)
+      : (process.env.APP_DB_USER || process.env['DB_USER'] || process.env['MYSQL_USER'] || baseConfig.user),
     password: env === 'test'
-      ? (process.env['TEST_DB_PASSWORD'] || baseConfig.password)
-      : (process.env.APP_DB_PASSWORD || baseConfig.password),
+      ? (process.env['TEST_DB_PASSWORD'] || process.env['DB_PASSWORD'] || process.env['MYSQL_PASSWORD'] || baseConfig.password)
+      : (process.env.APP_DB_PASSWORD || process.env['DB_PASSWORD'] || process.env['MYSQL_PASSWORD'] || baseConfig.password),
     database: env === 'test'
-      ? (process.env['TEST_DB_NAME'] || baseConfig.database)
-      : (process.env.APP_DB_NAME || baseConfig.database),
+      ? (process.env['TEST_DB_NAME'] || process.env['DB_NAME'] || process.env['MYSQL_DATABASE'] || baseConfig.database)
+      : (process.env.APP_DB_NAME || process.env['DB_NAME'] || process.env['MYSQL_DATABASE'] || baseConfig.database),
   };
   
   return dynamicConfig;

@@ -233,7 +233,7 @@ export class MerchantModel {
    */
   static async updateSettings(id: number, settings: MerchantSettings): Promise<Merchant> {
     const settingsJson = JSON.stringify(settings);
-    return await this.update(id, { settings: settingsJson });
+    return await this.update(id, { settings: settingsJson as any });
   }
 
   /**
@@ -260,7 +260,7 @@ export class MerchantModel {
    */
   static async updateSubscription(id: number, subscription: MerchantSubscription): Promise<Merchant> {
     const subscriptionJson = JSON.stringify(subscription);
-    return await this.update(id, { subscription: subscriptionJson });
+    return await this.update(id, { subscription: subscriptionJson as any });
   }
 
   /**
@@ -292,7 +292,7 @@ export class MerchantModel {
       isActive: isActive && !isExpired,
       isExpired,
       daysRemaining
-    };
+    } as { isActive: boolean; isExpired: boolean; daysRemaining?: number };
   }
 
   /**

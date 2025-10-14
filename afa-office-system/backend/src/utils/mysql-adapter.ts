@@ -608,7 +608,7 @@ export class MySQLAdapter implements DatabaseAdapter {
     const lines = schema.split('\n');
     
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i] ? lines[i].trim() : '';
+      const line = lines[i] ? lines[i]!.trim() : '';
       
       // 跳过空行和注释
       if (!line || line.startsWith('--') || line.startsWith('PRAGMA')) {
@@ -647,7 +647,7 @@ export class MySQLAdapter implements DatabaseAdapter {
     }
     
     // 处理最后一个语句（如果没有分隔符结尾）
-    if (currentStatement.trim()) {
+    if (currentStatement && currentStatement.trim()) {
       statements.push(currentStatement.trim());
     }
     

@@ -943,7 +943,7 @@ export interface LoginData {
 
 // 类型转换工具函数
 export function convertApiToDbAccessRecord(apiData: CreateAccessRecordApiData): CreateAccessRecordData {
-  return {
+  const result = {
     user_id: apiData.userId,
     passcode_id: apiData.passcodeId,
     device_id: apiData.deviceId,
@@ -958,12 +958,14 @@ export function convertApiToDbAccessRecord(apiData: CreateAccessRecordApiData): 
     floor_id: apiData.floorId,
     context: apiData.context,
     timestamp: apiData.timestamp,
-    verification: apiData.verification,
+    verification: apiData.verification
   };
+  
+  return result as CreateAccessRecordData;
 }
 
 export function convertDbToApiAccessRecord(dbData: CreateAccessRecordData): CreateAccessRecordApiData {
-  return {
+  const result = {
     userId: dbData.user_id,
     passcodeId: dbData.passcode_id,
     deviceId: dbData.device_id,
@@ -978,13 +980,19 @@ export function convertDbToApiAccessRecord(dbData: CreateAccessRecordData): Crea
     floorId: dbData.floor_id,
     context: dbData.context,
     timestamp: dbData.timestamp,
-    verification: dbData.verification,
+    verification: dbData.verification ? {
+      isVerified: dbData.verification.isVerified,
+      verifiedBy: dbData.verification.verifiedBy,
+      verifiedAt: dbData.verification.verifiedAt,
+      verificationMethod: dbData.verification.verificationMethod
+    } : null
   };
+  
+  return result as CreateAccessRecordApiData;
 }
 
 // Export API types from api.ts
 export type {
-  AuthenticatedRequest,
   ControllerMethod,
   AsyncControllerMethod,
   SyncControllerMethod,
@@ -1010,7 +1018,6 @@ export type {
   UserListQuery,
   CreateMerchantRequest,
   UpdateMerchantRequest,
-  MerchantListQuery,
   AssignPermissionsRequest,
   CreateEmployeeRequest,
   UpdateEmployeeRequest,

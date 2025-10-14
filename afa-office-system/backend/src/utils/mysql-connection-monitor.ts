@@ -334,7 +334,7 @@ export class MySQLConnectionMonitor extends EventEmitter {
    */
   private recordError(error: Error): void {
     const mysqlError = error as any;
-    const connectionError: ConnectionError = {
+    const connectionError = {
       code: mysqlError.code || 'UNKNOWN',
       errno: mysqlError.errno,
       sqlState: mysqlError.sqlState,
@@ -344,7 +344,7 @@ export class MySQLConnectionMonitor extends EventEmitter {
       fatal: this.isFatalError(mysqlError.code),
       retryable: this.isRetryableError(mysqlError.code),
       suggestion: this.getErrorSuggestion(mysqlError.code)
-    };
+    } as ConnectionError;
 
     this.errorHistory.push(connectionError);
     this.statistics.errors++;

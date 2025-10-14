@@ -91,13 +91,13 @@ export class Logger {
       return;
     }
 
-    const logEntry: LogEntry = {
+    const logEntry = {
       level,
       message,
       timestamp: new Date().toISOString(),
       context,
       error
-    };
+    } as LogEntry;
 
     if (this.config.enableConsole) {
       this.logToConsole(logEntry);

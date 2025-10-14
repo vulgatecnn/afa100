@@ -113,7 +113,7 @@ export class MySQLConnectionManager {
    * 创建连接池
    */
   private async createConnectionPool(): Promise<void> {
-    const poolConfig: mysql.PoolOptions = {
+    const poolConfig = {
       host: this.config.host,
       port: this.config.port,
       user: this.config.user,
@@ -144,7 +144,7 @@ export class MySQLConnectionManager {
       // 调试配置
       debug: this.config.debug || false,
       trace: this.config.trace || false
-    };
+    } as mysql.PoolOptions;
 
     this.pool = mysql.createPool(poolConfig);
     

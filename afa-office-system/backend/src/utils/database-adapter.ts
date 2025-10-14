@@ -195,8 +195,8 @@ export class DatabaseConfigManager {
     const dbType = process.env.TEST_DB_TYPE || 'sqlite';
     
     if (dbType === 'mysql') {
-      return {
-        type: 'mysql',
+      const config = {
+        type: 'mysql' as const,
         host: process.env['TEST_DB_HOST'] || '127.0.0.1',
         port: parseInt(process.env['TEST_DB_PORT'] || '3306'),
         user: process.env['TEST_DB_USER'] || 'root',
@@ -208,13 +208,15 @@ export class DatabaseConfigManager {
         charset: 'utf8mb4',
         timezone: '+00:00'
       };
+      return config as DatabaseConnectionConfig;
     }
     
     // 默认SQLite配置
-    return {
-      type: 'sqlite',
+    const sqliteConfig = {
+      type: 'sqlite' as const,
       path: process.env.DB_TEST_PATH || ':memory:'
     };
+    return sqliteConfig as DatabaseConnectionConfig;
   }
   
   /**

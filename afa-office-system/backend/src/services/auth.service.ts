@@ -61,9 +61,9 @@ export class AuthService {
       throw new Error('账户已被锁定，请稍后再试');
     }
 
-    let user: User | undefined;
-
     try {
+      let user: User | null = null;
+      
       if (openId) {
         // 微信登录
         user = await UserModel.findByOpenId(openId);
@@ -89,6 +89,11 @@ export class AuthService {
         throw new Error('密码登录功能暂未开放，请使用微信登录');
       } else {
         throw new Error('请提供有效的登录凭据');
+      }
+
+      // 确保user不为null
+      if (!user) {
+        throw new Error('用户不存在');
       }
 
       // 对于微信登录，检查用户状态
@@ -133,12 +138,23 @@ export class AuthService {
       
       if (!existingUser) {
         // 新用户注册
-        user = await this.wechatService.registerWechatUser({
+        // 构建注册数据，处理可选字段
+        const registrationData: any = {
           openId,
-          unionId,
           userType,
-          userInfo,
-        });
+        };
+        
+        // 只有当unionId定义了才添加
+        if (unionId !== undefined) {
+          registrationData.unionId = unionId;
+        }
+        
+        // 只有当userInfo定义了才添加
+        if (userInfo !== undefined) {
+          registrationData.userInfo = userInfo;
+        }
+        
+        user = await this.wechatService.registerWechatUser(registrationData);
         isNewUser = true;
       } else {
         user = existingUser;
@@ -314,9 +330,14 @@ export class AuthService {
     // 解析时间字符串（如 "24h", "7d", "3600"）
     if (typeof expiresIn === 'string') {
       const match = expiresIn.match(/^(\d+)([hdm]?)$/);
-      if (match) {
-        const value = parseInt(match[1]);
+      if (match && match[1]) {
+        const value = parseInt(match[1], 10);
         const unit = match[2];
+        
+        // 检查转换是否成功
+        if (isNaN(value)) {
+          return 24 * 3600; // 默认24小时
+        }
         
         switch (unit) {
           case 'h':

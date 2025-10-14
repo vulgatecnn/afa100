@@ -329,7 +329,7 @@ export class MySQLInitializationManager {
    * 初始化结构
    */
   private async initializeSchema(): Promise<SchemaInitializationResult> {
-    const schemaConfig: Partial<SchemaInitializationConfig> = {
+    const schemaConfig = {
       schemaFilePath: this.initConfig.schema.schemaFilePath,
       seedDataFilePath: this.initConfig.schema.seedDataFilePath,
       dropExistingObjects: this.initConfig.schema.dropExistingObjects,
@@ -342,7 +342,7 @@ export class MySQLInitializationManager {
       validateStructure: this.initConfig.validation.validateSchema,
       enableLogging: this.initConfig.logging.enableLogging,
       logLevel: this.initConfig.logging.logLevel
-    };
+    } as Partial<SchemaInitializationConfig>;
 
     const schemaInitializer = new MySQLSchemaInitializer(this.config, schemaConfig);
     return await schemaInitializer.initializeSchema();
@@ -362,6 +362,11 @@ export class MySQLInitializationManager {
       users: false,
       schema: false,
       connections: false
+    } as {
+      database: boolean;
+      users: boolean;
+      schema: boolean;
+      connections: boolean;
     };
 
     try {
@@ -475,7 +480,7 @@ export class MySQLInitializationManager {
       estimatedTimeRemaining: 0,
       errors: [],
       warnings: []
-    };
+    } as InitializationStatus;
     this.clearLogs();
   }
 
@@ -643,7 +648,7 @@ export async function quickCompleteInitialization(
     database: databaseName
   };
 
-  const initConfig: Partial<CompleteInitializationConfig> = {
+  const initConfig = {
     database: {
       name: databaseName,
       charset: 'utf8mb4',
@@ -657,7 +662,7 @@ export async function quickCompleteInitialization(
       dropExistingObjects: options.dropIfExists || false
     },
     users: options.createTestUsers !== false ? undefined : [] // 使用默认用户或不创建用户
-  };
+  } as Partial<CompleteInitializationConfig>;
 
   const manager = createMySQLInitializationManager(mysqlConfig, initConfig);
   return await manager.initializeComplete();

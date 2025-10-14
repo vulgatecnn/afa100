@@ -6,7 +6,7 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import crypto from 'crypto';
-import { FileModel } from '../models/file.model.js';
+import { FileModel, type FileQueryOptions, type CreateFileData } from '../models/file.model.js';
 import { AppError, ErrorCodes } from '../middleware/error.middleware.js';
 import { appConfig } from '../config/app.config.js';
 import type { UploadedFile } from '../types/index.js';
@@ -76,21 +76,33 @@ export class FileService {
       // 保存文件到磁盘
       await fs.writeFile(filePath, file.buffer);
 
-      // 保存文件信息到数据库
-      const fileInfo = await FileModel.create({
+      // 构建创建文件数据对象，只包含定义了的可选字段
+      const createData: CreateFileData = {
         id: fileId,
         originalName: file.originalname,
         fileName,
         mimeType: file.mimetype,
         size: file.size,
         userId: metadata.userId,
-        category: metadata.category,
-        description: metadata.description,
         isPublic: metadata.isPublic || false,
         filePath
-      });
+      };
 
-      return {
+      // 只有当category定义了才添加
+      if (metadata.category !== undefined) {
+        createData.category = metadata.category;
+      }
+
+      // 只有当description定义了才添加
+      if (metadata.description !== undefined) {
+        createData.description = metadata.description;
+      }
+
+      // 保存文件信息到数据库
+      const fileInfo = await FileModel.create(createData);
+
+      // 构建返回对象，处理可选字段
+      const result: FileInfo = {
         id: fileInfo.id,
         originalName: fileInfo.original_name,
         fileName: fileInfo.file_name,
@@ -98,10 +110,20 @@ export class FileService {
         size: fileInfo.size,
         uploadedAt: fileInfo.created_at,
         userId: fileInfo.user_id,
-        category: fileInfo.category,
-        description: fileInfo.description,
         isPublic: fileInfo.is_public
       };
+
+      // 只有当category存在时才添加
+      if (fileInfo.category !== null && fileInfo.category !== undefined) {
+        result.category = fileInfo.category;
+      }
+
+      // 只有当description存在时才添加
+      if (fileInfo.description !== null && fileInfo.description !== undefined) {
+        result.description = fileInfo.description;
+      }
+
+      return result;
     } catch (error) {
       // 如果数据库操作失败，删除已上传的文件
       try {
@@ -122,7 +144,8 @@ export class FileService {
       return null;
     }
 
-    return {
+    // 构建返回对象，处理可选字段
+    const result: FileInfo = {
       id: fileRecord.id,
       originalName: fileRecord.original_name,
       fileName: fileRecord.file_name,
@@ -130,9 +153,74 @@ export class FileService {
       size: fileRecord.size,
       uploadedAt: fileRecord.created_at,
       userId: fileRecord.user_id,
-      category: fileRecord.category,
-      description: fileRecord.description,
       isPublic: fileRecord.is_public
+    };
+
+    // 只有当category存在时才添加
+    if (fileRecord.category !== null && fileRecord.category !== undefined) {
+      result.category = fileRecord.category;
+    }
+
+    // 只有当description存在时才添加
+    if (fileRecord.description !== null && fileRecord.description !== undefined) {
+      result.description = fileRecord.description;
+    }
+
+    return result;
+  }
+
+  /**
+   * 获取用户文件列表
+   */
+  async getUserFiles(userId: number, options: FileListOptions): Promise<FileListResult> {
+    const { page, limit, type } = options;
+    const offset = (page - 1) * limit;
+
+    // 构建查询选项，处理可选字段
+    const queryOptions: FileQueryOptions = {
+      limit,
+      offset
+    };
+
+    // 只有当type不为undefined时才设置mimeType
+    if (type !== undefined) {
+      queryOptions.mimeType = type;
+    }
+
+    const result = await FileModel.findByUserId(userId, queryOptions);
+
+    const files: FileInfo[] = result.files.map(file => {
+      // 构建返回对象，处理可选字段
+      const fileInfo: FileInfo = {
+        id: file.id,
+        originalName: file.original_name,
+        fileName: file.file_name,
+        mimeType: file.mime_type,
+        size: file.size,
+        uploadedAt: file.created_at,
+        userId: file.user_id,
+        isPublic: file.is_public
+      };
+
+      // 只有当category存在时才添加
+      if (file.category !== null && file.category !== undefined) {
+        fileInfo.category = file.category;
+      }
+
+      // 只有当description存在时才添加
+      if (file.description !== null && file.description !== undefined) {
+        fileInfo.description = file.description;
+      }
+
+      return fileInfo;
+    });
+
+    return {
+      files,
+      total: result.total,
+      page,
+      limit,
+      totalPages: Math.ceil(result.total / limit)
     };
   }
 
@@ -214,41 +302,6 @@ export class FileService {
   }
 
   /**
-   * 获取用户文件列表
-   */
-  async getUserFiles(userId: number, options: FileListOptions): Promise<FileListResult> {
-    const { page, limit, type } = options;
-    const offset = (page - 1) * limit;
-
-    const result = await FileModel.findByUserId(userId, {
-      limit,
-      offset,
-      mimeType: type
-    });
-
-    const files = result.files.map(file => ({
-      id: file.id,
-      originalName: file.original_name,
-      fileName: file.file_name,
-      mimeType: file.mime_type,
-      size: file.size,
-      uploadedAt: file.created_at,
-      userId: file.user_id,
-      category: file.category,
-      description: file.description,
-      isPublic: file.is_public
-    }));
-
-    return {
-      files,
-      total: result.total,
-      page,
-      limit,
-      totalPages: Math.ceil(result.total / limit)
-    };
-  }
-
-  /**
    * 验证文件类型
    */
   private validateFileType(mimeType: string): void {
@@ -311,7 +364,16 @@ export class FileService {
     }
 
     const [, size, unit] = match;
-    return parseFloat(size) * units[unit];
+    if (!size || !unit) {
+      throw new Error(`无效的文件大小格式`);
+    }
+    
+    const unitValue = units[unit];
+    if (unitValue === undefined) {
+      throw new Error(`不支持的文件大小单位: ${unit}`);
+    }
+    
+    return parseFloat(size) * unitValue;
   }
 
   /**

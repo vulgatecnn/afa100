@@ -93,7 +93,7 @@ export class FileModel {
     `;
 
     const rows = await database.all<FileRecord>(sql, [id]);
-    return rows.length > 0 ? rows[0] : null;
+    return rows.length > 0 ? rows[0] as FileRecord : null;
   }
 
   /**
@@ -111,7 +111,7 @@ export class FileModel {
     // 查询总数
     const countSql = `SELECT COUNT(*) as total FROM files ${whereClause}`;
     const countResult = await database.all<{ total: number }>(countSql, params);
-    const total = countResult[0].total;
+    const total = countResult && countResult.length > 0 && countResult[0] ? countResult[0].total : 0;
 
     // 查询文件列表
     const sql = `
@@ -130,49 +130,6 @@ export class FileModel {
   }
 
   /**
-   * 删除文件记录
-   */
-  static async delete(id: string): Promise<void> {
-    const sql = 'DELETE FROM files WHERE id = ?';
-    await database.run(sql, [id]);
-  }
-
-  /**
-   * 更新文件信息
-   */
-  static async update(id: string, data: Partial<CreateFileData>): Promise<FileRecord | null> {
-    const updateFields: string[] = [];
-    const params: any[] = [];
-
-    if (data.description !== undefined) {
-      updateFields.push('description = ?');
-      params.push(data.description);
-    }
-
-    if (data.isPublic !== undefined) {
-      updateFields.push('is_public = ?');
-      params.push(data.isPublic ? 1 : 0);
-    }
-
-    if (data.category !== undefined) {
-      updateFields.push('category = ?');
-      params.push(data.category);
-    }
-
-    if (updateFields.length === 0) {
-      return FileModel.findById(id);
-    }
-
-    updateFields.push('updated_at = datetime(\'now\')');
-    params.push(id);
-
-    const sql = `UPDATE files SET ${updateFields.join(', ')} WHERE id = ?`;
-    await database.run(sql, params);
-
-    return FileModel.findById(id);
-  }
-
-  /**
    * 根据文件名查找文件
    */
   static async findByFileName(fileName: string): Promise<FileRecord | null> {
@@ -184,7 +141,7 @@ export class FileModel {
     `;
 
     const rows = await database.all<FileRecord>(sql, [fileName]);
-    return rows.length > 0 ? rows[0] : null;
+    return rows.length > 0 ? rows[0] as FileRecord : null;
   }
 
   /**
@@ -202,6 +159,8 @@ export class FileModel {
       WHERE user_id = ?
     `;
     const totalResult = await database.all<{ totalFiles: number; totalSize: number }>(totalSql, [userId]);
+    const totalFiles = totalResult && totalResult.length > 0 && totalResult[0] ? totalResult[0].totalFiles : 0;
+    const totalSize = totalResult && totalResult.length > 0 && totalResult[0] ? totalResult[0].totalSize : 0;
 
     // 按类型统计
     const typeSql = `
@@ -213,13 +172,17 @@ export class FileModel {
     const typeResult = await database.all<{ mime_type: string; count: number }>(typeSql, [userId]);
 
     const filesByType: { [mimeType: string]: number } = {};
-    typeResult.forEach(row => {
-      filesByType[row.mime_type] = row.count;
-    });
+    if (typeResult) {
+      typeResult.forEach(row => {
+        if (row) {
+          filesByType[row.mime_type] = row.count;
+        }
+      });
+    }
 
     return {
-      totalFiles: totalResult[0].totalFiles,
-      totalSize: totalResult[0].totalSize,
+      totalFiles,
+      totalSize,
       filesByType
     };
   }
@@ -236,5 +199,47 @@ export class FileModel {
 
     const result = await database.run(sql);
     return result.changes || 0;
+  }
+
+  /**
+   * 删除文件记录
+   */
+  static async delete(id: string): Promise<void> {
+    const sql = 'DELETE FROM files WHERE id = ?';
+    await database.run(sql, [id]);
+  }
+
+  /**
+   * 更新文件信息
+   */
+  static async update(id: string, data: Partial<CreateFileData>): Promise<FileRecord> {
+    const sql = `
+      UPDATE files
+      SET original_name = ?, file_name = ?, mime_type = ?, size = ?, user_id = ?,
+          category = ?, description = ?, is_public = ?, file_path = ?, updated_at = datetime('now')
+      WHERE id = ?
+    `;
+
+    const params = [
+      data.originalName || null,
+      data.fileName || null,
+      data.mimeType || null,
+      data.size || null,
+      data.userId || null,
+      data.category || null,
+      data.description || null,
+      data.isPublic !== undefined ? (data.isPublic ? 1 : 0) : null,
+      data.filePath || null,
+      id
+    ];
+
+    await database.run(sql, params);
+
+    const updatedFile = await FileModel.findById(id);
+    if (!updatedFile) {
+      throw new Error('文件更新失败');
+    }
+
+    return updatedFile;
   }
 }

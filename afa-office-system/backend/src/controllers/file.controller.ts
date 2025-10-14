@@ -1,14 +1,12 @@
-/**
- * 文件上传下载控制器
- * 处理文件上传、下载、删除等操作
- */
-
 import { Request, Response, NextFunction } from 'express';
 import { FileService } from '../services/file.service.js';
 import { AppError, ErrorCodes } from '../middleware/error.middleware.js';
-import type { UploadedFile } from '../types/index.js';
-import type { Express } from 'express';
+import type { ApiResponse, AuthenticatedRequest } from '../types/index.js';
 
+/**
+ * 文件控制器
+ * 处理文件上传、下载、管理等HTTP请求
+ */
 export class FileController {
   private fileService: FileService;
 
@@ -19,31 +17,35 @@ export class FileController {
   /**
    * 上传文件
    */
-  uploadFile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  uploadFile = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-      // 模拟存储空间不足
-      if (req.body.simulateStorageFull === 'true') {
-        throw new AppError('存储空间不足，无法上传文件', 507, ErrorCodes.SERVICE_UNAVAILABLE);
-      }
-
-      const file = req.file as Express.Multer.File;
-      if (!file) {
-        throw new AppError('未选择文件', 400, ErrorCodes.VALIDATION_ERROR);
-      }
-
       const userId = req.user?.id;
+      const files = req.files as Express.Multer.File[] | undefined;
+
       if (!userId) {
         throw new AppError('用户未认证', 401, ErrorCodes.UNAUTHORIZED);
       }
 
-      const metadata = req.body.metadata ? JSON.parse(req.body.metadata) : {};
-      
-      const result = await this.fileService.uploadFile(file, {
-        userId,
-        ...metadata
-      });
+      if (!files || files.length === 0) {
+        throw new AppError('请提供要上传的文件', 400, ErrorCodes.MISSING_REQUIRED_FIELD);
+      }
 
-      res.json({
+      // 处理单个文件上传
+      const file = files[0];
+      if (!file) {
+        throw new AppError('文件数据不完整', 400, ErrorCodes.MISSING_REQUIRED_FIELD);
+      }
+
+      const metadata = {
+        userId,
+        category: req.body.category,
+        description: req.body.description,
+        isPublic: req.body.isPublic === 'true'
+      };
+
+      const result = await this.fileService.uploadFile(file, metadata);
+
+      res.status(201).json({
         success: true,
         data: result,
         message: '文件上传成功',
@@ -57,27 +59,31 @@ export class FileController {
   /**
    * 下载文件
    */
-  downloadFile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  downloadFile = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const fileId = req.params['fileId'];
+      const fileIdParam = req.params['fileId'];
       const userId = req.user?.id;
+
+      if (!fileIdParam) {
+        throw new AppError('文件ID不能为空', 400, ErrorCodes.MISSING_REQUIRED_FIELD);
+      }
 
       if (!userId) {
         throw new AppError('用户未认证', 401, ErrorCodes.UNAUTHORIZED);
       }
 
-      const fileInfo = await this.fileService.getFileInfo(fileId);
+      const fileInfo = await this.fileService.getFileInfo(fileIdParam);
       if (!fileInfo) {
         throw new AppError('文件不存在', 404, ErrorCodes.NOT_FOUND);
       }
 
       // 检查文件访问权限
-      const hasAccess = await this.fileService.checkFileAccess(fileId, userId);
+      const hasAccess = await this.fileService.checkFileAccess(fileIdParam, userId);
       if (!hasAccess) {
         throw new AppError('无权访问此文件', 403, ErrorCodes.FORBIDDEN);
       }
 
-      const filePath = await this.fileService.getFilePath(fileId);
+      const filePath = await this.fileService.getFilePath(fileIdParam);
       
       res.setHeader('Content-Type', fileInfo.mimeType);
       res.setHeader('Content-Disposition', `attachment; filename="${fileInfo.originalName}"`);
@@ -90,22 +96,26 @@ export class FileController {
   /**
    * 获取文件信息
    */
-  getFileInfo = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getFileInfo = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const fileId = req.params['fileId'];
+      const fileIdParam = req.params['fileId'];
       const userId = req.user?.id;
+
+      if (!fileIdParam) {
+        throw new AppError('文件ID不能为空', 400, ErrorCodes.MISSING_REQUIRED_FIELD);
+      }
 
       if (!userId) {
         throw new AppError('用户未认证', 401, ErrorCodes.UNAUTHORIZED);
       }
 
-      const fileInfo = await this.fileService.getFileInfo(fileId);
+      const fileInfo = await this.fileService.getFileInfo(fileIdParam);
       if (!fileInfo) {
         throw new AppError('文件不存在', 404, ErrorCodes.NOT_FOUND);
       }
 
       // 检查文件访问权限
-      const hasAccess = await this.fileService.checkFileAccess(fileId, userId);
+      const hasAccess = await this.fileService.checkFileAccess(fileIdParam, userId);
       if (!hasAccess) {
         throw new AppError('无权访问此文件', 403, ErrorCodes.FORBIDDEN);
       }
@@ -124,27 +134,31 @@ export class FileController {
   /**
    * 删除文件
    */
-  deleteFile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  deleteFile = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const fileId = req.params['fileId'];
+      const fileIdParam = req.params['fileId'];
       const userId = req.user?.id;
+
+      if (!fileIdParam) {
+        throw new AppError('文件ID不能为空', 400, ErrorCodes.MISSING_REQUIRED_FIELD);
+      }
 
       if (!userId) {
         throw new AppError('用户未认证', 401, ErrorCodes.UNAUTHORIZED);
       }
 
-      const fileInfo = await this.fileService.getFileInfo(fileId);
+      const fileInfo = await this.fileService.getFileInfo(fileIdParam);
       if (!fileInfo) {
         throw new AppError('文件不存在', 404, ErrorCodes.NOT_FOUND);
       }
 
       // 检查文件删除权限
-      const canDelete = await this.fileService.checkFileDeletePermission(fileId, userId);
+      const canDelete = await this.fileService.checkFileDeletePermission(fileIdParam, userId);
       if (!canDelete) {
         throw new AppError('无权删除此文件', 403, ErrorCodes.FORBIDDEN);
       }
 
-      await this.fileService.deleteFile(fileId);
+      await this.fileService.deleteFile(fileIdParam);
 
       res.json({
         success: true,
@@ -160,7 +174,7 @@ export class FileController {
   /**
    * 获取用户文件列表
    */
-  getUserFiles = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+  getUserFiles = async (req: AuthenticatedRequest, res: Response, next: NextFunction): Promise<void> => {
     try {
       const userId = req.user?.id;
       if (!userId) {

@@ -523,21 +523,30 @@ export class VisitorService {
     }
 
     // 创建申请记录
-    const applicationData = {
+    // 构建申请数据，处理可选字段
+    const applicationData: any = {
       applicant_id: 0, // 临时设为0，实际应该从认证中获取用户ID
       merchant_id: data.merchantId,
-      visitee_id: data.visiteeId || undefined,
       visitor_name: data.visitorName,
       visitor_phone: data.visitorPhone,
-      visitor_company: data.visitorCompany || undefined,
       visit_purpose: data.visitPurpose,
-      visit_type: data.visitType,
+      visit_type: data.visitType || null, // 确保visit_type是正确的类型
       scheduled_time: data.scheduledTime.toISOString(),
       duration: data.duration,
-      status: 'pending' as const,
+      status: 'pending',
       usage_limit: 1, // 默认使用次数限制
       usage_count: 0
     };
+
+    // 只有当visiteeId定义了才添加
+    if (data.visiteeId !== undefined) {
+      applicationData.visitee_id = data.visiteeId;
+    }
+
+    // 只有当visitorCompany定义了才添加
+    if (data.visitorCompany !== undefined) {
+      applicationData.visitor_company = data.visitorCompany;
+    }
 
     const application = await VisitorApplicationModel.create(applicationData);
 

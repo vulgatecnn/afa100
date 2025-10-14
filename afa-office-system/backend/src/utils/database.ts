@@ -305,7 +305,10 @@ class Database {
         const results: DatabaseResult[] = [];
         
         for (let i = 0; i < queries.length; i++) {
-          const { sql, params = [] } = queries[i];
+          const query = queries[i];
+          if (!query) continue;
+          
+          const { sql, params = [] } = query;
           
           try {
             const [result] = await mysqlConnection.execute(sql, params);

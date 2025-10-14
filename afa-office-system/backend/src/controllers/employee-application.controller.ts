@@ -206,8 +206,17 @@ export class EmployeeApplicationController {
    */
   async getApplicationById(req: Request, res: Response): Promise<void> {
     try {
-      const applicationId = parseInt(req.params['applicationId']);
+      const applicationIdParam = req.params['applicationId'];
+      if (!applicationIdParam) {
+        res.status(400).json({
+          success: false,
+          message: '申请ID不能为空',
+          timestamp: new Date().toISOString()
+        } as ApiResponse);
+        return;
+      }
 
+      const applicationId = parseInt(applicationIdParam);
       if (isNaN(applicationId) || applicationId <= 0) {
         res.status(400).json({
           success: false,
@@ -241,10 +250,20 @@ export class EmployeeApplicationController {
    */
   async approveApplication(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const applicationId = parseInt(req.params['applicationId']);
+      const applicationIdParam = req.params['applicationId'];
       const { approved, reason } = req.body;
       const approvedBy = req.user?.id;
 
+      if (!applicationIdParam) {
+        res.status(400).json({
+          success: false,
+          message: '申请ID不能为空',
+          timestamp: new Date().toISOString()
+        } as ApiResponse);
+        return;
+      }
+
+      const applicationId = parseInt(applicationIdParam);
       if (isNaN(applicationId) || applicationId <= 0) {
         res.status(400).json({
           success: false,
@@ -301,8 +320,17 @@ export class EmployeeApplicationController {
    */
   async getApplicationStats(req: Request, res: Response): Promise<void> {
     try {
-      const merchantId = parseInt(req.params['merchantId']);
+      const merchantIdParam = req.params['merchantId'];
+      if (!merchantIdParam) {
+        res.status(400).json({
+          success: false,
+          message: '商户ID不能为空',
+          timestamp: new Date().toISOString()
+        } as ApiResponse);
+        return;
+      }
 
+      const merchantId = parseInt(merchantIdParam);
       if (isNaN(merchantId) || merchantId <= 0) {
         res.status(400).json({
           success: false,
@@ -335,9 +363,19 @@ export class EmployeeApplicationController {
    */
   async withdrawApplication(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const applicationId = parseInt(req.params['applicationId']);
+      const applicationIdParam = req.params['applicationId'];
       const userId = req.user?.id;
 
+      if (!applicationIdParam) {
+        res.status(400).json({
+          success: false,
+          message: '申请ID不能为空',
+          timestamp: new Date().toISOString()
+        } as ApiResponse);
+        return;
+      }
+
+      const applicationId = parseInt(applicationIdParam);
       if (isNaN(applicationId) || applicationId <= 0) {
         res.status(400).json({
           success: false,
@@ -360,7 +398,7 @@ export class EmployeeApplicationController {
 
       res.status(200).json({
         success: true,
-        message: '申请撤销成功',
+        message: '申请已撤销',
         timestamp: new Date().toISOString()
       } as ApiResponse);
     } catch (error) {

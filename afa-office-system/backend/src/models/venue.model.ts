@@ -588,8 +588,35 @@ export class VenueModel {
     const currentMinute = now.getMinutes();
     const currentTimeMinutes = currentHour * 60 + currentMinute;
 
-    const [startHour, startMinute] = settings.allowedHours.start.split(':').map(Number);
-    const [endHour, endMinute] = settings.allowedHours.end.split(':').map(Number);
+    const startParts = settings.allowedHours.start.split(':');
+    const endParts = settings.allowedHours.end.split(':');
+    
+    // 检查数组长度
+    if (startParts.length !== 2 || endParts.length !== 2) {
+      return false;
+    }
+    
+    // 获取小时和分钟字符串
+    const startHourStr = startParts[0];
+    const startMinuteStr = startParts[1];
+    const endHourStr = endParts[0];
+    const endMinuteStr = endParts[1];
+    
+    // 检查字符串是否存在
+    if (!startHourStr || !startMinuteStr || !endHourStr || !endMinuteStr) {
+      return false;
+    }
+    
+    // 转换并验证小时和分钟
+    const startHour = parseInt(startHourStr, 10);
+    const startMinute = parseInt(startMinuteStr, 10);
+    const endHour = parseInt(endHourStr, 10);
+    const endMinute = parseInt(endMinuteStr, 10);
+    
+    // 检查转换是否成功
+    if (isNaN(startHour) || isNaN(startMinute) || isNaN(endHour) || isNaN(endMinute)) {
+      return false;
+    }
     
     const startTimeMinutes = startHour * 60 + startMinute;
     const endTimeMinutes = endHour * 60 + endMinute;

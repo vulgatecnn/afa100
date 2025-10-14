@@ -91,20 +91,22 @@ export class AccessRecordService {
   }
 
   /**
-   * 获取通行记录列表
+   * 获取通行记录
    */
   static async getAccessRecords(query: AccessRecordQuery): Promise<PaginatedResponse<AccessRecord>> {
     const { page = 1, limit = 10 } = query;
     const records = await AccessRecordModel.findAll(query);
     
+    // 构建计数查询参数，过滤undefined值
+    const countQuery: any = {};
+    if (query.userId !== undefined) countQuery.userId = query.userId;
+    if (query.deviceId !== undefined) countQuery.deviceId = query.deviceId;
+    if (query.result !== undefined) countQuery.result = query.result;
+    if (query.startDate !== undefined) countQuery.startDate = query.startDate;
+    if (query.endDate !== undefined) countQuery.endDate = query.endDate;
+    
     // 获取总数用于分页
-    const total = await AccessRecordModel.count({
-      userId: query.userId,
-      deviceId: query.deviceId,
-      result: query.result,
-      startDate: query.startDate,
-      endDate: query.endDate
-    });
+    const total = await AccessRecordModel.count(countQuery);
     
     return {
       data: records,
@@ -125,14 +127,15 @@ export class AccessRecordService {
     const fullQuery = { ...query, userId };
     const records = await AccessRecordModel.findAll(fullQuery);
     
+    // 构建计数查询参数，过滤undefined值
+    const countQuery: any = { userId };
+    if (query.deviceId !== undefined) countQuery.deviceId = query.deviceId;
+    if (query.result !== undefined) countQuery.result = query.result;
+    if (query.startDate !== undefined) countQuery.startDate = query.startDate;
+    if (query.endDate !== undefined) countQuery.endDate = query.endDate;
+    
     // 获取总数用于分页
-    const total = await AccessRecordModel.count({
-      userId,
-      deviceId: query.deviceId,
-      result: query.result,
-      startDate: query.startDate,
-      endDate: query.endDate
-    });
+    const total = await AccessRecordModel.count(countQuery);
     
     return {
       data: records,
@@ -153,14 +156,15 @@ export class AccessRecordService {
     const fullQuery = { ...query, deviceId };
     const records = await AccessRecordModel.findAll(fullQuery);
     
+    // 构建计数查询参数，过滤undefined值
+    const countQuery: any = { deviceId };
+    if (query.userId !== undefined) countQuery.userId = query.userId;
+    if (query.result !== undefined) countQuery.result = query.result;
+    if (query.startDate !== undefined) countQuery.startDate = query.startDate;
+    if (query.endDate !== undefined) countQuery.endDate = query.endDate;
+    
     // 获取总数用于分页
-    const total = await AccessRecordModel.count({
-      userId: query.userId,
-      deviceId,
-      result: query.result,
-      startDate: query.startDate,
-      endDate: query.endDate
-    });
+    const total = await AccessRecordModel.count(countQuery);
     
     return {
       data: records,

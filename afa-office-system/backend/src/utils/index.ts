@@ -70,7 +70,6 @@ export type {
   PasswordHashOptions, 
   TokenGenerationOptions, 
   PermissionCheckOptions, 
-  PasswordStrengthResult,
   AuthUtilsInstance 
 } from './auth.js';
 

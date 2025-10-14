@@ -46,7 +46,16 @@ function parseFileSize(sizeStr: string): number {
   }
 
   const [, size, unit] = match;
-  return parseFloat(size) * units[unit];
+  if (!size || !unit) {
+    throw new Error(`无效的文件大小格式: ${sizeStr}`);
+  }
+  
+  const unitValue = units[unit];
+  if (unitValue === undefined) {
+    throw new Error(`不支持的文件大小单位: ${unit}`);
+  }
+  
+  return parseFloat(size) * unitValue;
 }
 
 // 文件上传

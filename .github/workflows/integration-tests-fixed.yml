@@ -246,15 +246,15 @@ jobs:
                 });
                 
                 // 创建测试数据库
-                await connection.execute(\`CREATE DATABASE IF NOT EXISTS \`\${process.env.MYSQL_DATABASE}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci\`);
+                await connection.execute(\`CREATE DATABASE IF NOT EXISTS \` + process.env.MYSQL_DATABASE + \` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci\`);
                 console.log('✅ 测试数据库创建成功');
                 
                 // 创建测试用户
-                await connection.execute(\`CREATE USER IF NOT EXISTS '\${process.env.MYSQL_USER}'@'%' IDENTIFIED BY '\${process.env.MYSQL_PASSWORD}'\`);
+                await connection.execute(\`CREATE USER IF NOT EXISTS '\` + process.env.MYSQL_USER + \`'@'%' IDENTIFIED BY '\` + process.env.MYSQL_PASSWORD + \`'\`);
                 console.log('✅ 测试用户创建成功');
                 
                 // 授予权限
-                await connection.execute(\`GRANT ALL PRIVILEGES ON \`\${process.env.MYSQL_DATABASE}\`.* TO '\${process.env.MYSQL_USER}'@'%'\`);
+                await connection.execute(\`GRANT ALL PRIVILEGES ON \` + process.env.MYSQL_DATABASE + \`.* TO '\` + process.env.MYSQL_USER + \`'@'%'\`);
                 await connection.execute('FLUSH PRIVILEGES');
                 console.log('✅ 权限授予成功');
                 

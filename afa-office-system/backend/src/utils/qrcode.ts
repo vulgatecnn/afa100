@@ -5,7 +5,7 @@ import crypto from 'crypto';
  * 提供动态二维码生成和验证功能
  */
 export class QRCodeUtils {
-  private static readonly SECRET_KEY = process.env.QRCODE_SECRET || 'afa-office-qrcode-secret-key-2024';
+  private static readonly SECRET_KEY = process.env['QRCODE_SECRET'] || 'afa-office-qrcode-secret-key-2024';
   
   /**
    * 生成动态二维码内容

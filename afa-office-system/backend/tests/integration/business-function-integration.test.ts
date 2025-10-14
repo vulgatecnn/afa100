@@ -31,18 +31,18 @@ describe('核心业务功能集成测试', () => {
         includeVisitors: true,
       },
     });
-    
+
     apiClient = helper.getApiClient();
-    
+
     // 创建测试用户并获取认证令牌
     const { user, authResponse } = await helper.createAndLoginUser('merchant_admin');
     authToken = authResponse.accessToken;
     testUserId = user.id;
-    
+
     // 获取测试商户ID
     const seedData = helper.getSeedData();
     testMerchantId = seedData?.merchants?.[0]?.id || 1;
-    
+
     console.log('✅ 业务功能集成测试环境初始化完成');
   });
 
@@ -54,7 +54,7 @@ describe('核心业务功能集成测试', () => {
   describe('1. 访客申请业务流程测试', () => {
     it('应该完成访客申请-审批流程', async () => {
       console.log('🧪 测试访客申请业务流程...');
-      
+
       // 创建访客申请
       const visitorApplicationData = {
         visitorName: '张三',
@@ -74,7 +74,7 @@ describe('核心业务功能集成测试', () => {
       );
 
       expect([200, 201]).toContain(createResponse.status);
-      
+
       if ([200, 201].includes(createResponse.status)) {
         const application = createResponse.data;
         expect(application).toMatchObject({
@@ -92,7 +92,7 @@ describe('核心业务功能集成测试', () => {
 
     it('应该完成访客申请拒绝流程', async () => {
       console.log('🧪 测试访客申请拒绝流程...');
-      
+
       // 创建访客申请
       const visitorApplicationData = {
         visitorName: '李四',
@@ -130,7 +130,7 @@ describe('核心业务功能集成测试', () => {
         );
 
         expect([200, 400, 401, 404]).toContain(rejectionResponse.status);
-        
+
         if (rejectionResponse.status === 200) {
           const rejectedApplication = rejectionResponse.data;
           expect(rejectedApplication).toMatchObject({
@@ -147,7 +147,7 @@ describe('核心业务功能集成测试', () => {
   describe('2. 员工管理业务流程测试', () => {
     it('应该完成员工创建-查询流程', async () => {
       console.log('🧪 测试员工管理业务流程...');
-      
+
       // 1. 创建员工
       const employeeData = {
         userName: '王五',
@@ -191,7 +191,7 @@ describe('核心业务功能集成测试', () => {
           const createdEmployee = Array.isArray(employees)
             ? employees.find((emp: any) => emp.id === employeeId)
             : null;
-          
+
           if (createdEmployee) {
             expect(createdEmployee.status).toBe('active');
           }
@@ -207,7 +207,7 @@ describe('核心业务功能集成测试', () => {
   describe('3. 商户空间管理业务流程测试', () => {
     it('应该完成空间创建-配置-权限管理流程', async () => {
       console.log('🧪 测试商户空间管理业务流程...');
-      
+
       // 1. 创建空间
       const spaceData = {
         spaceName: '会议室A',
@@ -226,7 +226,7 @@ describe('核心业务功能集成测试', () => {
       );
 
       expect([200, 201]).toContain(createResponse.status);
-    
+
       if ([200, 201].includes(createResponse.status)) {
         const space = createResponse.data;
         expect(space).toMatchObject({
@@ -247,7 +247,7 @@ describe('核心业务功能集成测试', () => {
   describe('4. 通行验证业务流程测试', () => {
     it('应该完成通行验证-记录生成-查询统计流程', async () => {
       console.log('🧪 测试通行验证业务流程...');
-      
+
       // 1. 模拟通行验证
       const accessData = {
         userId: testUserId,
@@ -264,7 +264,7 @@ describe('核心业务功能集成测试', () => {
       );
 
       expect([200, 201]).toContain(accessResponse.status);
-      
+
       // 2. 查询通行记录
       const recordsResponse = await apiClient.request(
         'GET',
@@ -272,7 +272,7 @@ describe('核心业务功能集成测试', () => {
       );
 
       expect([200, 401, 404]).toContain(recordsResponse.status);
-      
+
       if (recordsResponse.status === 200) {
         const records = recordsResponse.data.items || recordsResponse.data;
         expect(Array.isArray(records)).toBe(true);
@@ -285,7 +285,7 @@ describe('核心业务功能集成测试', () => {
   describe('5. 数据流转完整性测试', () => {
     it('应该验证跨模块数据流转的一致性', async () => {
       console.log('🧪 测试跨模块数据流转...');
-      
+
       // 1. 创建员工
       const employeeData = {
         userName: '赵六',
@@ -302,7 +302,7 @@ describe('核心业务功能集成测试', () => {
       );
 
       expect([200, 201]).toContain(employeeResponse.status);
-     
+
       if ([200, 201].includes(employeeResponse.status)) {
         const employee = employeeResponse.data;
         const employeeId = employee.id;
@@ -326,10 +326,10 @@ describe('核心业务功能集成测试', () => {
         );
 
         expect([200, 201]).toContain(visitorResponse.status);
-  
+
         if ([200, 201].includes(visitorResponse.status)) {
           const application = visitorResponse.data;
-          
+
           // 验证数据关联正确性
           expect(application.visiteeId).toBe(employeeId);
         }
@@ -342,7 +342,7 @@ describe('核心业务功能集成测试', () => {
   describe('6. 业务状态管理测试', () => {
     it('应该正确处理业务状态转换', async () => {
       console.log('🧪 测试业务状态管理...');
-      
+
       // 1. 创建访客申请，测试状态转换
       const visitorData = {
         visitorName: '周八',
@@ -361,7 +361,7 @@ describe('核心业务功能集成测试', () => {
       );
 
       expect([200, 201]).toContain(createResponse.status);
- 
+
       if ([200, 201].includes(createResponse.status)) {
         const application = createResponse.data;
         const applicationId = application.id;
@@ -382,7 +382,7 @@ describe('核心业务功能集成测试', () => {
         );
 
         expect([200, 400, 401, 404]).toContain(approvalResponse.status);
-        
+
         if (approvalResponse.status === 200) {
           const approvedApplication = approvalResponse.data;
           expect(approvedApplication.status).toBe('approved');

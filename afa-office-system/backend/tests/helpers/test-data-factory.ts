@@ -1,4 +1,4 @@
-import type { User, Merchant, Project, Venue, Floor, VisitorApplication, AccessRecord } from '../../src/types/index.js';
+import type { User, Merchant, Project, Venue, Floor, VisitorApplication, AccessRecord, UserType, UserStatus, MerchantStatus, ProjectStatus, VenueStatus, FloorStatus, VisitorApplicationStatus, AccessRecordResult, DeviceType, AccessDirection } from '../../src/types/index.js';
 
 /**
  * 测试数据工厂
@@ -104,7 +104,7 @@ export class TestDataFactory {
       phone: `1380013800${String(id).padStart(2, '0')}`,
       email: `merchant${id}@test.com`,
       address: `测试地址${id}号`,
-      status: 'active',
+      status: 'active' as MerchantStatus,
       settings: JSON.stringify({
         allowVisitors: true,
         maxVisitorsPerDay: 50,
@@ -122,20 +122,19 @@ export class TestDataFactory {
    */
   static createUser(overrides: Partial<User> = {}): User {
     const id = this.getNextUserId();
-    const userTypes = ['admin', 'merchant_admin', 'employee', 'visitor'];
-    const randomType = userTypes[Math.floor(Math.random() * userTypes.length)];
+    const userTypes: UserType[] = ['tenant_admin', 'merchant_admin', 'employee', 'visitor'];
+    const randomType = userTypes[Math.floor(Math.random() * userTypes.length)] as UserType;
     
     return {
       id,
       name: `测试用户${id}`,
       phone: `1380013800${String(id).padStart(2, '0')}`,
       user_type: randomType,
-      status: 'active',
+      status: 'active' as UserStatus,
       merchant_id: overrides.merchant_id || 1,
       open_id: `openid_test_${id}_${Date.now()}`,
       union_id: `unionid_test_${id}_${Date.now()}`,
       avatar: `https://test-avatar.com/user${id}.jpg`,
-      password: null, // 小程序用户通常不设置密码
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       ...overrides,
@@ -152,7 +151,7 @@ export class TestDataFactory {
       code: `PRJ${String(id).padStart(4, '0')}`,
       name: `测试项目${id}`,
       description: `这是第${id}个测试项目，用于验证系统功能`,
-      status: 'active',
+      status: 'active' as ProjectStatus,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       ...overrides,
@@ -173,7 +172,7 @@ export class TestDataFactory {
       code: `VEN${String(id).padStart(3, '0')}`,
       name: `${randomType}${id}`,
       description: `${randomType}${id}，总面积约${1000 + id * 100}平方米`,
-      status: 'active',
+      status: 'active' as VenueStatus,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       ...overrides,
@@ -194,7 +193,7 @@ export class TestDataFactory {
       code: `FL${String(id).padStart(2, '0')}`,
       name: floorName,
       description: `${floorName}，包含办公区域和公共设施`,
-      status: 'active',
+      status: 'active' as FloorStatus,
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       ...overrides,
@@ -229,7 +228,7 @@ export class TestDataFactory {
       visit_type: randomType,
       scheduled_time: scheduledTime.toISOString(),
       duration: Math.floor(Math.random() * 4) + 1, // 1-4小时
-      status: 'pending',
+      status: 'pending' as VisitorApplicationStatus,
       approved_by: null,
       approved_at: null,
       passcode: null,
@@ -247,9 +246,9 @@ export class TestDataFactory {
    */
   static createAccessRecord(overrides: Partial<AccessRecord> = {}): AccessRecord {
     const id = this.getNextAccessRecordId();
-    const deviceTypes = ['qr_scanner', 'face_recognition', 'card_reader', 'mobile_app'];
-    const directions = ['in', 'out'];
-    const results = ['success', 'failed', 'denied'];
+    const deviceTypes: DeviceType[] = ['qr_scanner', 'face_recognition', 'card_reader', 'mobile_app'];
+    const directions: AccessDirection[] = ['in', 'out'];
+    const results: AccessRecordResult[] = ['success', 'failed', 'denied'];
     const failReasons = ['expired_passcode', 'invalid_user', 'device_error', 'time_restriction'];
     
     const randomDeviceType = deviceTypes[Math.floor(Math.random() * deviceTypes.length)];
@@ -348,7 +347,7 @@ export class TestDataFactory {
     const passcode = `PASS${String(Math.floor(Math.random() * 10000)).padStart(4, '0')}`;
     
     return this.createVisitorApplication({
-      status: 'approved',
+      status: 'approved' as VisitorApplicationStatus,
       approved_by: 2, // 假设ID为2的用户是审批人
       approved_at: now.toISOString(),
       passcode,
@@ -362,7 +361,7 @@ export class TestDataFactory {
    */
   static createRejectedVisitorApplication(overrides: Partial<VisitorApplication> = {}): VisitorApplication {
     return this.createVisitorApplication({
-      status: 'rejected',
+      status: 'rejected' as VisitorApplicationStatus,
       approved_by: 2,
       approved_at: new Date().toISOString(),
       ...overrides,
@@ -374,7 +373,7 @@ export class TestDataFactory {
    */
   static createSuccessAccessRecord(overrides: Partial<AccessRecord> = {}): AccessRecord {
     return this.createAccessRecord({
-      result: 'success',
+      result: 'success' as AccessRecordResult,
       fail_reason: null,
       ...overrides,
     });
@@ -388,7 +387,7 @@ export class TestDataFactory {
     const randomFailReason = failReasons[Math.floor(Math.random() * failReasons.length)];
     
     return this.createAccessRecord({
-      result: 'failed',
+      result: 'failed' as AccessRecordResult,
       fail_reason: randomFailReason,
       ...overrides,
     });
@@ -447,12 +446,12 @@ export class TestDataFactory {
       this.createSuccessAccessRecord({
         user_id: application.applicant_id,
         passcode_id: application.id,
-        direction: 'in',
+        direction: 'in' as AccessDirection,
       }),
       this.createSuccessAccessRecord({
         user_id: application.applicant_id,
         passcode_id: application.id,
-        direction: 'out',
+        direction: 'out' as AccessDirection,
       }),
     ];
 

@@ -28,7 +28,7 @@ export const requirePermission = (resource: string, action: PermissionAction) =>
         throw new AppError('需要认证', 401, ErrorCodes.TOKEN_INVALID);
       }
 
-      const resourceId = req.params.id ? parseInt(req.params.id) : undefined;
+      const resourceId = req.params['id'] ? parseInt(req.params['id']) : undefined;
       const result = await permissionService.checkPermission(
         req.user.userId,
         resource,
@@ -70,7 +70,7 @@ export const requireAnyPermission = (
         throw new AppError('需要认证', 401, ErrorCodes.TOKEN_INVALID);
       }
 
-      const resourceId = req.params.id ? parseInt(req.params.id) : undefined;
+      const resourceId = req.params['id'] ? parseInt(req.params['id']) : undefined;
       const permissionsWithId = permissions.map(p => ({ 
         ...p, 
         ...(resourceId !== undefined && { resourceId })
@@ -113,7 +113,7 @@ export const requireAllPermissions = (
         throw new AppError('需要认证', 401, ErrorCodes.TOKEN_INVALID);
       }
 
-      const resourceId = req.params.id ? parseInt(req.params.id) : undefined;
+      const resourceId = req.params['id'] ? parseInt(req.params['id']) : undefined;
       const permissionsWithId = permissions.map(p => ({ 
         ...p, 
         ...(resourceId !== undefined && { resourceId })
@@ -194,7 +194,7 @@ export const requireMerchantResource = () => {
       }
 
       // 其他用户只能访问自己商户的资源
-      const merchantId = req.params.merchantId || req.body.merchantId || req.query.merchantId;
+      const merchantId = req.params['merchantId'] || req.body.merchantId || req.query['merchantId'];
       
       if (merchantId && req.user.merchantId && parseInt(merchantId) !== req.user.merchantId) {
         throw new AppError(
@@ -230,7 +230,7 @@ export const requireResourceOwner = (resourceType: string) => {
         return next();
       }
 
-      const resourceId = req.params.id ? parseInt(req.params.id) : undefined;
+      const resourceId = req.params['id'] ? parseInt(req.params['id']) : undefined;
       
       if (!resourceId) {
         throw new AppError('缺少资源ID', 400, ErrorCodes.MISSING_REQUIRED_FIELD);
@@ -258,7 +258,7 @@ export const optionalPermission = (resource: string, action: PermissionAction) =
         return next();
       }
 
-      const resourceId = req.params.id ? parseInt(req.params.id) : undefined;
+      const resourceId = req.params['id'] ? parseInt(req.params['id']) : undefined;
       const result = await permissionService.checkPermission(
         req.user.userId,
         resource,

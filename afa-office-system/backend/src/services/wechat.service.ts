@@ -1,5 +1,5 @@
 import { WechatUtils } from '../utils/wechat.js';
-import { UserModel } from '../models/user.model.js';
+import { UserModel } from '../models/index.js';
 import type { User, UserType } from '../types/index.js';
 
 /**

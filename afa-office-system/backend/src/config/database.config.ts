@@ -73,14 +73,14 @@ export const dbConfig: Record<string, DatabaseConfig> = {
     },
   },
   test: {
-    host: process.env.TEST_DB_HOST || '127.0.0.1',
-    port: parseInt(process.env.TEST_DB_PORT || '3306'),
-    user: process.env.TEST_DB_USER || 'afa_test_user',
-    password: process.env.TEST_DB_PASSWORD || 'afa_test_2024',
-    database: process.env.TEST_DB_NAME || 'afa_office_test',
-    connectionLimit: parseInt(process.env.TEST_DB_CONNECTION_LIMIT || '5'),
-    acquireTimeout: parseInt(process.env.TEST_DB_ACQUIRE_TIMEOUT || '30000'),
-    timeout: parseInt(process.env.TEST_DB_TIMEOUT || '30000'),
+    host: process.env['TEST_DB_HOST'] || '127.0.0.1',
+    port: parseInt(process.env['TEST_DB_PORT'] || '3306'),
+    user: process.env['TEST_DB_USER'] || 'afa_test_user',
+    password: process.env['TEST_DB_PASSWORD'] || 'afa_test_2024',
+    database: process.env['TEST_DB_NAME'] || 'afa_office_test',
+    connectionLimit: parseInt(process.env['TEST_DB_CONNECTION_LIMIT'] || '5'),
+    acquireTimeout: parseInt(process.env['TEST_DB_ACQUIRE_TIMEOUT'] || '30000'),
+    timeout: parseInt(process.env['TEST_DB_TIMEOUT'] || '30000'),
     multipleStatements: true,
     charset: 'utf8mb4',
     timezone: '+00:00',
@@ -145,25 +145,25 @@ export const getCurrentDbConfig = (): DatabaseConfig => {
   const env = process.env.NODE_ENV || 'development';
   
   // 获取基础配置
-  const baseConfig = dbConfig[env] || dbConfig.development!;
+  const baseConfig = dbConfig[env] || dbConfig['development']!;
   
   // 动态覆盖配置（优先使用环境变量）
   const dynamicConfig: DatabaseConfig = {
     ...baseConfig,
     host: env === 'test' 
-      ? (process.env.TEST_DB_HOST || baseConfig.host)
+      ? (process.env['TEST_DB_HOST'] || baseConfig.host)
       : (process.env.APP_DB_HOST || baseConfig.host),
     port: env === 'test'
-      ? parseInt(process.env.TEST_DB_PORT || baseConfig.port.toString())
+      ? parseInt(process.env['TEST_DB_PORT'] || baseConfig.port.toString())
       : parseInt(process.env.APP_DB_PORT || baseConfig.port.toString()),
     user: env === 'test'
-      ? (process.env.TEST_DB_USER || baseConfig.user)
+      ? (process.env['TEST_DB_USER'] || baseConfig.user)
       : (process.env.APP_DB_USER || baseConfig.user),
     password: env === 'test'
-      ? (process.env.TEST_DB_PASSWORD || baseConfig.password)
+      ? (process.env['TEST_DB_PASSWORD'] || baseConfig.password)
       : (process.env.APP_DB_PASSWORD || baseConfig.password),
     database: env === 'test'
-      ? (process.env.TEST_DB_NAME || baseConfig.database)
+      ? (process.env['TEST_DB_NAME'] || baseConfig.database)
       : (process.env.APP_DB_NAME || baseConfig.database),
   };
   
@@ -173,19 +173,19 @@ export const getCurrentDbConfig = (): DatabaseConfig => {
 // 获取环境特定的性能配置
 export const getPerformanceConfig = (env?: string) => {
   const environment = env || process.env.NODE_ENV || 'development';
-  return dbConfig[environment]?.performance || dbConfig.development!.performance;
+  return dbConfig[environment]?.performance || dbConfig['development']!.performance;
 };
 
 // 获取环境特定的连接池配置
 export const getPoolConfig = (env?: string) => {
   const environment = env || process.env.NODE_ENV || 'development';
-  return dbConfig[environment]?.pool || dbConfig.development!.pool;
+  return dbConfig[environment]?.pool || dbConfig['development']!.pool;
 };
 
 // 获取环境特定的重试配置
 export const getRetryConfig = (env?: string) => {
   const environment = env || process.env.NODE_ENV || 'development';
-  return dbConfig[environment]?.retry || dbConfig.development!.retry;
+  return dbConfig[environment]?.retry || dbConfig['development']!.retry;
 };
 
 // 验证MySQL数据库配置

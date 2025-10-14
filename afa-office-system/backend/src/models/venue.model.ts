@@ -1,5 +1,13 @@
 import database from '../utils/database.js';
-import type { Venue, ProjectStatus, DatabaseResult } from '../types/index.js';
+import type { 
+  Venue, 
+  ProjectStatus, 
+  VenueType, 
+  VenueSettings, 
+  VenueDevice, 
+  VenueAccessLevel,
+  DatabaseResult 
+} from '../types/index.js';
 
 /**
  * 场地数据模型
@@ -9,18 +17,24 @@ export class VenueModel {
   /**
    * 创建新场地
    */
-  static async create(venueData: Omit<Venue, 'id' | 'created_at' | 'updated_at'>): Promise<Venue> {
+  static async create(venueData: Omit<Venue, 'id' | 'created_at' | 'updated_at' | 'createdAt' | 'updatedAt' | 'projectId' | 'project' | 'floors' | 'permissions' | 'access_records' | 'statistics' | 'devices'>): Promise<Venue> {
     const sql = `
-      INSERT INTO venues (project_id, code, name, description, status)
-      VALUES (?, ?, ?, ?, ?)
+      INSERT INTO venues (project_id, code, name, description, type, status, settings)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
     `;
+    
+    const settingsJson = venueData.settings 
+      ? (typeof venueData.settings === 'string' ? venueData.settings : JSON.stringify(venueData.settings))
+      : null;
     
     const params = [
       venueData.project_id,
       venueData.code,
       venueData.name,
       venueData.description || null,
-      venueData.status || 'active'
+      venueData.type || 'office',
+      venueData.status || 'active',
+      settingsJson
     ];
 
     const result = await database.run(sql, params);
@@ -378,5 +392,214 @@ export class VenueModel {
   static async deleteByProjectId(projectId: number): Promise<number> {
     const result = await database.run('DELETE FROM venues WHERE project_id = ?', [projectId]);
     return result.changes;
+  }
+
+  /**
+   * 获取场地设置
+   */
+  static async getSettings(venueId: number): Promise<VenueSettings | null> {
+    const venue = await this.findById(venueId);
+    if (!venue || !venue.settings) {
+      return null;
+    }
+
+    try {
+      return typeof venue.settings === 'string' 
+        ? JSON.parse(venue.settings) 
+        : venue.settings as VenueSettings;
+    } catch (error) {
+      console.error('解析场地设置失败:', error);
+      return null;
+    }
+  }
+
+  /**
+   * 更新场地设置
+   */
+  static async updateSettings(venueId: number, settings: VenueSettings): Promise<Venue> {
+    const settingsJson = JSON.stringify(settings);
+    return await this.update(venueId, { settings: settingsJson });
+  }
+
+  /**
+   * 根据场地类型查找场地
+   */
+  static async findByType(type: VenueType, projectId?: number): Promise<Venue[]> {
+    let sql = 'SELECT * FROM venues WHERE type = ?';
+    const params: any[] = [type];
+
+    if (projectId) {
+      sql += ' AND project_id = ?';
+      params.push(projectId);
+    }
+
+    sql += ' ORDER BY created_at DESC';
+    return await database.all<Venue>(sql, params);
+  }
+
+  /**
+   * 根据访问级别查找场地
+   */
+  static async findByAccessLevel(accessLevel: VenueAccessLevel, projectId?: number): Promise<Venue[]> {
+    let sql = `
+      SELECT * FROM venues 
+      WHERE JSON_EXTRACT(settings, '$.accessLevel') = ?
+    `;
+    const params: any[] = [accessLevel];
+
+    if (projectId) {
+      sql += ' AND project_id = ?';
+      params.push(projectId);
+    }
+
+    sql += ' ORDER BY created_at DESC';
+    return await database.all<Venue>(sql, params);
+  }
+
+  /**
+   * 获取场地的设备数量
+   */
+  static async getDeviceCount(venueId: number): Promise<number> {
+    // 这里假设有一个devices表或者设备信息存储在其他地方
+    // 暂时返回0，实际实现需要根据具体的设备存储方式
+    return 0;
+  }
+
+  /**
+   * 获取场地今日通行记录数量
+   */
+  static async getTodayAccessCount(venueId: number): Promise<number> {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const sql = `
+      SELECT COUNT(*) as count 
+      FROM access_records 
+      WHERE venue_id = ? 
+      AND timestamp >= ? 
+      AND timestamp < ?
+    `;
+    
+    const result = await database.get<{ count: number }>(sql, [
+      venueId,
+      today.toISOString(),
+      tomorrow.toISOString()
+    ]);
+    
+    return result?.count || 0;
+  }
+
+  /**
+   * 获取场地的详细统计信息
+   */
+  static async getDetailedStatistics(venueId: number): Promise<{
+    floorCount: number;
+    permissionCount: number;
+    deviceCount: number;
+    todayAccessCount: number;
+    totalAccessCount: number;
+    successRate: number;
+  }> {
+    const [floorCount, permissionCount, deviceCount, todayAccessCount] = await Promise.all([
+      this.getFloorCount(venueId),
+      this.getPermissionCount(venueId),
+      this.getDeviceCount(venueId),
+      this.getTodayAccessCount(venueId)
+    ]);
+
+    // 获取总通行记录数和成功率
+    const totalAccessSql = 'SELECT COUNT(*) as total FROM access_records WHERE venue_id = ?';
+    const successAccessSql = 'SELECT COUNT(*) as success FROM access_records WHERE venue_id = ? AND result = "success"';
+    
+    const [totalResult, successResult] = await Promise.all([
+      database.get<{ total: number }>(totalAccessSql, [venueId]),
+      database.get<{ success: number }>(successAccessSql, [venueId])
+    ]);
+
+    const totalAccessCount = totalResult?.total || 0;
+    const successCount = successResult?.success || 0;
+    const successRate = totalAccessCount > 0 ? (successCount / totalAccessCount) * 100 : 0;
+
+    return {
+      floorCount,
+      permissionCount,
+      deviceCount,
+      todayAccessCount,
+      totalAccessCount,
+      successRate: Math.round(successRate * 100) / 100
+    };
+  }
+
+  /**
+   * 获取场地的完整信息（包含统计数据和camelCase字段）
+   */
+  static async findWithDetails(venueId: number): Promise<(Venue & {
+    project?: any;
+    floors?: any[];
+    statistics?: any;
+  }) | null> {
+    const fullInfo = await this.getFullInfo(venueId);
+    if (!fullInfo) {
+      return null;
+    }
+
+    const statistics = await this.getDetailedStatistics(venueId);
+
+    return {
+      ...fullInfo.venue,
+      createdAt: fullInfo.venue.created_at,
+      updatedAt: fullInfo.venue.updated_at,
+      projectId: fullInfo.venue.project_id,
+      project: fullInfo.project,
+      floors: fullInfo.floors,
+      statistics
+    };
+  }
+
+  /**
+   * 检查场地是否允许访客
+   */
+  static async allowsVisitors(venueId: number): Promise<boolean> {
+    const settings = await this.getSettings(venueId);
+    return settings?.allowVisitors ?? true;
+  }
+
+  /**
+   * 检查场地是否需要审批
+   */
+  static async requiresApproval(venueId: number): Promise<boolean> {
+    const settings = await this.getSettings(venueId);
+    return settings?.requiresApproval ?? false;
+  }
+
+  /**
+   * 检查当前时间是否在场地允许通行时间内
+   */
+  static async isAccessAllowed(venueId: number, currentTime?: Date): Promise<boolean> {
+    const settings = await this.getSettings(venueId);
+    if (!settings?.allowedHours) {
+      return true; // 没有时间限制
+    }
+
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+    const currentTimeMinutes = currentHour * 60 + currentMinute;
+
+    const [startHour, startMinute] = settings.allowedHours.start.split(':').map(Number);
+    const [endHour, endMinute] = settings.allowedHours.end.split(':').map(Number);
+    
+    const startTimeMinutes = startHour * 60 + startMinute;
+    const endTimeMinutes = endHour * 60 + endMinute;
+
+    if (startTimeMinutes <= endTimeMinutes) {
+      // 同一天内的时间范围
+      return currentTimeMinutes >= startTimeMinutes && currentTimeMinutes <= endTimeMinutes;
+    } else {
+      // 跨天的时间范围
+      return currentTimeMinutes >= startTimeMinutes || currentTimeMinutes <= endTimeMinutes;
+    }
   }
 }

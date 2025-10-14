@@ -333,6 +333,7 @@ describe('AuthController', () => {
   describe('logout', () => {
     it('应该成功登出用户', async () => {
       mockReq.user = {
+        id: 1,
         userId: 1,
         userType: 'employee',
         merchantId: 1,
@@ -438,6 +439,7 @@ describe('AuthController', () => {
   describe('changePassword', () => {
     it('应该成功修改密码', async () => {
       mockReq.user = {
+        id: 1,
         userId: 1,
         userType: 'employee',
         merchantId: 1,
@@ -477,6 +479,7 @@ describe('AuthController', () => {
 
     it('应该拒绝缺少密码的请求', async () => {
       mockReq.user = {
+        id: 1,
         userId: 1,
         userType: 'employee',
         merchantId: 1,
@@ -493,6 +496,7 @@ describe('AuthController', () => {
 
     it('应该拒绝弱密码', async () => {
       mockReq.user = {
+        id: 1,
         userId: 1,
         userType: 'employee',
         merchantId: 1,

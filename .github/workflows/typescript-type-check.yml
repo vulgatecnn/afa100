@@ -1,0 +1,480 @@
+name: TypeScript 类型检查
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'afa-office-system/**/*.ts'
+      - 'afa-office-system/**/*.tsx'
+      - 'afa-office-system/**/tsconfig*.json'
+      - 'shared/**/*.ts'
+      - '.github/workflows/typescript-type-check.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'afa-office-system/**/*.ts'
+      - 'afa-office-system/**/*.tsx'
+      - 'afa-office-system/**/tsconfig*.json'
+      - 'shared/**/*.ts'
+      - '.github/workflows/typescript-type-check.yml'
+  workflow_dispatch:
+    inputs:
+      strict_mode:
+        description: '严格模式 (阻断构建)'
+        required: false
+        default: 'false'
+        type: boolean
+      generate_baseline:
+        description: '生成新的类型检查基准'
+        required: false
+        default: 'false'
+        type: boolean
+
+env:
+  NODE_VERSION: '20.x'
+  PNPM_VERSION: '8'
+
+jobs:
+  # TypeScript 类型检查
+  typescript-check:
+    name: TypeScript 类型检查
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        project: [backend, frontend-tenant, frontend-merchant]
+        include:
+          - project: backend
+            path: afa-office-system/backend
+            config: tsconfig.test.json
+          - project: frontend-tenant
+            path: afa-office-system/frontend/tenant-admin
+            config: tsconfig.json
+          - project: frontend-merchant
+            path: afa-office-system/frontend/merchant-admin
+            config: tsconfig.json
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 设置pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 缓存依赖
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            node_modules
+            ${{ matrix.path }}/node_modules
+          key: ${{ runner.os }}-pnpm-${{ matrix.project }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-${{ matrix.project }}-
+            ${{ runner.os }}-pnpm-
+
+      - name: 安装依赖
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 安装项目依赖
+        working-directory: ${{ matrix.path }}
+        run: |
+          if [ -f "package.json" ]; then
+            pnpm install --no-frozen-lockfile
+          fi
+
+      - name: 检查 TypeScript 配置
+        working-directory: ${{ matrix.path }}
+        run: |
+          echo "::group::TypeScript 配置检查"
+          echo "当前目录: $(pwd)"
+          echo "TypeScript 配置文件:"
+          ls -la tsconfig*.json || echo "未找到 TypeScript 配置文件"
+          
+          if [ -f "${{ matrix.config }}" ]; then
+            echo "使用配置文件: ${{ matrix.config }}"
+            cat ${{ matrix.config }}
+          else
+            echo "配置文件 ${{ matrix.config }} 不存在"
+          fi
+          echo "::endgroup::"
+
+      - name: 运行 TypeScript 类型检查
+        working-directory: ${{ matrix.path }}
+        id: type-check
+        continue-on-error: true
+        run: |
+          echo "::group::TypeScript 类型检查 - ${{ matrix.project }}"
+          
+          # 检查是否有 type-check 脚本
+          if [ -f "package.json" ] && grep -q "type-check" package.json; then
+            echo "使用 package.json 中的 type-check 脚本"
+            pnpm type-check 2>&1 | tee type-check-output.log
+            TYPE_CHECK_EXIT_CODE=${PIPESTATUS[0]}
+          else
+            echo "直接运行 tsc 命令"
+            if [ -f "${{ matrix.config }}" ]; then
+              npx tsc --noEmit --project ${{ matrix.config }} 2>&1 | tee type-check-output.log
+              TYPE_CHECK_EXIT_CODE=${PIPESTATUS[0]}
+            else
+              echo "未找到 TypeScript 配置文件，跳过类型检查"
+              TYPE_CHECK_EXIT_CODE=0
+            fi
+          fi
+          
+          echo "type_check_exit_code=$TYPE_CHECK_EXIT_CODE" >> $GITHUB_OUTPUT
+          echo "::endgroup::"
+
+      - name: 运行类型检查验证脚本 (仅后端)
+        if: matrix.project == 'backend'
+        working-directory: ${{ matrix.path }}
+        continue-on-error: true
+        run: |
+          echo "::group::类型检查验证脚本"
+          if [ -f "scripts/type-check-validation.js" ]; then
+            node scripts/type-check-validation.js
+            echo "类型检查验证完成"
+          else
+            echo "类型检查验证脚本不存在"
+          fi
+          echo "::endgroup::"
+
+      - name: 解析类型错误
+        working-directory: ${{ matrix.path }}
+        if: always()
+        run: |
+          echo "::group::类型错误统计"
+          
+          if [ -f "type-check-output.log" ]; then
+            # 统计错误数量
+            ERROR_COUNT=$(grep -c "error TS" type-check-output.log || echo "0")
+            WARNING_COUNT=$(grep -c "warning TS" type-check-output.log || echo "0")
+            
+            echo "TypeScript 错误数量: $ERROR_COUNT"
+            echo "TypeScript 警告数量: $WARNING_COUNT"
+            
+            # 生成错误摘要
+            echo "## TypeScript 类型检查结果 - ${{ matrix.project }}" >> type-check-summary.md
+            echo "" >> type-check-summary.md
+            echo "- 错误数量: $ERROR_COUNT" >> type-check-summary.md
+            echo "- 警告数量: $WARNING_COUNT" >> type-check-summary.md
+            echo "- 检查状态: ${{ steps.type-check.outputs.type_check_exit_code == '0' && '✅ 通过' || '❌ 失败' }}" >> type-check-summary.md
+            echo "" >> type-check-summary.md
+            
+            if [ "$ERROR_COUNT" -gt "0" ]; then
+              echo "### 错误详情" >> type-check-summary.md
+              echo '```' >> type-check-summary.md
+              grep "error TS" type-check-output.log | head -20 >> type-check-summary.md
+              if [ "$ERROR_COUNT" -gt "20" ]; then
+                echo "... 还有 $((ERROR_COUNT - 20)) 个错误" >> type-check-summary.md
+              fi
+              echo '```' >> type-check-summary.md
+            fi
+            
+            # 设置 GitHub 输出
+            echo "error_count=$ERROR_COUNT" >> $GITHUB_OUTPUT
+            echo "warning_count=$WARNING_COUNT" >> $GITHUB_OUTPUT
+          else
+            echo "未找到类型检查输出文件"
+            echo "error_count=0" >> $GITHUB_OUTPUT
+            echo "warning_count=0" >> $GITHUB_OUTPUT
+          fi
+          
+          echo "::endgroup::"
+
+      - name: 生成类型检查报告 (仅后端)
+        if: matrix.project == 'backend' && always()
+        working-directory: ${{ matrix.path }}
+        run: |
+          echo "::group::生成类型检查报告"
+          
+          # 检查是否有报告文件
+          if [ -f "type-check-report.json" ]; then
+            echo "发现类型检查报告文件"
+            
+            # 提取关键信息
+            TOTAL_ERRORS=$(cat type-check-report.json | jq -r '.totalErrors // 0')
+            FILES_WITH_ERRORS=$(cat type-check-report.json | jq -r '.summary.filesWithErrors // 0')
+            DURATION=$(cat type-check-report.json | jq -r '.summary.duration // "未知"')
+            
+            echo "总错误数: $TOTAL_ERRORS"
+            echo "有错误的文件数: $FILES_WITH_ERRORS"
+            echo "检查耗时: $DURATION"
+            
+            # 添加到摘要
+            echo "" >> type-check-summary.md
+            echo "### 详细统计" >> type-check-summary.md
+            echo "- 总错误数: $TOTAL_ERRORS" >> type-check-summary.md
+            echo "- 有错误的文件数: $FILES_WITH_ERRORS" >> type-check-summary.md
+            echo "- 检查耗时: $DURATION" >> type-check-summary.md
+          fi
+          
+          echo "::endgroup::"
+
+      - name: 上传类型检查报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: typescript-check-${{ matrix.project }}
+          path: |
+            ${{ matrix.path }}/type-check-output.log
+            ${{ matrix.path }}/type-check-summary.md
+            ${{ matrix.path }}/type-check-report.json
+            ${{ matrix.path }}/type-check-results.log
+            ${{ matrix.path }}/type-check-baseline.json
+          retention-days: 30
+
+      - name: 检查类型错误阻断
+        if: steps.type-check.outputs.type_check_exit_code != '0'
+        run: |
+          echo "::error::TypeScript 类型检查失败 - ${{ matrix.project }}"
+          
+          if [ "${{ github.event.inputs.strict_mode }}" == "true" ]; then
+            echo "严格模式已启用，构建将被阻断"
+            exit 1
+          else
+            echo "非严格模式，允许继续构建但会记录错误"
+            echo "::warning::TypeScript 类型检查存在错误，建议修复"
+          fi
+
+  # 类型回归测试 (仅后端)
+  type-regression-test:
+    name: 类型回归测试
+    runs-on: ubuntu-latest
+    needs: typescript-check
+    if: always()
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 设置pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 安装依赖
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 安装后端依赖
+        working-directory: afa-office-system/backend
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 下载类型检查报告
+        uses: actions/download-artifact@v4
+        with:
+          name: typescript-check-backend
+          path: afa-office-system/backend/
+
+      - name: 运行类型回归测试
+        working-directory: afa-office-system/backend
+        continue-on-error: true
+        run: |
+          echo "::group::类型回归测试"
+          
+          if [ -f "scripts/type-regression-test.js" ]; then
+            node scripts/type-regression-test.js
+          else
+            echo "类型回归测试脚本不存在，跳过回归测试"
+          fi
+          
+          echo "::endgroup::"
+
+      - name: 生成新基准 (如果需要)
+        if: github.event.inputs.generate_baseline == 'true'
+        working-directory: afa-office-system/backend
+        run: |
+          echo "::group::生成新的类型检查基准"
+          
+          if [ -f "scripts/type-check-validation.js" ]; then
+            node scripts/type-check-validation.js --setup-regression
+            echo "新基准已生成"
+          else
+            echo "类型检查验证脚本不存在"
+          fi
+          
+          echo "::endgroup::"
+
+      - name: 上传回归测试结果
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: type-regression-results
+          path: |
+            afa-office-system/backend/type-check-baseline.json
+            afa-office-system/backend/type-check-report.json
+          retention-days: 90
+
+  # 类型质量监控仪表板
+  type-quality-dashboard:
+    name: 类型质量监控
+    runs-on: ubuntu-latest
+    needs: [typescript-check, type-regression-test]
+    if: always()
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 下载所有类型检查报告
+        uses: actions/download-artifact@v4
+        with:
+          path: type-check-reports
+
+      - name: 生成类型质量仪表板
+        run: |
+          echo "# TypeScript 类型质量仪表板" > type-quality-dashboard.md
+          echo "" >> type-quality-dashboard.md
+          echo "## 检查时间" >> type-quality-dashboard.md
+          echo "- 检查时间: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> type-quality-dashboard.md
+          echo "- 分支: ${{ github.ref_name }}" >> type-quality-dashboard.md
+          echo "- 提交: ${{ github.sha }}" >> type-quality-dashboard.md
+          echo "- 触发事件: ${{ github.event_name }}" >> type-quality-dashboard.md
+          echo "" >> type-quality-dashboard.md
+          
+          echo "## 项目类型检查状态" >> type-quality-dashboard.md
+          echo "| 项目 | 状态 | 错误数 | 警告数 |" >> type-quality-dashboard.md
+          echo "|------|------|--------|--------|" >> type-quality-dashboard.md
+          
+          # 处理后端报告
+          if [ -f "type-check-reports/typescript-check-backend/type-check-report.json" ]; then
+            BACKEND_ERRORS=$(cat type-check-reports/typescript-check-backend/type-check-report.json | jq -r '.totalErrors // 0')
+            BACKEND_STATUS=$([ "$BACKEND_ERRORS" -eq "0" ] && echo "✅ 通过" || echo "❌ 失败")
+            echo "| 后端 | $BACKEND_STATUS | $BACKEND_ERRORS | - |" >> type-quality-dashboard.md
+          else
+            echo "| 后端 | ⚠️ 未检查 | - | - |" >> type-quality-dashboard.md
+          fi
+          
+          # 处理前端报告
+          for frontend in tenant merchant; do
+            if [ -f "type-check-reports/typescript-check-frontend-$frontend/type-check-summary.md" ]; then
+              echo "| 前端-$frontend | ✅ 已检查 | - | - |" >> type-quality-dashboard.md
+            else
+              echo "| 前端-$frontend | ⚠️ 未检查 | - | - |" >> type-quality-dashboard.md
+            fi
+          done
+          
+          echo "" >> type-quality-dashboard.md
+          
+          # 添加趋势分析
+          echo "## 类型错误趋势" >> type-quality-dashboard.md
+          if [ -f "type-check-reports/typescript-check-backend/type-check-report.json" ]; then
+            echo "### 后端类型错误分类" >> type-quality-dashboard.md
+            cat type-check-reports/typescript-check-backend/type-check-report.json | jq -r '
+              .errorsByCategory | to_entries | 
+              map("- " + .key + ": " + (.value | tostring) + " 个错误") | 
+              .[]
+            ' >> type-quality-dashboard.md 2>/dev/null || echo "- 无法解析错误分类数据" >> type-quality-dashboard.md
+          fi
+          
+          echo "" >> type-quality-dashboard.md
+          echo "## 建议" >> type-quality-dashboard.md
+          
+          # 根据错误数量给出建议
+          if [ -f "type-check-reports/typescript-check-backend/type-check-report.json" ]; then
+            TOTAL_ERRORS=$(cat type-check-reports/typescript-check-backend/type-check-report.json | jq -r '.totalErrors // 0')
+            
+            if [ "$TOTAL_ERRORS" -eq "0" ]; then
+              echo "🎉 恭喜！所有 TypeScript 类型检查都通过了。" >> type-quality-dashboard.md
+            elif [ "$TOTAL_ERRORS" -lt "50" ]; then
+              echo "⚠️ 发现少量类型错误，建议优先修复。" >> type-quality-dashboard.md
+            elif [ "$TOTAL_ERRORS" -lt "200" ]; then
+              echo "🔧 发现中等数量的类型错误，建议分批修复。" >> type-quality-dashboard.md
+            else
+              echo "🚨 发现大量类型错误，建议制定系统性修复计划。" >> type-quality-dashboard.md
+            fi
+          fi
+          
+          echo "" >> type-quality-dashboard.md
+          echo "## 详细报告" >> type-quality-dashboard.md
+          echo "详细的类型检查报告请查看 CI 构建的 Artifacts。" >> type-quality-dashboard.md
+
+      - name: 上传类型质量仪表板
+        uses: actions/upload-artifact@v4
+        with:
+          name: type-quality-dashboard
+          path: |
+            type-quality-dashboard.md
+            type-check-reports/
+          retention-days: 90
+
+      - name: 输出仪表板摘要
+        run: |
+          echo "::group::类型质量仪表板摘要"
+          cat type-quality-dashboard.md
+          echo "::endgroup::"
+
+  # 类型检查结果通知
+  type-check-notification:
+    name: 类型检查结果通知
+    runs-on: ubuntu-latest
+    needs: [typescript-check, type-regression-test, type-quality-dashboard]
+    if: always()
+    
+    steps:
+      - name: 评估整体状态
+        id: overall-status
+        run: |
+          # 检查各个作业的状态
+          TYPESCRIPT_CHECK_STATUS="${{ needs.typescript-check.result }}"
+          REGRESSION_TEST_STATUS="${{ needs.type-regression-test.result }}"
+          DASHBOARD_STATUS="${{ needs.type-quality-dashboard.result }}"
+          
+          echo "TypeScript 检查状态: $TYPESCRIPT_CHECK_STATUS"
+          echo "回归测试状态: $REGRESSION_TEST_STATUS"
+          echo "仪表板状态: $DASHBOARD_STATUS"
+          
+          # 确定整体状态
+          if [ "$TYPESCRIPT_CHECK_STATUS" == "success" ]; then
+            OVERALL_STATUS="success"
+            STATUS_EMOJI="✅"
+            STATUS_MESSAGE="TypeScript 类型检查全部通过"
+          elif [ "$TYPESCRIPT_CHECK_STATUS" == "failure" ]; then
+            if [ "${{ github.event.inputs.strict_mode }}" == "true" ]; then
+              OVERALL_STATUS="failure"
+              STATUS_EMOJI="❌"
+              STATUS_MESSAGE="TypeScript 类型检查失败 (严格模式)"
+            else
+              OVERALL_STATUS="warning"
+              STATUS_EMOJI="⚠️"
+              STATUS_MESSAGE="TypeScript 类型检查存在错误 (非严格模式)"
+            fi
+          else
+            OVERALL_STATUS="unknown"
+            STATUS_EMOJI="❓"
+            STATUS_MESSAGE="TypeScript 类型检查状态未知"
+          fi
+          
+          echo "overall_status=$OVERALL_STATUS" >> $GITHUB_OUTPUT
+          echo "status_emoji=$STATUS_EMOJI" >> $GITHUB_OUTPUT
+          echo "status_message=$STATUS_MESSAGE" >> $GITHUB_OUTPUT
+
+      - name: 发送通知
+        run: |
+          echo "${{ steps.overall-status.outputs.status_emoji }} ${{ steps.overall-status.outputs.status_message }}"
+          
+          # 这里可以添加实际的通知逻辑
+          # 例如发送到 Slack、钉钉、企业微信等
+          
+          if [ "${{ steps.overall-status.outputs.overall_status }}" == "failure" ]; then
+            echo "::error::TypeScript 类型检查失败，请查看详细报告"
+            exit 1
+          elif [ "${{ steps.overall-status.outputs.overall_status }}" == "warning" ]; then
+            echo "::warning::TypeScript 类型检查存在问题，建议修复"
+          else
+            echo "::notice::TypeScript 类型检查完成"
+          fi

@@ -1,5 +1,12 @@
 import database from '../utils/database.js';
-import type { VisitorApplication, ApplicationStatus } from '../types/index.js';
+import type { 
+  VisitorApplication, 
+  ApplicationStatus, 
+  ApprovalStatus, 
+  VisitPurpose, 
+  VisitType,
+  VisitorVerification 
+} from '../types/index.js';
 
 /**
  * 访客申请数据模型
@@ -9,16 +16,24 @@ export class VisitorApplicationModel {
   /**
    * 创建新访客申请
    */
-  static async create(applicationData: Omit<VisitorApplication, 'id' | 'created_at' | 'updated_at'>): Promise<VisitorApplication> {
+  static async create(applicationData: Omit<VisitorApplication, 'id' | 'created_at' | 'updated_at' | 'createdAt' | 'updatedAt' | 'scheduledTime' | 'applicant' | 'merchant' | 'visitee' | 'approver' | 'access_records'>): Promise<VisitorApplication> {
     const sql = `
       INSERT INTO visitor_applications (
         applicant_id, merchant_id, visitee_id, visitor_name, visitor_phone, 
-        visitor_company, visit_purpose, visit_type, scheduled_time, duration, 
-        status, approved_by, approved_at, rejection_reason, passcode, passcode_expiry,
-        usage_limit, usage_count
+        visitor_company, visit_purpose, visitPurpose, visit_type, scheduled_time, duration, 
+        status, approvalStatus, approved_by, approved_at, rejection_reason, passcode, passcode_expiry,
+        usage_limit, usage_count, verification, workflow
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
+
+    const verificationJson = applicationData.verification 
+      ? JSON.stringify(applicationData.verification)
+      : null;
+    
+    const workflowJson = applicationData.workflow 
+      ? JSON.stringify(applicationData.workflow)
+      : null;
 
     const params = [
       applicationData.applicant_id,
@@ -28,17 +43,21 @@ export class VisitorApplicationModel {
       applicationData.visitor_phone,
       applicationData.visitor_company || null,
       applicationData.visit_purpose,
+      applicationData.visitPurpose || null,
       applicationData.visit_type || null,
       applicationData.scheduled_time,
       applicationData.duration || 4,
       applicationData.status || 'pending',
+      applicationData.approvalStatus || 'pending',
       applicationData.approved_by || null,
       applicationData.approved_at || null,
       applicationData.rejection_reason || null,
       applicationData.passcode || null,
       applicationData.passcode_expiry || null,
       applicationData.usage_limit || 10,
-      applicationData.usage_count || 0
+      applicationData.usage_count || 0,
+      verificationJson,
+      workflowJson
     ];
 
     const result = await database.run(sql, params);
@@ -529,7 +548,7 @@ export class VisitorApplicationModel {
       SET status = ?, updated_at = CURRENT_TIMESTAMP 
       WHERE id IN (${placeholders})
     `;
-    const params = [status, ...ids];
+    const params = [status, ...ids.map(id => id.toString())];
 
     const result = await database.run(sql, params);
     return result.changes;
@@ -577,5 +596,187 @@ export class VisitorApplicationModel {
     `;
     const result = await database.run(sql, [passcode, passcodeExpiry, id]);
     return result.changes > 0;
+  }
+
+  /**
+   * 更新访客验证信息
+   */
+  static async updateVerification(id: number, verification: VisitorVerification): Promise<VisitorApplication> {
+    const verificationJson = JSON.stringify(verification);
+    return await this.update(id, { verification: verificationJson });
+  }
+
+  /**
+   * 获取访客验证信息
+   */
+  static async getVerification(id: number): Promise<VisitorVerification | null> {
+    const application = await this.findById(id);
+    if (!application || !application.verification) {
+      return null;
+    }
+
+    try {
+      return typeof application.verification === 'string' 
+        ? JSON.parse(application.verification) 
+        : application.verification;
+    } catch (error) {
+      console.error('解析访客验证信息失败:', error);
+      return null;
+    }
+  }
+
+  /**
+   * 更新审批状态
+   */
+  static async updateApprovalStatus(id: number, approvalStatus: ApprovalStatus, approvedBy?: number): Promise<VisitorApplication> {
+    const updateData: any = {
+      approvalStatus,
+      approved_at: new Date().toISOString()
+    };
+
+    if (approvedBy) {
+      updateData.approved_by = approvedBy;
+    }
+
+    // 同时更新主状态
+    if (approvalStatus === 'approved' || approvalStatus === 'auto_approved') {
+      updateData.status = 'approved';
+    } else if (approvalStatus === 'rejected') {
+      updateData.status = 'rejected';
+    }
+
+    return await this.update(id, updateData);
+  }
+
+  /**
+   * 更新工作流状态
+   */
+  static async updateWorkflow(id: number, workflow: any): Promise<VisitorApplication> {
+    const workflowJson = JSON.stringify(workflow);
+    return await this.update(id, { workflow: workflowJson });
+  }
+
+  /**
+   * 获取工作流状态
+   */
+  static async getWorkflow(id: number): Promise<any | null> {
+    const application = await this.findById(id);
+    if (!application || !application.workflow) {
+      return null;
+    }
+
+    try {
+      return typeof application.workflow === 'string' 
+        ? JSON.parse(application.workflow) 
+        : application.workflow;
+    } catch (error) {
+      console.error('解析工作流信息失败:', error);
+      return null;
+    }
+  }
+
+  /**
+   * 根据访问目的查找申请
+   */
+  static async findByVisitPurpose(visitPurpose: VisitPurpose): Promise<VisitorApplication[]> {
+    const sql = 'SELECT * FROM visitor_applications WHERE visitPurpose = ? ORDER BY created_at DESC';
+    return await database.all<VisitorApplication>(sql, [visitPurpose]);
+  }
+
+  /**
+   * 根据审批状态查找申请
+   */
+  static async findByApprovalStatus(approvalStatus: ApprovalStatus): Promise<VisitorApplication[]> {
+    const sql = 'SELECT * FROM visitor_applications WHERE approvalStatus = ? ORDER BY created_at DESC';
+    return await database.all<VisitorApplication>(sql, [approvalStatus]);
+  }
+
+  /**
+   * 获取申请的完整信息（包含关联数据和camelCase字段）
+   */
+  static async findWithRelations(id: number): Promise<(VisitorApplication & {
+    applicant?: any;
+    merchant?: any;
+    visitee?: any;
+    approver?: any;
+  }) | null> {
+    const fullInfo = await this.getFullInfo(id);
+    if (!fullInfo) {
+      return null;
+    }
+
+    const application = fullInfo.application;
+    
+    // 添加camelCase字段
+    const result = {
+      ...application,
+      createdAt: application.created_at,
+      updatedAt: application.updated_at,
+      scheduledTime: application.scheduled_time,
+      applicant: fullInfo.applicant,
+      merchant: fullInfo.merchant,
+      visitee: fullInfo.visitee,
+      approver: fullInfo.approver
+    };
+
+    return result;
+  }
+
+  /**
+   * 批量更新审批状态
+   */
+  static async batchUpdateApprovalStatus(ids: number[], approvalStatus: ApprovalStatus, approvedBy?: number): Promise<number> {
+    if (ids.length === 0) {
+      return 0;
+    }
+
+    const placeholders = ids.map(() => '?').join(',');
+    const params = [approvalStatus, new Date().toISOString()];
+    
+    let sql = `
+      UPDATE visitor_applications 
+      SET approvalStatus = ?, approved_at = ?, updated_at = CURRENT_TIMESTAMP
+    `;
+
+    if (approvedBy) {
+      sql += ', approved_by = ?';
+      params.push(approvedBy.toString());
+    }
+
+    // 同时更新主状态
+    if (approvalStatus === 'approved' || approvalStatus === 'auto_approved') {
+      sql += ', status = ?';
+      params.push('approved');
+    } else if (approvalStatus === 'rejected') {
+      sql += ', status = ?';
+      params.push('rejected');
+    }
+
+    sql += ` WHERE id IN (${placeholders})`;
+    params.push(...ids.map(id => id.toString()));
+
+    const result = await database.run(sql, params);
+    return result.changes;
+  }
+
+  /**
+   * 获取需要验证的申请列表
+   */
+  static async getPendingVerificationApplications(merchantId?: number): Promise<VisitorApplication[]> {
+    let sql = `
+      SELECT * FROM visitor_applications 
+      WHERE status = 'approved' 
+      AND (verification IS NULL OR JSON_EXTRACT(verification, '$.verificationStatus') = 'pending')
+    `;
+    const params: any[] = [];
+
+    if (merchantId) {
+      sql += ' AND merchant_id = ?';
+      params.push(merchantId);
+    }
+
+    sql += ' ORDER BY scheduled_time ASC';
+
+    return await database.all<VisitorApplication>(sql, params);
   }
 }

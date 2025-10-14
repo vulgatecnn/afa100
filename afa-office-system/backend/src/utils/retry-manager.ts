@@ -267,7 +267,7 @@ export class RetryManager {
       /cannot start a transaction within a transaction/i,
     ];
     
-    return sqliteRetryablePatterns.some(pattern => pattern.test(errorMessage));
+    return sqliteRetryablePatterns.some(pattern => pattern['test'](errorMessage));
   }
 
   /**

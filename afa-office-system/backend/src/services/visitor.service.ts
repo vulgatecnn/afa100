@@ -1,6 +1,4 @@
-import { VisitorApplicationModel } from '../models/visitor-application.model.js';
-import { UserModel } from '../models/user.model.js';
-import { MerchantModel } from '../models/merchant.model.js';
+import { VisitorApplicationModel, UserModel, MerchantModel } from '../models/index.js';
 import type { 
   VisitorApplication, 
   ApplicationStatus, 

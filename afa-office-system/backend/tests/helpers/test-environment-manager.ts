@@ -3,7 +3,7 @@
  * 定义统一的测试环境管理接口
  */
 
-import { DatabaseAdapter } from './database-adapter.js';
+import { DatabaseAdapter } from '../../src/utils/database-adapter.js';
 
 export interface TestEnvironment {
   id: string;

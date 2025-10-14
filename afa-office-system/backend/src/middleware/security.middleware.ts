@@ -31,7 +31,7 @@ export const createIPWhitelist = (allowedIPs: string[]) => {
     const clientIP = req.ip || req.connection.remoteAddress || 'unknown';
     
     // 开发环境跳过IP检查
-    if (process.env.NODE_ENV === 'development') {
+    if (process.env['NODE_ENV'] === 'development') {
       return next();
     }
     
@@ -116,12 +116,12 @@ export const validateUserAgent = (req: Request, _res: Response, next: NextFuncti
   ];
   
   // 开发环境跳过检查
-  if (process.env.NODE_ENV === 'development') {
+  if (process.env['NODE_ENV'] === 'development') {
     return next();
   }
   
-  const isAllowed = allowedPatterns.some(pattern => pattern.test(userAgent));
-  const isMalicious = maliciousPatterns.some(pattern => pattern.test(userAgent));
+  const isAllowed = allowedPatterns.some(pattern => pattern['test'](userAgent));
+  const isMalicious = maliciousPatterns.some(pattern => pattern['test'](userAgent));
   
   if (isMalicious && !isAllowed) {
     throw new AppError('不允许的用户代理', 403, ErrorCodes.PERMISSION_DENIED);
@@ -134,14 +134,14 @@ export const validateUserAgent = (req: Request, _res: Response, next: NextFuncti
  * API密钥验证中间件 - 用于硬件设备接入
  */
 export const validateApiKey = (req: Request, _res: Response, next: NextFunction): void => {
-  const apiKey = req.get('X-API-Key') || req.query.apiKey as string;
+  const apiKey = req.get('X-API-Key') || req.query['apiKey'] as string;
   
   if (!apiKey) {
     throw new AppError('缺少API密钥', 401, ErrorCodes.TOKEN_INVALID);
   }
   
   // 从环境变量或数据库验证API密钥
-  const validApiKeys = process.env.VALID_API_KEYS?.split(',') || [];
+  const validApiKeys = process.env['VALID_API_KEYS']?.split(',') || [];
   
   if (!validApiKeys.includes(apiKey)) {
     throw new AppError('无效的API密钥', 401, ErrorCodes.TOKEN_INVALID);
@@ -168,7 +168,7 @@ export const requestMonitor = (req: Request, _res: Response, next: NextFunction)
   
   const url = req.originalUrl;
   const isSuspicious = suspiciousPatterns.some(pattern => 
-    pattern.test(url) || pattern.test(JSON.stringify(req.body))
+    pattern['test'](url) || pattern['test'](JSON.stringify(req.body))
   );
   
   if (isSuspicious) {

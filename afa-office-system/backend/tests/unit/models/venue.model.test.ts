@@ -290,7 +290,8 @@ describe('VenueModel', () => {
       const venueData = {
         project_id: testProjectId,
         code: 'TEST_VENUE_013',
-        name: '测试场地13'
+        name: '测试场地13',
+        status: 'active' as ProjectStatus
       };
 
       const venue = await VenueModel.create(venueData);
@@ -308,7 +309,8 @@ describe('VenueModel', () => {
       const venueData = {
         project_id: testProjectId,
         code: 'TEST_VENUE_014',
-        name: '测试场地14'
+        name: '测试场地14',
+        status: 'active' as ProjectStatus
       };
 
       await VenueModel.create(venueData);
@@ -324,7 +326,8 @@ describe('VenueModel', () => {
       const venueData = {
         project_id: testProjectId,
         code: 'TEST_VENUE_015',
-        name: '测试场地15'
+        name: '测试场地15',
+        status: 'active' as ProjectStatus
       };
 
       const venue = await VenueModel.create(venueData);
@@ -340,13 +343,15 @@ describe('VenueModel', () => {
       const venue1 = await VenueModel.create({
         project_id: testProjectId,
         code: 'TEST_VENUE_016',
-        name: '测试场地16'
+        name: '测试场地16',
+        status: 'active' as ProjectStatus
       });
 
       const venue2 = await VenueModel.create({
         project_id: testProjectId,
         code: 'TEST_VENUE_017',
-        name: '测试场地17'
+        name: '测试场地17',
+        status: 'active' as ProjectStatus
       });
 
       const updatedCount = await VenueModel.batchUpdateStatus(
@@ -399,7 +404,8 @@ describe('VenueModel', () => {
         await VenueModel.create({
           project_id: testProjectId,
           code: `TEST_VENUE_PAGE_${i}`,
-          name: `测试分页场地${i}`
+          name: `测试分页场地${i}`,
+          status: 'active' as ProjectStatus
         });
       }
 

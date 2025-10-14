@@ -4,8 +4,8 @@
  */
 
 import { randomUUID } from 'crypto';
-import database from './database.js';
-import type { User, Merchant, Project, Venue, Floor, VisitorApplication, AccessRecord } from '../types/index.js';
+import database from '../../src/utils/database.js';
+import type { User, Merchant, Project, Venue, Floor, VisitorApplication, AccessRecord } from '../../src/types/index.js';
 
 export interface DataGenerationOptions {
   count?: number;

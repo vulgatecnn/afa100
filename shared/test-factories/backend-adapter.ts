@@ -29,157 +29,66 @@ import {
 export class BackendDataAdapter {
   /**
    * 转换用户数据为MySQL数据库格式
+   * 现在接口已经使用snake_case，直接返回原对象
    */
   static adaptUserForDatabase(user: User) {
-    return {
-      id: user.id,
-      open_id: user.openId,
-      union_id: user.unionId,
-      phone: user.phone,
-      name: user.name,
-      avatar: user.avatar,
-      user_type: user.userType,
-      status: user.status,
-      merchant_id: user.merchantId,
-      password: user.password,
-      created_at: user.createdAt,
-      updated_at: user.updatedAt
-    }
+    return user
   }
   
   /**
    * 转换商户数据为MySQL数据库格式
+   * 现在接口已经使用snake_case，直接返回原对象
    */
   static adaptMerchantForDatabase(merchant: Merchant) {
-    return {
-      id: merchant.id,
-      name: merchant.name,
-      code: merchant.code,
-      contact: merchant.contact,
-      phone: merchant.phone,
-      email: merchant.email,
-      address: merchant.address,
-      status: merchant.status,
-      settings: merchant.settings ? JSON.stringify(merchant.settings) : null,
-      created_at: merchant.createdAt,
-      updated_at: merchant.updatedAt
-    }
+    return merchant
   }
   
   /**
    * 转换访客申请数据为MySQL数据库格式
+   * 现在两个接口都使用snake_case，所以直接返回原对象
    */
   static adaptVisitorApplicationForDatabase(application: VisitorApplication) {
-    return {
-      id: application.id,
-      applicant_id: application.applicantId,
-      merchant_id: application.merchantId,
-      visitee_id: application.visiteeId,
-      visitor_name: application.visitorName,
-      visitor_phone: application.visitorPhone,
-      visitor_company: application.visitorCompany,
-      visit_purpose: application.visitPurpose,
-      visit_type: application.visitType,
-      scheduled_time: application.scheduledTime,
-      duration: application.duration,
-      status: application.status,
-      approved_by: application.approvedBy,
-      approved_at: application.approvedAt,
-      rejection_reason: application.rejectionReason,
-      passcode: application.passcode,
-      passcode_expiry: application.passcodeExpiry,
-      usage_limit: application.usageLimit,
-      usage_count: application.usageCount,
-      created_at: application.createdAt,
-      updated_at: application.updatedAt
-    }
+    return application
   }
   
   /**
    * 转换项目数据为MySQL数据库格式
+   * 现在接口已经使用snake_case，直接返回原对象
    */
   static adaptProjectForDatabase(project: Project) {
-    return {
-      id: project.id,
-      code: project.code,
-      name: project.name,
-      description: project.description,
-      status: project.status,
-      created_at: project.createdAt,
-      updated_at: project.updatedAt
-    }
+    return project
   }
   
   /**
    * 转换场地数据为MySQL数据库格式
+   * 现在接口已经使用snake_case，直接返回原对象
    */
   static adaptVenueForDatabase(venue: Venue) {
-    return {
-      id: venue.id,
-      project_id: venue.projectId,
-      code: venue.code,
-      name: venue.name,
-      description: venue.description,
-      status: venue.status,
-      created_at: venue.createdAt,
-      updated_at: venue.updatedAt
-    }
+    return venue
   }
   
   /**
    * 转换楼层数据为MySQL数据库格式
+   * 现在接口已经使用snake_case，直接返回原对象
    */
   static adaptFloorForDatabase(floor: Floor) {
-    return {
-      id: floor.id,
-      venue_id: floor.venueId,
-      code: floor.code,
-      name: floor.name,
-      description: floor.description,
-      status: floor.status,
-      created_at: floor.createdAt,
-      updated_at: floor.updatedAt
-    }
+    return floor
   }
   
   /**
    * 转换通行码数据为MySQL数据库格式
+   * 现在接口已经使用snake_case，直接返回原对象
    */
   static adaptPasscodeForDatabase(passcode: Passcode) {
-    return {
-      id: passcode.id,
-      user_id: passcode.userId,
-      code: passcode.code,
-      type: passcode.type,
-      status: passcode.status,
-      expiry_time: passcode.expiryTime,
-      usage_limit: passcode.usageLimit,
-      usage_count: passcode.usageCount,
-      permissions: passcode.permissions ? JSON.stringify(passcode.permissions) : null,
-      application_id: passcode.applicationId,
-      created_at: passcode.createdAt,
-      updated_at: passcode.updatedAt
-    }
+    return passcode
   }
   
   /**
    * 转换通行记录数据为MySQL数据库格式
+   * 现在接口已经使用snake_case，直接返回原对象
    */
   static adaptAccessRecordForDatabase(record: AccessRecord) {
-    return {
-      id: record.id,
-      user_id: record.userId,
-      passcode_id: record.passcodeId,
-      device_id: record.deviceId,
-      device_type: record.deviceType,
-      direction: record.direction,
-      result: record.result,
-      fail_reason: record.failReason,
-      project_id: record.projectId,
-      venue_id: record.venueId,
-      floor_id: record.floorId,
-      timestamp: record.timestamp
-    }
+    return record
   }
 }
 

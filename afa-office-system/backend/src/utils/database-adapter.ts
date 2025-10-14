@@ -197,14 +197,14 @@ export class DatabaseConfigManager {
     if (dbType === 'mysql') {
       return {
         type: 'mysql',
-        host: process.env.TEST_DB_HOST || '127.0.0.1',
-        port: parseInt(process.env.TEST_DB_PORT || '3306'),
-        user: process.env.TEST_DB_USER || 'root',
-        password: process.env.TEST_DB_PASSWORD || '111111',
-        database: process.env.TEST_DB_NAME, // 测试时动态创建
-        connectionLimit: parseInt(process.env.TEST_DB_CONNECTION_LIMIT || '10'),
-        acquireTimeout: parseInt(process.env.TEST_DB_ACQUIRE_TIMEOUT || '60000'),
-        timeout: parseInt(process.env.TEST_DB_TIMEOUT || '60000'),
+        host: process.env['TEST_DB_HOST'] || '127.0.0.1',
+        port: parseInt(process.env['TEST_DB_PORT'] || '3306'),
+        user: process.env['TEST_DB_USER'] || 'root',
+        password: process.env['TEST_DB_PASSWORD'] || '111111',
+        database: process.env['TEST_DB_NAME'], // 测试时动态创建
+        connectionLimit: parseInt(process.env['TEST_DB_CONNECTION_LIMIT'] || '10'),
+        acquireTimeout: parseInt(process.env['TEST_DB_ACQUIRE_TIMEOUT'] || '60000'),
+        timeout: parseInt(process.env['TEST_DB_TIMEOUT'] || '60000'),
         charset: 'utf8mb4',
         timezone: '+00:00'
       };

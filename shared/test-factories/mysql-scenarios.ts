@@ -37,7 +37,7 @@ export class MySQLTestScenarioFactory {
     // 2. 创建依赖项目的场地数据
     const venues = projects.flatMap(project => 
       venueFactory.createMany(2, { 
-        projectId: project.id, 
+        project_id: project.id, 
         status: 'active' 
       })
     )
@@ -45,7 +45,7 @@ export class MySQLTestScenarioFactory {
     // 3. 创建依赖场地的楼层数据
     const floors = venues.flatMap(venue => 
       floorFactory.createMany(2, { 
-        venueId: venue.id, 
+        venue_id: venue.id, 
         status: 'active' 
       })
     )
@@ -90,9 +90,9 @@ export class MySQLTestScenarioFactory {
       merchants.slice(0, 2).map(merchant => {
         const employee = employees.find(e => e.merchantId === merchant.id)
         return visitorApplicationFactory.create({
-          applicantId: visitor.id,
-          merchantId: merchant.id,
-          visiteeId: employee?.id,
+          applicant_id: visitor.id,
+          merchant_id: merchant.id,
+          visitee_id: employee?.id,
           status: 'approved'
         })
       })
@@ -103,11 +103,11 @@ export class MySQLTestScenarioFactory {
       // 员工通行码
       ...employees.map(employee => 
         passcodeFactory.create({
-          userId: employee.id,
+          user_id: employee.id,
           type: 'employee',
           status: 'active',
-          usageLimit: 100,
-          applicationId: undefined
+          usage_limit: 100,
+          application_id: undefined
         })
       ),
       // 访客通行码（依赖申请）
@@ -115,11 +115,11 @@ export class MySQLTestScenarioFactory {
         .filter(app => app.status === 'approved')
         .map(app => 
           passcodeFactory.create({
-            userId: app.applicantId,
+            userId: app.applicant_id,
             type: 'visitor',
             status: 'active',
-            usageLimit: 10,
-            applicationId: app.id
+            usage_limit: 10,
+            application_id: app.id
           })
         )
     ]
@@ -128,11 +128,11 @@ export class MySQLTestScenarioFactory {
     const accessRecords = passcodes.flatMap(passcode => 
       Array.from({ length: 3 }, () => 
         accessRecordFactory.create({
-          userId: passcode.userId,
-          passcodeId: passcode.id,
-          projectId: projects[0].id,
-          venueId: venues[0].id,
-          floorId: floors[0].id,
+          user_id: passcode.user_id,
+          passcode_id: passcode.id,
+          project_id: projects[0].id,
+          venue_id: venues[0].id,
+          floor_id: floors[0].id,
           result: 'success'
         })
       )
@@ -168,10 +168,10 @@ export class MySQLTestScenarioFactory {
     
     // 创建空间层级
     const venues = projects.flatMap(project => 
-      venueFactory.createMany(3, { projectId: project.id, status: 'active' })
+      venueFactory.createMany(3, { project_id: project.id, status: 'active' })
     )
     const floors = venues.flatMap(venue => 
-      floorFactory.createMany(4, { venueId: venue.id, status: 'active' })
+      floorFactory.createMany(4, { venue_id: venue.id, status: 'active' })
     )
     
     // 创建用户
@@ -202,9 +202,9 @@ export class MySQLTestScenarioFactory {
         const employee = users.find(u => u.merchantId === merchant.id && u.userType === 'employee')
         
         return visitorApplicationFactory.create({
-          applicantId: visitor.id,
-          merchantId: merchant.id,
-          visiteeId: employee?.id,
+          applicant_id: visitor.id,
+          merchant_id: merchant.id,
+          visitee_id: employee?.id,
           status: Math.random() > 0.3 ? 'approved' : 'pending'
         })
       })
@@ -214,20 +214,20 @@ export class MySQLTestScenarioFactory {
     const passcodes = [
       ...users.map(user => 
         passcodeFactory.create({
-          userId: user.id,
-          type: user.userType === 'employee' ? 'employee' : 'visitor',
+          user_id: user.id,
+          type: user.user_type === 'employee' ? 'employee' : 'visitor',
           status: 'active',
-          usageLimit: user.userType === 'employee' ? 100 : 10
+          usage_limit: user.user_type === 'employee' ? 100 : 10
         })
       ),
       ...visitorApplications
         .filter(app => app.status === 'approved')
         .map(app => 
           passcodeFactory.create({
-            userId: app.applicantId,
+            user_id: app.applicant_id,
             type: 'visitor',
             status: 'active',
-            applicationId: app.id
+            application_id: app.id
           })
         )
     ]
@@ -236,11 +236,11 @@ export class MySQLTestScenarioFactory {
     const accessRecords = passcodes.flatMap(passcode => 
       Array.from({ length: Math.floor(Math.random() * 20) + 5 }, () => 
         accessRecordFactory.create({
-          userId: passcode.userId,
-          passcodeId: passcode.id,
-          projectId: projects[Math.floor(Math.random() * projects.length)].id,
-          venueId: venues[Math.floor(Math.random() * venues.length)].id,
-          floorId: floors[Math.floor(Math.random() * floors.length)].id
+          user_id: passcode.user_id,
+          passcode_id: passcode.id,
+          project_id: projects[Math.floor(Math.random() * projects.length)].id,
+          venue_id: venues[Math.floor(Math.random() * venues.length)].id,
+          floor_id: floors[Math.floor(Math.random() * floors.length)].id
         })
       )
     )
@@ -334,16 +334,16 @@ export class MySQLTestScenarioFactory {
     
     const visitorApplications = [
       visitorApplicationFactory.create({
-        applicantId: users[1].id,
-        merchantId: merchants[0].id,
-        scheduledTime: farFuture.toISOString(),
+        applicant_id: users[1].id,
+        merchant_id: merchants[0].id,
+        scheduled_time: farFuture.toISOString(),
         duration: 1, // 最小时长
         status: 'pending'
       }),
       visitorApplicationFactory.create({
-        applicantId: users[1].id,
-        merchantId: merchants[0].id,
-        scheduledTime: farPast.toISOString(),
+        applicant_id: users[1].id,
+        merchant_id: merchants[0].id,
+        scheduled_time: farPast.toISOString(),
         duration: 480, // 最大时长（8小时）
         status: 'expired'
       })
@@ -390,18 +390,18 @@ export class MySQLTestScenarioFactory {
     
     // 创建需要同时更新多个表的申请
     const application = visitorApplicationFactory.create({
-      applicantId: visitor.id,
-      merchantId: merchant.id,
-      visiteeId: employee.id,
+      applicant_id: visitor.id,
+      merchant_id: merchant.id,
+      visitee_id: employee.id,
       status: 'approved'
     })
     
     // 创建相关的通行码
     const passcode = passcodeFactory.create({
-      userId: visitor.id,
+      user_id: visitor.id,
       type: 'visitor',
       status: 'active',
-      applicationId: application.id
+      application_id: application.id
     })
     
     return {
@@ -431,16 +431,16 @@ export class MySQLTestScenarioFactory {
     // 检查外键约束
     if (dataSet.venues) {
       dataSet.venues.forEach((venue: Venue) => {
-        if (!dataSet.projects?.find((p: Project) => p.id === venue.projectId)) {
-          errors.push(`Venue ${venue.id} references non-existent project ${venue.projectId}`)
+        if (!dataSet.projects?.find((p: Project) => p.id === venue.project_id)) {
+          errors.push(`Venue ${venue.id} references non-existent project ${venue.project_id}`)
         }
       })
     }
     
     if (dataSet.floors) {
       dataSet.floors.forEach((floor: Floor) => {
-        if (!dataSet.venues?.find((v: Venue) => v.id === floor.venueId)) {
-          errors.push(`Floor ${floor.id} references non-existent venue ${floor.venueId}`)
+        if (!dataSet.venues?.find((v: Venue) => v.id === floor.venue_id)) {
+          errors.push(`Floor ${floor.id} references non-existent venue ${floor.venue_id}`)
         }
       })
     }

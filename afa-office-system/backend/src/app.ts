@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
@@ -54,7 +54,7 @@ app.use(maintenanceCheck);
 app.use('/uploads', express.static(join(__dirname, '../uploads')));
 
 // 健康检查端点
-app.get('/health', (_req, res) => {
+app.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({
     success: true,
     message: 'AFA办公小程序后端服务运行正常',

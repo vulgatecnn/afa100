@@ -23,17 +23,17 @@ export interface TestDataFactory<T> {
  */
 export interface User {
   id: number
-  openId?: string
-  unionId?: string
-  phone?: string
+  open_id?: string | undefined
+  union_id?: string | undefined
+  phone?: string | undefined
   name: string
-  avatar?: string
-  userType: 'tenant_admin' | 'merchant_admin' | 'employee' | 'visitor'
+  avatar?: string | undefined
+  user_type: 'tenant_admin' | 'merchant_admin' | 'employee' | 'visitor'
   status: 'active' | 'inactive' | 'pending'
-  merchantId?: number
-  password?: string
-  createdAt: string
-  updatedAt: string
+  merchant_id?: number | undefined
+  password?: string | undefined
+  created_at: string
+  updated_at: string
 }
 
 /**
@@ -48,36 +48,63 @@ export interface Merchant {
   email?: string
   address?: string
   status: 'active' | 'inactive'
-  settings?: Record<string, any>
-  createdAt: string
-  updatedAt: string
+  settings?: string
+  created_at: string
+  updated_at: string
 }
 
 /**
  * 访客申请数据类型 - MySQL适配版本
+ * 使用snake_case字段名以匹配后端数据库结构
  */
 export interface VisitorApplication {
   id: number
-  applicantId: number
-  merchantId: number
-  visiteeId?: number
-  visitorName: string
-  visitorPhone: string
-  visitorCompany?: string
-  visitPurpose: string
-  visitType?: 'business' | 'personal' | 'interview' | 'meeting'
-  scheduledTime: string
+  applicant_id: number
+  merchant_id: number
+  visitee_id?: number | undefined
+  visitor_name: string
+  visitor_phone: string
+  visitor_company?: string | undefined
+  visit_purpose: string
+  visitPurpose?: 'business' | 'interview' | 'meeting' | 'delivery' | 'maintenance' | 'other' | null | undefined // 标准化的访问目的
+  visit_type?: string | undefined
+  scheduled_time: string
   duration: number
   status: 'pending' | 'approved' | 'rejected' | 'expired' | 'completed'
-  approvedBy?: number
-  approvedAt?: string
-  rejectionReason?: string
-  passcode?: string
-  passcodeExpiry?: string
-  usageLimit: number
-  usageCount: number
-  createdAt: string
-  updatedAt: string
+  approvalStatus?: 'pending' | 'approved' | 'rejected' | 'auto_approved' | null | undefined // 审批状态（更细粒度）
+  approved_by?: number | undefined
+  approved_at?: string | undefined
+  rejection_reason?: string | undefined
+  passcode?: string | undefined
+  passcode_expiry?: string | undefined
+  usage_limit: number
+  usage_count: number
+  verification?: {
+    idCard?: string;
+    idCardPhoto?: string;
+    facePhoto?: string;
+    temperature?: number;
+    healthCode?: string;
+    verificationStatus: 'pending' | 'verified' | 'failed';
+    verifiedAt?: string;
+    verifiedBy?: number;
+  } | string | null // 访客验证信息，支持JSON字符串
+  created_at: string
+  updated_at: string
+  // 添加camelCase版本以支持API层
+  createdAt?: string
+  updatedAt?: string
+  scheduledTime?: string
+  // 流程相关字段
+  workflow?: {
+    currentStep: string;
+    steps: Array<{
+      name: string;
+      status: 'pending' | 'completed' | 'skipped';
+      completedAt?: string | null;
+      completedBy?: number | null;
+    }>;
+  } | string | null // 支持JSON字符串
 }
 
 /**
@@ -89,8 +116,8 @@ export interface Project {
   name: string
   description?: string
   status: 'active' | 'inactive'
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
 }
 
 /**
@@ -98,13 +125,13 @@ export interface Project {
  */
 export interface Venue {
   id: number
-  projectId: number
+  project_id: number
   code: string
   name: string
   description?: string
   status: 'active' | 'inactive'
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
 }
 
 /**
@@ -112,13 +139,13 @@ export interface Venue {
  */
 export interface Floor {
   id: number
-  venueId: number
+  venue_id: number
   code: string
   name: string
   description?: string
   status: 'active' | 'inactive'
-  createdAt: string
-  updatedAt: string
+  created_at: string
+  updated_at: string
 }
 
 /**
@@ -126,17 +153,17 @@ export interface Floor {
  */
 export interface Passcode {
   id: number
-  userId: number
+  user_id: number
   code: string
   type: 'employee' | 'visitor'
   status: 'active' | 'expired' | 'revoked'
-  expiryTime?: string
-  usageLimit?: number
-  usageCount: number
-  permissions?: Record<string, any>
-  applicationId?: number
-  createdAt: string
-  updatedAt: string
+  expiry_time?: string | undefined
+  usage_limit?: number | undefined
+  usage_count: number
+  permissions?: string | undefined
+  application_id?: number | undefined
+  created_at: string
+  updated_at: string
 }
 
 /**
@@ -144,16 +171,16 @@ export interface Passcode {
  */
 export interface AccessRecord {
   id: number
-  userId: number
-  passcodeId?: number
-  deviceId: string
-  deviceType?: string
+  user_id: number
+  passcode_id?: number | undefined
+  device_id: string
+  device_type?: string | undefined
   direction: 'in' | 'out'
   result: 'success' | 'failed'
-  failReason?: string
-  projectId?: number
-  venueId?: number
-  floorId?: number
+  fail_reason?: string | undefined
+  project_id?: number | undefined
+  venue_id?: number | undefined
+  floor_id?: number | undefined
   timestamp: string
 }
 
@@ -163,17 +190,17 @@ export interface AccessRecord {
 export const userFactory: TestDataFactory<User> = {
   create: (overrides = {}) => ({
     id: faker.number.int({ min: 1, max: 10000 }),
-    openId: faker.string.alphanumeric(28),
-    unionId: faker.string.alphanumeric(28),
+    open_id: faker.string.alphanumeric(28),
+    union_id: faker.string.alphanumeric(28),
     phone: faker.phone.number(),
     name: faker.person.fullName(),
     avatar: faker.helpers.maybe(() => faker.image.avatar(), { probability: 0.7 }),
-    userType: faker.helpers.arrayElement(['tenant_admin', 'merchant_admin', 'employee', 'visitor']),
+    user_type: faker.helpers.arrayElement(['tenant_admin', 'merchant_admin', 'employee', 'visitor']),
     status: faker.helpers.arrayElement(['active', 'inactive', 'pending']),
-    merchantId: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 100 }), { probability: 0.8 }) || undefined,
+    merchant_id: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 100 }), { probability: 0.8 }) || undefined,
     password: faker.helpers.maybe(() => `$2b$10$${faker.string.alphanumeric(53)}`, { probability: 0.9 }),
-    createdAt: faker.date.past().toISOString(),
-    updatedAt: faker.date.recent().toISOString(),
+    created_at: faker.date.past().toISOString(),
+    updated_at: faker.date.recent().toISOString(),
     ...overrides
   }),
   
@@ -196,7 +223,7 @@ export const merchantFactory: TestDataFactory<Merchant> = {
     email: faker.internet.email(),
     address: faker.location.streetAddress({ useFullAddress: true }),
     status: faker.helpers.arrayElement(['active', 'inactive']),
-    settings: {
+    settings: JSON.stringify({
       maxEmployees: faker.number.int({ min: 10, max: 100 }),
       maxVisitors: faker.number.int({ min: 5, max: 50 }),
       workingHours: {
@@ -207,9 +234,9 @@ export const merchantFactory: TestDataFactory<Merchant> = {
       allowVisitorSelfApply: faker.datatype.boolean(),
       maxVisitorDuration: faker.number.int({ min: 1, max: 24 }),
       requireApproval: faker.datatype.boolean()
-    },
-    createdAt: faker.date.past().toISOString(),
-    updatedAt: faker.date.recent().toISOString(),
+    }),
+    created_at: faker.date.past().toISOString(),
+    updated_at: faker.date.recent().toISOString(),
     ...overrides
   }),
   
@@ -229,26 +256,59 @@ export const visitorApplicationFactory: TestDataFactory<VisitorApplication> = {
     
     return {
       id: faker.number.int({ min: 1, max: 10000 }),
-      applicantId: faker.number.int({ min: 1, max: 1000 }),
-      merchantId: faker.number.int({ min: 1, max: 100 }),
-      visiteeId: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 1000 }), { probability: 0.8 }),
-      visitorName: faker.person.fullName(),
-      visitorPhone: faker.phone.number(),
-      visitorCompany: faker.helpers.maybe(() => faker.company.name(), { probability: 0.8 }),
-      visitPurpose: faker.helpers.arrayElement(['商务洽谈', '技术交流', '参观访问', '会议讨论', '项目合作', '面试', '培训']),
-      visitType: faker.helpers.arrayElement(['business', 'personal', 'interview', 'meeting']),
-      scheduledTime: scheduledTime.toISOString(),
+      applicant_id: faker.number.int({ min: 1, max: 1000 }),
+      merchant_id: faker.number.int({ min: 1, max: 100 }),
+      visitee_id: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 1000 }), { probability: 0.8 }),
+      visitor_name: faker.person.fullName(),
+      visitor_phone: faker.phone.number(),
+      visitor_company: faker.helpers.maybe(() => faker.company.name(), { probability: 0.8 }),
+      visit_purpose: faker.helpers.arrayElement(['商务洽谈', '技术交流', '参观访问', '会议讨论', '项目合作', '面试', '培训']),
+      visitPurpose: faker.helpers.maybe(() => faker.helpers.arrayElement(['business', 'interview', 'meeting', 'delivery', 'maintenance', 'other']), { probability: 0.8 }),
+      visit_type: faker.helpers.arrayElement(['business', 'personal', 'interview', 'meeting']),
+      scheduled_time: scheduledTime.toISOString(),
       duration,
       status: faker.helpers.arrayElement(['pending', 'approved', 'rejected', 'expired', 'completed']),
-      approvedBy: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 100 }), { probability: 0.6 }),
-      approvedAt: faker.helpers.maybe(() => faker.date.recent().toISOString(), { probability: 0.6 }),
-      rejectionReason: faker.helpers.maybe(() => faker.lorem.sentence(), { probability: 0.2 }),
+      approvalStatus: faker.helpers.maybe(() => faker.helpers.arrayElement(['pending', 'approved', 'rejected', 'auto_approved']), { probability: 0.8 }),
+      approved_by: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 100 }), { probability: 0.6 }),
+      approved_at: faker.helpers.maybe(() => faker.date.recent().toISOString(), { probability: 0.6 }),
+      rejection_reason: faker.helpers.maybe(() => faker.lorem.sentence(), { probability: 0.2 }),
       passcode: faker.helpers.maybe(() => `PASS${faker.string.numeric(3)}`, { probability: 0.7 }),
-      passcodeExpiry: faker.helpers.maybe(() => faker.date.future().toISOString(), { probability: 0.7 }),
-      usageLimit: faker.number.int({ min: 1, max: 10 }),
-      usageCount: faker.number.int({ min: 0, max: 5 }),
+      passcode_expiry: faker.helpers.maybe(() => faker.date.future().toISOString(), { probability: 0.7 }),
+      usage_limit: faker.number.int({ min: 1, max: 10 }),
+      usage_count: faker.number.int({ min: 0, max: 5 }),
+      verification: faker.helpers.maybe(() => ({
+        idCard: faker.string.numeric(18),
+        idCardPhoto: faker.image.url(),
+        facePhoto: faker.image.url(),
+        temperature: faker.number.float({ min: 36.0, max: 37.5, fractionDigits: 1 }),
+        healthCode: faker.helpers.arrayElement(['green', 'yellow', 'red']),
+        verificationStatus: faker.helpers.arrayElement(['pending', 'verified', 'failed']),
+        verifiedAt: faker.date.recent().toISOString(),
+        verifiedBy: faker.number.int({ min: 1, max: 100 })
+      }), { probability: 0.7 }),
+      workflow: faker.helpers.maybe(() => ({
+        currentStep: faker.helpers.arrayElement(['submit', 'review', 'approve', 'verify', 'complete']),
+        steps: [
+          {
+            name: 'submit',
+            status: 'completed',
+            completedAt: faker.date.past().toISOString(),
+            completedBy: faker.number.int({ min: 1, max: 100 })
+          },
+          {
+            name: 'review',
+            status: faker.helpers.arrayElement(['pending', 'completed', 'skipped']),
+            completedAt: faker.helpers.maybe(() => faker.date.recent().toISOString()),
+            completedBy: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 100 }))
+          }
+        ]
+      }), { probability: 0.6 }),
+      created_at: faker.date.past().toISOString(),
+      updated_at: faker.date.recent().toISOString(),
+      // 添加camelCase版本
       createdAt: faker.date.past().toISOString(),
       updatedAt: faker.date.recent().toISOString(),
+      scheduledTime: scheduledTime.toISOString(),
       ...overrides
     }
   },
@@ -269,8 +329,8 @@ export const projectFactory: TestDataFactory<Project> = {
     name: `${faker.company.name()}项目`,
     description: faker.lorem.sentence(),
     status: faker.helpers.arrayElement(['active', 'inactive']),
-    createdAt: faker.date.past().toISOString(),
-    updatedAt: faker.date.recent().toISOString(),
+    created_at: faker.date.past().toISOString(),
+    updated_at: faker.date.recent().toISOString(),
     ...overrides
   }),
   
@@ -286,13 +346,13 @@ export const projectFactory: TestDataFactory<Project> = {
 export const venueFactory: TestDataFactory<Venue> = {
   create: (overrides = {}) => ({
     id: faker.number.int({ min: 1, max: 1000 }),
-    projectId: faker.number.int({ min: 1, max: 100 }),
+    project_id: faker.number.int({ min: 1, max: 100 }),
     code: `VEN${faker.string.numeric(3).padStart(3, '0')}`,
     name: `${faker.helpers.arrayElement(['A座', 'B座', 'C座', 'D座'])}大楼`,
     description: faker.lorem.sentence(),
     status: faker.helpers.arrayElement(['active', 'inactive']),
-    createdAt: faker.date.past().toISOString(),
-    updatedAt: faker.date.recent().toISOString(),
+    created_at: faker.date.past().toISOString(),
+    updated_at: faker.date.recent().toISOString(),
     ...overrides
   }),
   
@@ -308,13 +368,13 @@ export const venueFactory: TestDataFactory<Venue> = {
 export const floorFactory: TestDataFactory<Floor> = {
   create: (overrides = {}) => ({
     id: faker.number.int({ min: 1, max: 1000 }),
-    venueId: faker.number.int({ min: 1, max: 100 }),
+    venue_id: faker.number.int({ min: 1, max: 100 }),
     code: `FL${faker.string.numeric(3).padStart(3, '0')}`,
     name: `${faker.number.int({ min: 1, max: 30 })}楼`,
     description: faker.lorem.sentence(),
     status: faker.helpers.arrayElement(['active', 'inactive']),
-    createdAt: faker.date.past().toISOString(),
-    updatedAt: faker.date.recent().toISOString(),
+    created_at: faker.date.past().toISOString(),
+    updated_at: faker.date.recent().toISOString(),
     ...overrides
   }),
   
@@ -336,23 +396,23 @@ export const passcodeFactory: TestDataFactory<Passcode> = {
     
     return {
       id: faker.number.int({ min: 1, max: 10000 }),
-      userId: faker.number.int({ min: 1, max: 1000 }),
+      user_id: faker.number.int({ min: 1, max: 1000 }),
       code: type === 'employee' 
         ? `EMP${faker.string.numeric(3).padStart(3, '0')}`
         : `VIS${faker.string.numeric(3).padStart(3, '0')}`,
       type,
       status: faker.helpers.arrayElement(['active', 'expired', 'revoked']),
-      expiryTime: faker.helpers.maybe(() => expiryTime.toISOString(), { probability: 0.9 }),
-      usageLimit: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 100 }), { probability: 0.8 }),
-      usageCount: faker.number.int({ min: 0, max: 10 }),
-      permissions: {
+      expiry_time: faker.helpers.maybe(() => expiryTime.toISOString(), { probability: 0.9 }),
+      usage_limit: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 100 }), { probability: 0.8 }),
+      usage_count: faker.number.int({ min: 0, max: 10 }),
+      permissions: JSON.stringify({
         projects: faker.helpers.arrayElements([1, 2, 3], faker.number.int({ min: 1, max: 3 })),
         venues: faker.helpers.arrayElements([1, 2, 3, 4], faker.number.int({ min: 1, max: 2 })),
         floors: faker.helpers.arrayElements([1, 2, 3, 4, 5], faker.number.int({ min: 1, max: 3 }))
-      },
-      applicationId: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 1000 }), { probability: 0.6 }),
-      createdAt: faker.date.past().toISOString(),
-      updatedAt: faker.date.recent().toISOString(),
+      }),
+      application_id: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 1000 }), { probability: 0.6 }),
+      created_at: faker.date.past().toISOString(),
+      updated_at: faker.date.recent().toISOString(),
       ...overrides
     }
   },
@@ -369,19 +429,19 @@ export const passcodeFactory: TestDataFactory<Passcode> = {
 export const accessRecordFactory: TestDataFactory<AccessRecord> = {
   create: (overrides = {}) => ({
     id: faker.number.int({ min: 1, max: 100000 }),
-    userId: faker.number.int({ min: 1, max: 1000 }),
-    passcodeId: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 10000 }), { probability: 0.9 }),
-    deviceId: `DEVICE${faker.string.numeric(3).padStart(3, '0')}`,
-    deviceType: faker.helpers.arrayElement(['card_reader', 'qr_scanner', 'face_recognition', 'fingerprint']),
+    user_id: faker.number.int({ min: 1, max: 1000 }),
+    passcode_id: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 10000 }), { probability: 0.9 }),
+    device_id: `DEVICE${faker.string.numeric(3).padStart(3, '0')}`,
+    device_type: faker.helpers.arrayElement(['card_reader', 'qr_scanner', 'face_recognition', 'fingerprint']),
     direction: faker.helpers.arrayElement(['in', 'out']),
     result: faker.helpers.arrayElement(['success', 'failed']),
-    failReason: faker.helpers.maybe(() => 
+    fail_reason: faker.helpers.maybe(() => 
       faker.helpers.arrayElement(['通行码已过期', '权限不足', '设备故障', '网络异常', '人脸识别失败', '指纹不匹配']), 
       { probability: 0.2 }
     ),
-    projectId: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 10 }), { probability: 0.8 }),
-    venueId: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 20 }), { probability: 0.8 }),
-    floorId: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 50 }), { probability: 0.6 }),
+    project_id: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 10 }), { probability: 0.8 }),
+    venue_id: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 20 }), { probability: 0.8 }),
+    floor_id: faker.helpers.maybe(() => faker.number.int({ min: 1, max: 50 }), { probability: 0.6 }),
     timestamp: faker.date.recent().toISOString(),
     ...overrides
   }),
@@ -402,24 +462,24 @@ export class TestScenarioFactory {
   static createMerchantScenario() {
     const merchant = merchantFactory.create()
     const admin = userFactory.create({
-      userType: 'merchant_admin',
-      merchantId: merchant.id,
+      user_type: 'merchant_admin',
+      merchant_id: merchant.id,
       status: 'active'
     })
     const employees = userFactory.createMany(3, {
-      userType: 'employee',
-      merchantId: merchant.id,
+      user_type: 'employee',
+      merchant_id: merchant.id,
       status: 'active'
     })
     
     // 创建项目、场地、楼层的层级结构
     const project = projectFactory.create({ status: 'active' })
     const venues = venueFactory.createMany(2, { 
-      projectId: project.id,
+      project_id: project.id,
       status: 'active' 
     })
     const floors = floorFactory.createMany(3, {
-      venueId: venues[0].id,
+      venue_id: venues[0].id,
       status: 'active'
     })
     
@@ -441,23 +501,23 @@ export class TestScenarioFactory {
     
     // 创建访客用户
     const visitor = userFactory.create({
-      userType: 'visitor',
-      merchantId: undefined,
+      user_type: 'visitor',
+      merchant_id: undefined,
       status: 'active'
     })
     
     const visitorApplications = visitorApplicationFactory.createMany(5, {
-      merchantId: merchantScenario.merchant.id,
-      applicantId: visitor.id,
-      visiteeId: merchantScenario.employees[0].id,
+      merchant_id: merchantScenario.merchant.id,
+      applicant_id: visitor.id,
+      visitee_id: merchantScenario.employees[0].id,
       status: 'approved'
     })
     
     const passcodes = passcodeFactory.createMany(3, {
-      userId: visitor.id,
+      user_id: visitor.id,
       type: 'visitor',
       status: 'active',
-      applicationId: visitorApplications[0].id
+      application_id: visitorApplications[0].id
     })
     
     return {
@@ -475,11 +535,11 @@ export class TestScenarioFactory {
     const visitorScenario = this.createVisitorScenario()
     
     const accessRecords = accessRecordFactory.createMany(10, {
-      userId: visitorScenario.visitor.id,
-      passcodeId: visitorScenario.passcodes[0].id,
-      projectId: visitorScenario.project.id,
-      venueId: visitorScenario.venues[0].id,
-      floorId: visitorScenario.floors[0].id,
+      user_id: visitorScenario.visitor.id,
+      passcode_id: visitorScenario.passcodes[0].id,
+      project_id: visitorScenario.project.id,
+      venue_id: visitorScenario.venues[0].id,
+      floor_id: visitorScenario.floors[0].id,
       result: 'success'
     })
     
@@ -496,18 +556,18 @@ export class TestScenarioFactory {
     const merchantScenario = this.createMerchantScenario()
     
     const employeePasscodes = passcodeFactory.createMany(3, {
-      userId: merchantScenario.employees[0].id,
+      user_id: merchantScenario.employees[0].id,
       type: 'employee',
       status: 'active',
-      usageLimit: 100
+      usage_limit: 100
     })
     
     const employeeAccessRecords = accessRecordFactory.createMany(20, {
-      userId: merchantScenario.employees[0].id,
-      passcodeId: employeePasscodes[0].id,
-      projectId: merchantScenario.project.id,
-      venueId: merchantScenario.venues[0].id,
-      floorId: merchantScenario.floors[0].id,
+      user_id: merchantScenario.employees[0].id,
+      passcode_id: employeePasscodes[0].id,
+      project_id: merchantScenario.project.id,
+      venue_id: merchantScenario.venues[0].id,
+      floor_id: merchantScenario.floors[0].id,
       result: 'success'
     })
     
@@ -524,8 +584,8 @@ export class TestScenarioFactory {
   static createCompleteSystemScenario() {
     // 创建租务管理员
     const tenantAdmin = userFactory.create({
-      userType: 'tenant_admin',
-      merchantId: undefined,
+      user_type: 'tenant_admin',
+      merchant_id: undefined,
       status: 'active'
     })
     
@@ -586,13 +646,13 @@ export class TestDataReset {
     const projects = projectFactory.createMany(3, { status: 'active' })
     const venues = projects.flatMap(project => 
       venueFactory.createMany(2, { 
-        projectId: project.id, 
+        project_id: project.id, 
         status: 'active' 
       })
     )
     const floors = venues.flatMap(venue => 
       floorFactory.createMany(2, { 
-        venueId: venue.id, 
+        venue_id: venue.id, 
         status: 'active' 
       })
     )
@@ -602,69 +662,69 @@ export class TestDataReset {
     const users = [
       // 租务管理员
       userFactory.create({
-        userType: 'tenant_admin',
-        merchantId: undefined,
+        user_type: 'tenant_admin',
+        merchant_id: undefined,
         status: 'active'
       }),
       // 商户管理员
       ...merchants.map(merchant => 
         userFactory.create({
-          userType: 'merchant_admin',
-          merchantId: merchant.id,
+          user_type: 'merchant_admin',
+          merchant_id: merchant.id,
           status: 'active'
         })
       ),
       // 员工
       ...merchants.flatMap(merchant => 
         userFactory.createMany(2, {
-          userType: 'employee',
-          merchantId: merchant.id,
+          user_type: 'employee',
+          merchant_id: merchant.id,
           status: 'active'
         })
       ),
       // 访客
       ...userFactory.createMany(3, {
-        userType: 'visitor',
-        merchantId: undefined,
+        user_type: 'visitor',
+        merchant_id: undefined,
         status: 'active'
       })
     ]
     
     const visitorApplications = visitorApplicationFactory.createMany(15, {
-      merchantId: merchants[0].id,
-      applicantId: users.find(u => u.userType === 'visitor')?.id || 1,
-      visiteeId: users.find(u => u.userType === 'employee')?.id || 1
+      merchant_id: merchants[0].id,
+      applicant_id: users.find(u => u.user_type === 'visitor')?.id || 1,
+      visitee_id: users.find(u => u.user_type === 'employee')?.id || 1
     })
     
     const passcodes = [
       // 员工通行码
       ...users
-        .filter(u => u.userType === 'employee')
+        .filter(u => u.user_type === 'employee')
         .map(user => passcodeFactory.create({
-          userId: user.id,
+          user_id: user.id,
           type: 'employee',
           status: 'active',
-          usageLimit: 100
+          usage_limit: 100
         })),
       // 访客通行码
       ...visitorApplications
         .filter(app => app.status === 'approved')
         .slice(0, 5)
         .map(app => passcodeFactory.create({
-          userId: app.applicantId,
+          user_id: app.applicant_id,
           type: 'visitor',
           status: 'active',
-          applicationId: app.id,
-          usageLimit: 10
+          application_id: app.id,
+          usage_limit: 10
         }))
     ]
     
     const accessRecords = accessRecordFactory.createMany(50, {
-      userId: users[0].id,
-      passcodeId: passcodes[0]?.id || 1,
-      projectId: projects[0].id,
-      venueId: venues[0].id,
-      floorId: floors[0].id
+      user_id: users[0].id,
+      passcode_id: passcodes[0]?.id || 1,
+      project_id: projects[0].id,
+      venue_id: venues[0].id,
+      floor_id: floors[0].id
     })
     
     return {

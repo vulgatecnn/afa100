@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    setupFiles: ['./tests/enhanced-setup.ts'],
+    setupFiles: ['./tests/enhanced-setup.ts', './tests/utils/mock-utils.ts'],
     testTimeout: 15000, // 增加超时时间以适应增强功能
     hookTimeout: 15000,
     // 支持并发测试但限制并发数以避免资源竞争

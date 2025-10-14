@@ -67,11 +67,11 @@ export class DatabaseService {
     };
 
     this.serviceConfig = {
-      enableFallback: process.env.DB_ENABLE_FALLBACK !== 'false',
-      fallbackTimeout: parseInt(process.env.DB_FALLBACK_TIMEOUT || '10000'),
-      healthCheckInterval: parseInt(process.env.DB_HEALTH_CHECK_INTERVAL || '30000'),
-      maxRetries: parseInt(process.env.DB_MAX_RETRIES || '3'),
-      retryDelay: parseInt(process.env.DB_RETRY_DELAY || '1000')
+      enableFallback: process.env['DB_ENABLE_FALLBACK'] !== 'false',
+      fallbackTimeout: parseInt(process.env['DB_FALLBACK_TIMEOUT'] || '10000'),
+      healthCheckInterval: parseInt(process.env['DB_HEALTH_CHECK_INTERVAL'] || '30000'),
+      maxRetries: parseInt(process.env['DB_MAX_RETRIES'] || '3'),
+      retryDelay: parseInt(process.env['DB_RETRY_DELAY'] || '1000')
     };
   }
 

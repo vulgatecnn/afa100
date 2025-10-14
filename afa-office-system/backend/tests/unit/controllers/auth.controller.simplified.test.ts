@@ -292,6 +292,7 @@ describe('AuthController - 简化测试', () => {
         authController.logout,
         {
           user: {
+            id: 1,
             userId: 1,
             userType: 'employee',
           }
@@ -311,6 +312,7 @@ describe('AuthController - 简化测试', () => {
         authController.changePassword,
         {
           user: {
+            id: 1,
             userId: 1,
             userType: 'employee',
           },
@@ -335,6 +337,7 @@ describe('AuthController - 简化测试', () => {
         authController.changePassword,
         {
           user: {
+            id: 1,
             userId: 1,
             userType: 'employee',
           },

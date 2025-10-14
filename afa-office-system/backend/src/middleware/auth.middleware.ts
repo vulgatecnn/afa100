@@ -4,15 +4,7 @@ import { AuthService } from '../services/auth.service.js';
 import { AppError, ErrorCodes } from './error.middleware.js';
 import type { JwtPayload, UserType, User, UserContext } from '../types/index.js';
 
-// 扩展Request接口以包含用户信息
-declare global {
-  namespace Express {
-    interface Request {
-      user?: UserContext;
-      userDetails?: User;
-    }
-  }
-}
+// Note: Express Request interface is already extended in types/express.d.ts
 
 const authService = new AuthService();
 
@@ -47,7 +39,7 @@ export const authenticate = async (req: Request, _res: Response, next: NextFunct
     req.user = {
       ...decoded,
       id: decoded.userId // 添加id字段以保持向后兼容
-    };
+    } as UserContext;
     req.userDetails = user;
     next();
   } catch (error) {
@@ -95,7 +87,7 @@ export const optionalAuth = async (req: Request, _res: Response, next: NextFunct
       req.user = {
         ...decoded,
         id: decoded.userId // 添加id字段以保持向后兼容
-      };
+      } as UserContext;
       req.userDetails = user;
     }
   } catch (error) {
@@ -142,7 +134,7 @@ export const requireMerchantAccess = (req: Request, _res: Response, next: NextFu
     }
 
     // 其他用户只能访问自己商户的数据
-    const merchantId = req.params?.merchantId || req.body?.merchantId || req.query?.merchantId;
+    const merchantId = req.params?.['merchantId'] || req.body?.merchantId || req.query?.['merchantId'];
     
     if (merchantId && req.user.merchantId && parseInt(merchantId) !== req.user.merchantId) {
       throw new AppError('无权访问其他商户数据', 403, ErrorCodes.INSUFFICIENT_PERMISSIONS);

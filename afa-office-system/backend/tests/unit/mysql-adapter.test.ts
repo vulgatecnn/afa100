@@ -185,12 +185,12 @@ describe('MySQL适配器单元测试', () => {
     });
 
     it('应该能够处理非MySQL配置类型', async () => {
-      const sqliteConfig = {
-        type: DatabaseType.SQLITE,
+      const invalidConfig = {
+        type: 'sqlite' as any,
         path: ':memory:'
       };
 
-      await expect(adapter.connect(sqliteConfig as any)).rejects.toThrow('MySQLAdapter只能用于MySQL配置');
+      await expect(adapter.connect(invalidConfig as any)).rejects.toThrow('MySQLAdapter只能用于MySQL配置');
     });
   });
 

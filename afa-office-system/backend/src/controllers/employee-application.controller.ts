@@ -155,9 +155,19 @@ export class EmployeeApplicationController {
    */
   async getMerchantApplications(req: Request, res: Response): Promise<void> {
     try {
-      const merchantId = parseInt(req.params.merchantId);
+      const merchantIdParam = req.params['merchantId'];
       const { status, page, limit } = req.query;
 
+      if (!merchantIdParam) {
+        res.status(400).json({
+          success: false,
+          message: '商户ID不能为空',
+          timestamp: new Date().toISOString()
+        } as ApiResponse);
+        return;
+      }
+
+      const merchantId = parseInt(merchantIdParam);
       if (isNaN(merchantId) || merchantId <= 0) {
         res.status(400).json({
           success: false,
@@ -167,11 +177,11 @@ export class EmployeeApplicationController {
         return;
       }
 
-      const options = {
-        status: status as any,
-        page: page ? parseInt(page as string) : undefined,
-        limit: limit ? parseInt(limit as string) : undefined
-      };
+      // 构建选项对象，只包含非undefined的字段
+      const options: any = {};
+      if (status !== undefined) options.status = status as any;
+      if (page !== undefined) options.page = parseInt(page as string);
+      if (limit !== undefined) options.limit = parseInt(limit as string);
 
       const result = await this.employeeApplicationService.getMerchantApplications(merchantId, options);
 
@@ -196,7 +206,7 @@ export class EmployeeApplicationController {
    */
   async getApplicationById(req: Request, res: Response): Promise<void> {
     try {
-      const applicationId = parseInt(req.params.applicationId);
+      const applicationId = parseInt(req.params['applicationId']);
 
       if (isNaN(applicationId) || applicationId <= 0) {
         res.status(400).json({
@@ -231,7 +241,7 @@ export class EmployeeApplicationController {
    */
   async approveApplication(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const applicationId = parseInt(req.params.applicationId);
+      const applicationId = parseInt(req.params['applicationId']);
       const { approved, reason } = req.body;
       const approvedBy = req.user?.id;
 
@@ -291,7 +301,7 @@ export class EmployeeApplicationController {
    */
   async getApplicationStats(req: Request, res: Response): Promise<void> {
     try {
-      const merchantId = parseInt(req.params.merchantId);
+      const merchantId = parseInt(req.params['merchantId']);
 
       if (isNaN(merchantId) || merchantId <= 0) {
         res.status(400).json({
@@ -325,7 +335,7 @@ export class EmployeeApplicationController {
    */
   async withdrawApplication(req: AuthenticatedRequest, res: Response): Promise<void> {
     try {
-      const applicationId = parseInt(req.params.applicationId);
+      const applicationId = parseInt(req.params['applicationId']);
       const userId = req.user?.id;
 
       if (isNaN(applicationId) || applicationId <= 0) {

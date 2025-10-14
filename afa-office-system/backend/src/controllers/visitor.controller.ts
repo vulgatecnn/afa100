@@ -18,7 +18,7 @@ export class VisitorController {
    */
   async getVisitorApplications(req: Request, res: Response): Promise<void> {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
       const { page, limit, status, search, dateFrom, dateTo, visiteeId } = req.query;
 
       // 验证商户ID
@@ -83,8 +83,8 @@ export class VisitorController {
    */
   async getVisitorApplicationById(req: Request, res: Response): Promise<void> {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
-      const applicationId = req.params.applicationId ? parseInt(req.params.applicationId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
+      const applicationId = req.params['applicationId'] ? parseInt(req.params['applicationId']) : NaN;
 
       // 验证参数
       if (isNaN(merchantId) || merchantId <= 0) {
@@ -129,8 +129,8 @@ export class VisitorController {
    */
   async approveVisitorApplication(req: Request, res: Response): Promise<void> {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
-      const applicationId = req.params.applicationId ? parseInt(req.params.applicationId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
+      const applicationId = req.params['applicationId'] ? parseInt(req.params['applicationId']) : NaN;
       const { approvedBy, duration, usageLimit, note } = req.body;
 
       // 验证参数
@@ -207,8 +207,8 @@ export class VisitorController {
    */
   async rejectVisitorApplication(req: Request, res: Response): Promise<void> {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
-      const applicationId = req.params.applicationId ? parseInt(req.params.applicationId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
+      const applicationId = req.params['applicationId'] ? parseInt(req.params['applicationId']) : NaN;
       const { approvedBy, rejectionReason } = req.body;
 
       // 验证参数
@@ -277,7 +277,7 @@ export class VisitorController {
    */
   async batchApproveApplications(req: Request, res: Response): Promise<void> {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
       const { applicationIds, approvedBy, duration, usageLimit, note } = req.body;
 
       // 验证商户ID
@@ -354,7 +354,7 @@ export class VisitorController {
    */
   async batchRejectApplications(req: Request, res: Response): Promise<void> {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
       const { applicationIds, approvedBy, rejectionReason } = req.body;
 
       // 验证商户ID
@@ -423,7 +423,7 @@ export class VisitorController {
    */
   async getVisitorStats(req: Request, res: Response): Promise<void> {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
       const { dateFrom, dateTo } = req.query;
 
       // 验证商户ID
@@ -473,7 +473,7 @@ export class VisitorController {
    */
   async getPendingApplicationsCount(req: Request, res: Response): Promise<void> {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
 
       // 验证商户ID
       if (isNaN(merchantId) || merchantId <= 0) {
@@ -508,7 +508,7 @@ export class VisitorController {
    */
   async getExpiringApplications(req: Request, res: Response): Promise<void> {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
       const { hours } = req.query;
 
       // 验证商户ID
@@ -739,7 +739,7 @@ export class VisitorController {
   async getApplicationDetail(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as any).user?.id;
-      const applicationId = req.params.applicationId ? parseInt(req.params.applicationId) : NaN;
+      const applicationId = req.params['applicationId'] ? parseInt(req.params['applicationId']) : NaN;
 
       if (!userId) {
         res.status(401).json({
@@ -784,7 +784,7 @@ export class VisitorController {
   async getPasscode(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as any).user?.id;
-      const applicationId = req.params.applicationId ? parseInt(req.params.applicationId) : NaN;
+      const applicationId = req.params['applicationId'] ? parseInt(req.params['applicationId']) : NaN;
 
       if (!userId) {
         res.status(401).json({
@@ -829,7 +829,7 @@ export class VisitorController {
   async refreshPasscode(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as any).user?.id;
-      const applicationId = req.params.applicationId ? parseInt(req.params.applicationId) : NaN;
+      const applicationId = req.params['applicationId'] ? parseInt(req.params['applicationId']) : NaN;
 
       if (!userId) {
         res.status(401).json({
@@ -873,8 +873,8 @@ export class VisitorController {
    */
   async getVisitorPasscode(req: Request, res: Response): Promise<void> {
     try {
-      const applicationId = req.params.applicationId ? parseInt(req.params.applicationId) : NaN;
-      const applicantId = req.params.applicantId ? parseInt(req.params.applicantId) : NaN;
+      const applicationId = req.params['applicationId'] ? parseInt(req.params['applicationId']) : NaN;
+      const applicantId = req.params['applicantId'] ? parseInt(req.params['applicantId']) : NaN;
 
       // 验证参数
       if (isNaN(applicationId) || applicationId <= 0) {

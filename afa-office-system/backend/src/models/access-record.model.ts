@@ -1,22 +1,15 @@
 import database from '../utils/database.js';
-import type { AccessRecord, AccessDirection, AccessResult, PaginatedResult } from '../types/index.js';
-
-/**
- * 通行记录创建数据接口
- */
-export interface CreateAccessRecordData {
-  user_id: number;
-  passcode_id?: number;
-  device_id: string;
-  device_type?: string;
-  direction: AccessDirection;
-  result: AccessResult;
-  fail_reason?: string;
-  project_id?: number;
-  venue_id?: number;
-  floor_id?: number;
-  timestamp: string;
-}
+import type { 
+  AccessRecord, 
+  AccessDirection, 
+  AccessResult, 
+  AccessMethod,
+  DeviceType,
+  DeviceInfo,
+  AccessContext,
+  PaginatedResult,
+  CreateAccessRecordData
+} from '../types/index.js';
 
 /**
  * 通行记录查询接口
@@ -62,23 +55,32 @@ export class AccessRecordModel {
   static async create(data: CreateAccessRecordData): Promise<AccessRecord> {
     const sql = `
       INSERT INTO access_records (
-        user_id, passcode_id, device_id, device_type, direction, 
-        result, fail_reason, project_id, venue_id, floor_id, timestamp
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        user_id, passcode_id, device_id, device_type, device_info, direction, 
+        result, access_method, fail_reason, project_id, venue_id, floor_id, 
+        context, timestamp, verification
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
+
+    const deviceInfoJson = data.device_info ? JSON.stringify(data.device_info) : null;
+    const contextJson = data.context ? JSON.stringify(data.context) : null;
+    const verificationJson = data.verification ? JSON.stringify(data.verification) : null;
 
     const result = await database.run(sql, [
       data.user_id,
       data.passcode_id || null,
       data.device_id,
       data.device_type || null,
+      deviceInfoJson,
       data.direction,
       data.result,
+      data.access_method || null,
       data.fail_reason || null,
       data.project_id || null,
       data.venue_id || null,
       data.floor_id || null,
+      contextJson,
       data.timestamp,
+      verificationJson
     ]);
 
     if (!result.lastID) {
@@ -634,5 +636,220 @@ export class AccessRecordModel {
     const sql = 'SELECT 1 FROM access_records WHERE id = ?';
     const result = await database.get(sql, [id]);
     return !!result;
+  }
+
+  /**
+   * 根据通行方式查找记录
+   */
+  static async findByAccessMethod(accessMethod: AccessMethod, limit?: number): Promise<AccessRecord[]> {
+    let sql = 'SELECT * FROM access_records WHERE access_method = ? ORDER BY timestamp DESC';
+    const params: any[] = [accessMethod];
+    
+    if (limit) {
+      sql += ' LIMIT ?';
+      params.push(limit);
+    }
+    
+    return await database.all<AccessRecord>(sql, params);
+  }
+
+  /**
+   * 根据设备类型查找记录
+   */
+  static async findByDeviceType(deviceType: DeviceType, limit?: number): Promise<AccessRecord[]> {
+    let sql = 'SELECT * FROM access_records WHERE device_type = ? ORDER BY timestamp DESC';
+    const params: any[] = [deviceType];
+    
+    if (limit) {
+      sql += ' LIMIT ?';
+      params.push(limit);
+    }
+    
+    return await database.all<AccessRecord>(sql, params);
+  }
+
+  /**
+   * 获取设备信息
+   */
+  static async getDeviceInfo(recordId: number): Promise<DeviceInfo | null> {
+    const record = await this.findById(recordId);
+    if (!record || !record.device_info) {
+      return null;
+    }
+
+    try {
+      return typeof record.device_info === 'string' 
+        ? JSON.parse(record.device_info) 
+        : record.device_info;
+    } catch (error) {
+      console.error('解析设备信息失败:', error);
+      return null;
+    }
+  }
+
+  /**
+   * 获取通行上下文信息
+   */
+  static async getContext(recordId: number): Promise<AccessContext | null> {
+    const record = await this.findById(recordId);
+    if (!record || !record.context) {
+      return null;
+    }
+
+    try {
+      return typeof record.context === 'string' 
+        ? JSON.parse(record.context) 
+        : record.context;
+    } catch (error) {
+      console.error('解析通行上下文失败:', error);
+      return null;
+    }
+  }
+
+  /**
+   * 更新验证状态
+   */
+  static async updateVerification(recordId: number, verification: {
+    isVerified: boolean;
+    verifiedBy?: number;
+    verifiedAt?: string;
+    verificationMethod?: string;
+  }): Promise<AccessRecord> {
+    const verificationJson = JSON.stringify(verification);
+    // Use string type for verification field in update
+    const updateData: Partial<AccessRecord> = { 
+      verification: verificationJson as any 
+    };
+    return await this.update(recordId, updateData);
+  }
+
+  /**
+   * 获取需要验证的记录
+   */
+  static async getPendingVerificationRecords(limit?: number): Promise<AccessRecord[]> {
+    let sql = `
+      SELECT * FROM access_records 
+      WHERE verification IS NULL 
+      OR JSON_EXTRACT(verification, '$.isVerified') = false
+      ORDER BY timestamp DESC
+    `;
+    
+    if (limit) {
+      sql += ' LIMIT ?';
+    }
+    
+    const params = limit ? [limit] : [];
+    return await database.all<AccessRecord>(sql, params);
+  }
+
+  /**
+   * 获取设备统计信息
+   */
+  static async getDeviceStatistics(deviceId: string, options?: {
+    startDate?: string;
+    endDate?: string;
+  }): Promise<{
+    totalCount: number;
+    successCount: number;
+    failedCount: number;
+    methodStats: Record<AccessMethod, number>;
+    hourlyStats: Record<string, number>;
+  }> {
+    const baseConditions = 'device_id = ?';
+    const baseParams = [deviceId];
+    
+    let dateCondition = '';
+    if (options?.startDate) {
+      dateCondition += ' AND timestamp >= ?';
+      baseParams.push(options.startDate);
+    }
+    if (options?.endDate) {
+      dateCondition += ' AND timestamp <= ?';
+      baseParams.push(options.endDate);
+    }
+
+    // 总数和成功/失败统计
+    const totalSql = `SELECT COUNT(*) as count FROM access_records WHERE ${baseConditions}${dateCondition}`;
+    const successSql = `SELECT COUNT(*) as count FROM access_records WHERE ${baseConditions}${dateCondition} AND result = 'success'`;
+    const failedSql = `SELECT COUNT(*) as count FROM access_records WHERE ${baseConditions}${dateCondition} AND result = 'failed'`;
+
+    const [totalResult, successResult, failedResult] = await Promise.all([
+      database.get<{ count: number }>(totalSql, baseParams),
+      database.get<{ count: number }>(successSql, baseParams),
+      database.get<{ count: number }>(failedSql, baseParams)
+    ]);
+
+    // 按通行方式统计
+    const methodSql = `
+      SELECT access_method, COUNT(*) as count 
+      FROM access_records 
+      WHERE ${baseConditions}${dateCondition} AND access_method IS NOT NULL
+      GROUP BY access_method
+    `;
+    const methodResults = await database.all<{ access_method: AccessMethod; count: number }>(methodSql, baseParams);
+    
+    const methodStats: Record<AccessMethod, number> = {} as any;
+    methodResults.forEach(row => {
+      methodStats[row.access_method] = row.count;
+    });
+
+    // 按小时统计
+    const hourlySql = `
+      SELECT strftime('%H', timestamp) as hour, COUNT(*) as count 
+      FROM access_records 
+      WHERE ${baseConditions}${dateCondition}
+      GROUP BY strftime('%H', timestamp)
+      ORDER BY hour
+    `;
+    const hourlyResults = await database.all<{ hour: string; count: number }>(hourlySql, baseParams);
+    
+    const hourlyStats: Record<string, number> = {};
+    hourlyResults.forEach(row => {
+      hourlyStats[row.hour] = row.count;
+    });
+
+    return {
+      totalCount: totalResult?.count || 0,
+      successCount: successResult?.count || 0,
+      failedCount: failedResult?.count || 0,
+      methodStats,
+      hourlyStats
+    };
+  }
+
+  /**
+   * 获取记录的完整信息（包含camelCase字段）
+   */
+  static async findWithDetails(recordId: number): Promise<(AccessRecord & {
+    user?: any;
+    passcode?: any;
+    project?: any;
+    venue?: any;
+    floor?: any;
+  }) | null> {
+    const fullInfo = await this.getFullInfo(recordId);
+    if (!fullInfo) {
+      return null;
+    }
+
+    const record = fullInfo.record;
+    
+    return {
+      ...record,
+      userId: record.user_id,
+      passcodeId: record.passcode_id,
+      deviceId: record.device_id,
+      deviceType: record.device_type,
+      projectId: record.project_id,
+      venueId: record.venue_id,
+      floorId: record.floor_id,
+      accessMethod: record.access_method,
+      failReason: record.fail_reason,
+      user: fullInfo.user,
+      passcode: fullInfo.passcode,
+      project: fullInfo.project,
+      venue: fullInfo.venue,
+      floor: fullInfo.floor
+    };
   }
 }

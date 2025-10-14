@@ -59,7 +59,7 @@ export class FileController {
    */
   downloadFile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { fileId } = req.params;
+      const fileId = req.params['fileId'];
       const userId = req.user?.id;
 
       if (!userId) {
@@ -92,7 +92,7 @@ export class FileController {
    */
   getFileInfo = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { fileId } = req.params;
+      const fileId = req.params['fileId'];
       const userId = req.user?.id;
 
       if (!userId) {
@@ -126,7 +126,7 @@ export class FileController {
    */
   deleteFile = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
-      const { fileId } = req.params;
+      const fileId = req.params['fileId'];
       const userId = req.user?.id;
 
       if (!userId) {

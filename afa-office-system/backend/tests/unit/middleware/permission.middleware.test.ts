@@ -42,11 +42,18 @@ describe('Permission Middleware', () => {
     merchantId: 1,
   };
 
+  const mockUserContext = {
+    id: 1,
+    userId: 1,
+    userType: 'employee' as const,
+    merchantId: 1,
+  };
+
   beforeEach(() => {
     vi.clearAllMocks();
 
     mockReq = {
-      user: mockJwtPayload,
+      user: mockUserContext,
       params: {},
       body: {},
       query: {},
@@ -271,7 +278,7 @@ describe('Permission Middleware', () => {
 
   describe('requireMerchantResource', () => {
     it('应该允许租务管理员访问所有商户资源', () => {
-      mockReq.user = { ...mockJwtPayload, userType: 'tenant_admin' };
+      mockReq.user = { ...mockUserContext, userType: 'tenant_admin' };
 
       requireMerchantResource()(mockReq as Request, mockRes as Response, mockNext);
 
@@ -279,7 +286,7 @@ describe('Permission Middleware', () => {
     });
 
     it('应该允许用户访问自己商户的资源', () => {
-      mockReq.user = { ...mockJwtPayload, userType: 'merchant_admin', merchantId: 1 };
+      mockReq.user = { ...mockUserContext, userType: 'merchant_admin', merchantId: 1 };
       mockReq.params = { merchantId: '1' };
 
       requireMerchantResource()(mockReq as Request, mockRes as Response, mockNext);
@@ -288,7 +295,7 @@ describe('Permission Middleware', () => {
     });
 
     it('应该拒绝用户访问其他商户的资源', () => {
-      mockReq.user = { ...mockJwtPayload, userType: 'merchant_admin', merchantId: 1 };
+      mockReq.user = { ...mockUserContext, userType: 'merchant_admin', merchantId: 1 };
       mockReq.params = { merchantId: '2' };
 
       requireMerchantResource()(mockReq as Request, mockRes as Response, mockNext);
@@ -304,7 +311,7 @@ describe('Permission Middleware', () => {
 
   describe('requireResourceOwner', () => {
     it('应该允许管理员访问所有资源', async () => {
-      mockReq.user = { ...mockJwtPayload, userType: 'tenant_admin' };
+      mockReq.user = { ...mockUserContext, userType: 'tenant_admin' };
 
       const middleware = requireResourceOwner('application');
       await middleware(mockReq as Request, mockRes as Response, mockNext);
@@ -313,7 +320,7 @@ describe('Permission Middleware', () => {
     });
 
     it('应该允许商户管理员访问所有资源', async () => {
-      mockReq.user = { ...mockJwtPayload, userType: 'merchant_admin' };
+      mockReq.user = { ...mockUserContext, userType: 'merchant_admin' };
 
       const middleware = requireResourceOwner('application');
       await middleware(mockReq as Request, mockRes as Response, mockNext);
@@ -322,7 +329,7 @@ describe('Permission Middleware', () => {
     });
 
     it('应该检查普通用户的资源所有权', async () => {
-      mockReq.user = { ...mockJwtPayload, userType: 'employee' };
+      mockReq.user = { ...mockUserContext, userType: 'employee' };
       mockReq.params = { id: '123' };
 
       const middleware = requireResourceOwner('application');
@@ -333,7 +340,7 @@ describe('Permission Middleware', () => {
     });
 
     it('应该拒绝缺少资源ID的请求', async () => {
-      mockReq.user = { ...mockJwtPayload, userType: 'employee' };
+      mockReq.user = { ...mockUserContext, userType: 'employee' };
       mockReq.params = {};
 
       const middleware = requireResourceOwner('application');

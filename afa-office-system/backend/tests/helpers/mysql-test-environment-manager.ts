@@ -4,8 +4,8 @@
  */
 
 import { randomUUID } from 'crypto';
-import { MySQLAdapter } from './mysql-adapter.js';
-import { MySQLConfig } from './database-adapter.js';
+import { MySQLAdapter } from '../../src/utils/mysql-adapter.js';
+import { MySQLConfig } from '../../src/utils/database-adapter.js';
 import { 
   TestEnvironment, 
   TestEnvironmentOptions, 
@@ -546,8 +546,6 @@ export class MySQLTestEnvironmentManager implements TestEnvironmentManager {
     this.errorStats.connectionErrors++;
   }
 
-
-
   /**
    * 批量创建环境（带错误处理）
    */
@@ -715,10 +713,10 @@ export class FatalTestError extends Error {
 export function createMySQLTestEnvironmentManager(config?: Partial<MySQLConfig>): MySQLTestEnvironmentManager {
   const defaultConfig: MySQLConfig = {
     type: 'mysql',
-    host: process.env.TEST_DB_HOST || '127.0.0.1',
-    port: parseInt(process.env.TEST_DB_PORT || '3306'),
-    user: process.env.TEST_DB_USER || 'root',
-    password: process.env.TEST_DB_PASSWORD || '111111',
+    host: process.env['TEST_DB_HOST'] || '127.0.0.1',
+    port: parseInt(process.env['TEST_DB_PORT'] || '3306'),
+    user: process.env['TEST_DB_USER'] || 'root',
+    password: process.env['TEST_DB_PASSWORD'] || '111111',
     connectionLimit: 10,
     acquireTimeout: 60000,
     timeout: 60000,

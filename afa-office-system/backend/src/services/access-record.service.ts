@@ -1,5 +1,12 @@
 import { AccessRecordModel } from '../models/access-record.model.js';
-import type { AccessRecord, PaginatedResponse } from '../types/index.js';
+import type { 
+  AccessRecord, 
+  PaginatedResponse, 
+  CreateAccessRecordData, 
+  RealtimeStatus,
+  AccessDirection,
+  AccessResult
+} from '../types/index.js';
 
 /**
  * 通行记录查询参数接口
@@ -41,31 +48,14 @@ export interface AccessStats {
 }
 
 /**
- * 实时通行状态接口
+ * 实时通行状态接口（扩展版本）
  */
-export interface RealtimeStatus {
+export interface ExtendedRealtimeStatus extends RealtimeStatus {
   deviceId?: string;
   isOnline: boolean;
   lastActivity?: string;
   todayCount: number;
   currentHourCount: number;
-}
-
-/**
- * 通行记录创建数据接口
- */
-export interface CreateAccessRecordData {
-  userId: number;
-  passcodeId?: number;
-  deviceId: string;
-  deviceType?: string;
-  direction: 'in' | 'out';
-  result: 'success' | 'failed';
-  failReason?: string;
-  projectId?: number;
-  venueId?: number;
-  floorId?: number;
-  timestamp: string;
 }
 
 /**
@@ -81,22 +71,21 @@ export class AccessRecordService {
    * 记录通行日志
    */
   static async recordAccess(data: CreateAccessRecordData): Promise<AccessRecord> {
-    // 转换接口格式，过滤undefined值
+    // 数据已经是正确的snake_case格式，直接使用
     const recordData: any = {
-      user_id: data.userId,
-      device_id: data.deviceId,
+      user_id: data.user_id,
+      device_id: data.device_id,
       direction: data.direction,
       result: data.result,
-      timestamp: data.timestamp,
     };
 
     // 只添加非undefined的可选字段
-    if (data.passcodeId !== undefined) recordData.passcode_id = data.passcodeId;
-    if (data.deviceType !== undefined) recordData.device_type = data.deviceType;
-    if (data.failReason !== undefined) recordData.fail_reason = data.failReason;
-    if (data.projectId !== undefined) recordData.project_id = data.projectId;
-    if (data.venueId !== undefined) recordData.venue_id = data.venueId;
-    if (data.floorId !== undefined) recordData.floor_id = data.floorId;
+    if (data.passcode_id !== undefined) recordData.passcode_id = data.passcode_id;
+    if (data.device_type !== undefined) recordData.device_type = data.device_type;
+    if (data.fail_reason !== undefined) recordData.fail_reason = data.fail_reason;
+    if (data.project_id !== undefined) recordData.project_id = data.project_id;
+    if (data.venue_id !== undefined) recordData.venue_id = data.venue_id;
+    if (data.floor_id !== undefined) recordData.floor_id = data.floor_id;
     
     return await AccessRecordModel.create(recordData);
   }
@@ -271,6 +260,7 @@ export class AccessRecordService {
       isOnline,
       todayCount: todayCount || 0,
       currentHourCount: currentHourCount || 0,
+      status: 'unknown', // 默认状态
     };
 
     if (deviceId) {
@@ -281,13 +271,13 @@ export class AccessRecordService {
       result.lastActivity = lastActivity.timestamp;
       // 设置状态
       if (isOnline) {
-        (result as any).status = 'active';
+        result.status = 'active';
       } else {
-        (result as any).status = 'offline';
+        result.status = 'offline';
       }
     } else {
       result.lastActivity = null;
-      (result as any).status = 'unknown';
+      result.status = 'unknown';
     }
 
     return result;
@@ -330,7 +320,7 @@ export class AccessRecordService {
   static async batchRecordAccess(records: CreateAccessRecordData[]): Promise<AccessRecord[]> {
     // 简化验证 - 只检查必需字段
     for (const record of records) {
-      if (!record.userId || !record.deviceId || !record.direction || !record.result || !record.timestamp) {
+      if (!record.user_id || !record.device_id || !record.direction || !record.result) {
         throw new Error(`批量记录验证失败: 缺少必需字段`);
       }
     }
@@ -338,20 +328,20 @@ export class AccessRecordService {
     // 转换数据格式并批量创建记录
     const recordsData = records.map(record => {
       const data: any = {
-        user_id: record.userId,
-        device_id: record.deviceId,
+        user_id: record.user_id,
+        device_id: record.device_id,
         direction: record.direction,
         result: record.result,
-        timestamp: record.timestamp,
+        timestamp: record.timestamp || new Date().toISOString(),
       };
 
       // 只添加非undefined的可选字段
-      if (record.passcodeId !== undefined) data.passcode_id = record.passcodeId;
-      if (record.deviceType !== undefined) data.device_type = record.deviceType;
-      if (record.failReason !== undefined) data.fail_reason = record.failReason;
-      if (record.projectId !== undefined) data.project_id = record.projectId;
-      if (record.venueId !== undefined) data.venue_id = record.venueId;
-      if (record.floorId !== undefined) data.floor_id = record.floorId;
+      if (record.passcode_id !== undefined) data.passcode_id = record.passcode_id;
+      if (record.device_type !== undefined) data.device_type = record.device_type;
+      if (record.fail_reason !== undefined) data.fail_reason = record.fail_reason;
+      if (record.project_id !== undefined) data.project_id = record.project_id;
+      if (record.venue_id !== undefined) data.venue_id = record.venue_id;
+      if (record.floor_id !== undefined) data.floor_id = record.floor_id;
 
       return data;
     });

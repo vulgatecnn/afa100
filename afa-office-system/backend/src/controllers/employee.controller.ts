@@ -19,7 +19,7 @@ export class EmployeeController {
    */
   createEmployee = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
       const employeeData = req.body;
 
       // 验证商户ID
@@ -65,7 +65,7 @@ export class EmployeeController {
    */
   batchCreateEmployees = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
       const { employees } = req.body;
 
       // 验证商户ID
@@ -111,7 +111,7 @@ export class EmployeeController {
    */
   getEmployees = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
       const { page, limit, status, search } = req.query;
 
       // 验证商户ID
@@ -167,8 +167,8 @@ export class EmployeeController {
    */
   getEmployeeById = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
-      const employeeId = req.params.employeeId ? parseInt(req.params.employeeId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
+      const employeeId = req.params['employeeId'] ? parseInt(req.params['employeeId']) : NaN;
 
       // 验证参数
       if (isNaN(merchantId) || merchantId <= 0) {
@@ -213,8 +213,8 @@ export class EmployeeController {
    */
   updateEmployee = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
-      const employeeId = req.params.employeeId ? parseInt(req.params.employeeId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
+      const employeeId = req.params['employeeId'] ? parseInt(req.params['employeeId']) : NaN;
       const updateData = req.body;
 
       // 验证参数
@@ -260,8 +260,8 @@ export class EmployeeController {
    */
   deleteEmployee = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
-      const employeeId = req.params.employeeId ? parseInt(req.params.employeeId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
+      const employeeId = req.params['employeeId'] ? parseInt(req.params['employeeId']) : NaN;
 
       // 验证参数
       if (isNaN(merchantId) || merchantId <= 0) {
@@ -305,7 +305,7 @@ export class EmployeeController {
    */
   batchDeleteEmployees = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
       const { employeeIds } = req.body;
 
       // 验证商户ID
@@ -351,8 +351,8 @@ export class EmployeeController {
    */
   toggleEmployeeStatus = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
-      const employeeId = req.params.employeeId ? parseInt(req.params.employeeId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
+      const employeeId = req.params['employeeId'] ? parseInt(req.params['employeeId']) : NaN;
       const { status } = req.body;
 
       // 验证参数
@@ -398,7 +398,7 @@ export class EmployeeController {
    */
   importEmployeesFromExcel = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
 
       // 验证商户ID
       if (isNaN(merchantId) || merchantId <= 0) {
@@ -431,7 +431,7 @@ export class EmployeeController {
    */
   getEmployeeStats = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
 
       // 验证商户ID
       if (isNaN(merchantId) || merchantId <= 0) {
@@ -472,8 +472,8 @@ export class EmployeeController {
    */
   assignEmployeePermissions = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
-      const employeeId = req.params.employeeId ? parseInt(req.params.employeeId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
+      const employeeId = req.params['employeeId'] ? parseInt(req.params['employeeId']) : NaN;
       const { permissions } = req.body;
 
       // 验证参数
@@ -516,8 +516,8 @@ export class EmployeeController {
    */
   getEmployeePermissions = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     try {
-      const merchantId = req.params.merchantId ? parseInt(req.params.merchantId) : NaN;
-      const employeeId = req.params.employeeId ? parseInt(req.params.employeeId) : NaN;
+      const merchantId = req.params['merchantId'] ? parseInt(req.params['merchantId']) : NaN;
+      const employeeId = req.params['employeeId'] ? parseInt(req.params['employeeId']) : NaN;
 
       // 验证参数
       if (isNaN(merchantId) || merchantId <= 0) {

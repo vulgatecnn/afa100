@@ -177,9 +177,9 @@ export class TestConfigManager {
       database: {
         host: 'localhost',
         port: 3306,
-        user: process.env.TEST_DB_USER || 'afa_test_user',
-        password: process.env.TEST_DB_PASSWORD || 'test_password_123',
-        database: process.env.TEST_DB_NAME || 'afa_office_test',
+        user: process.env['TEST_DB_USER'] || 'afa_test_user',
+        password: process.env['TEST_DB_PASSWORD'] || 'test_password_123',
+        database: process.env['TEST_DB_NAME'] || 'afa_office_test',
         connectionLimit: 5,
         acquireTimeout: 10000,
         timeout: 5000,
@@ -226,10 +226,10 @@ export class TestConfigManager {
       ...baseConfig,
       database: {
         ...baseConfig.database,
-        host: process.env.INTEGRATION_DB_HOST || process.env.TEST_DB_HOST || 'localhost',
-        user: process.env.INTEGRATION_DB_USER || process.env.TEST_DB_USER || 'afa_test_user',
-        password: process.env.INTEGRATION_DB_PASSWORD || process.env.TEST_DB_PASSWORD || 'afa_test_2024',
-        database: process.env.INTEGRATION_DB_NAME || process.env.TEST_DB_NAME || 'afa_office_test',
+        host: process.env.INTEGRATION_DB_HOST || process.env['TEST_DB_HOST'] || 'localhost',
+        user: process.env.INTEGRATION_DB_USER || process.env['TEST_DB_USER'] || 'afa_test_user',
+        password: process.env.INTEGRATION_DB_PASSWORD || process.env['TEST_DB_PASSWORD'] || 'afa_test_2024',
+        database: process.env.INTEGRATION_DB_NAME || process.env['TEST_DB_NAME'] || 'afa_office_test',
         connectionLimit: 10,
         timeout: 10000,
       },
@@ -242,7 +242,7 @@ export class TestConfigManager {
         retryDelay: 1000,
       },
       test: {
-        ...baseConfig.test,
+        ...baseConfig['test'],
         timeout: 30000,
         parallel: false, // 集成测试通常需要串行执行
         maxWorkers: 1,
@@ -279,7 +279,7 @@ export class TestConfigManager {
         retryDelay: 2000,
       },
       test: {
-        ...baseConfig.test,
+        ...baseConfig['test'],
         timeout: 60000,
         parallel: false,
         maxWorkers: 1,
@@ -336,7 +336,7 @@ export class TestConfigManager {
       throw new Error('API端口号必须在1-65535范围内');
     }
     
-    if (config.test.timeout <= 0) {
+    if (config['test'].timeout <= 0) {
       throw new Error('测试超时时间必须大于0');
     }
     
@@ -395,7 +395,7 @@ export class TestConfigManager {
       database: { ...baseConfig.database, ...overrides.database },
       api: { ...baseConfig.api, ...overrides.api },
       jwt: { ...baseConfig.jwt, ...overrides.jwt },
-      test: { ...baseConfig.test, ...overrides.test },
+      test: { ...baseConfig['test'], ...overrides['test'] },
       upload: { ...baseConfig.upload, ...overrides.upload },
       websocket: { ...baseConfig.websocket, ...overrides.websocket },
     };

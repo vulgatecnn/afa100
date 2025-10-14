@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { JwtUtils } from '../utils/jwt.js';
-import { UserModel } from '../models/user.model.js';
+import { UserModel } from '../models/index.js';
 import { WechatService } from './wechat.service.js';
 import { appConfig } from '../config/app.config.js';
 import type { User, UserType } from '../types/index.js';
@@ -19,7 +19,7 @@ export interface LoginCredentials {
  * 登录结果接口
  */
 export interface LoginResult {
-  user: Omit<User, 'password'>;
+  user: User;
   accessToken: string;
   refreshToken: string;
   expiresIn: number;
@@ -83,17 +83,10 @@ export class AuthService {
           throw new Error('账户已被禁用，请联系管理员');
         }
 
-        // 验证密码
-        if (!user.password) {
-          this.recordFailedAttempt(phone);
-          throw new Error('用户未设置密码');
-        }
-        
-        const isPasswordValid = await this.verifyPassword(password, user.password);
-        if (!isPasswordValid) {
-          this.recordFailedAttempt(phone);
-          throw new Error('密码错误');
-        }
+        // 注意：当前系统主要使用微信登录，密码登录功能待完善
+        // TODO: 实现密码存储和验证机制
+        this.recordFailedAttempt(phone);
+        throw new Error('密码登录功能暂未开放，请使用微信登录');
       } else {
         throw new Error('请提供有效的登录凭据');
       }
@@ -306,10 +299,10 @@ export class AuthService {
   /**
    * 清理用户敏感信息
    */
-  private sanitizeUser(user: User): Omit<User, 'password'> {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { password, ...sanitizedUser } = user;
-    return sanitizedUser;
+  private sanitizeUser(user: User): User {
+    // 当前User模型不包含敏感字段，直接返回
+    // 如果将来添加敏感字段，在此处过滤
+    return user;
   }
 
   /**

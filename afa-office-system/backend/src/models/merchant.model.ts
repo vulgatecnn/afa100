@@ -1,5 +1,13 @@
 import database from '../utils/database.js';
-import type { Merchant, MerchantStatus, DatabaseResult } from '../types/index.js';
+import type {
+  Merchant,
+  MerchantStatus,
+  MerchantSettings,
+  MerchantSubscription,
+  SubscriptionType,
+  SubscriptionStatus,
+  DatabaseResult
+} from '../types/index.js';
 
 /**
  * 商户数据模型
@@ -9,12 +17,20 @@ export class MerchantModel {
   /**
    * 创建新商户
    */
-  static async create(merchantData: Omit<Merchant, 'id' | 'created_at' | 'updated_at'>): Promise<Merchant> {
+  static async create(merchantData: Omit<Merchant, 'id' | 'created_at' | 'updated_at' | 'createdAt' | 'updatedAt' | 'employees' | 'visitor_applications' | 'employee_applications' | 'statistics'>): Promise<Merchant> {
     const sql = `
-      INSERT INTO merchants (name, code, contact, phone, email, address, status, settings)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO merchants (name, code, contact, phone, email, address, status, settings, subscription)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
-    
+
+    const settingsJson = merchantData.settings
+      ? (typeof merchantData.settings === 'string' ? merchantData.settings : JSON.stringify(merchantData.settings))
+      : null;
+
+    const subscriptionJson = merchantData.subscription
+      ? JSON.stringify(merchantData.subscription)
+      : null;
+
     const params = [
       merchantData.name,
       merchantData.code,
@@ -23,11 +39,12 @@ export class MerchantModel {
       merchantData.email || null,
       merchantData.address || null,
       merchantData.status || 'active',
-      merchantData.settings || null
+      settingsJson,
+      subscriptionJson
     ];
 
     const result = await database.run(sql, params);
-    
+
     if (!result.lastID) {
       throw new Error('创建商户失败');
     }
@@ -35,7 +52,7 @@ export class MerchantModel {
     // 使用一致性查询确保能读取到刚创建的数据
     const sql_select = 'SELECT * FROM merchants WHERE id = ?';
     const newMerchant = await database.getWithConsistency<Merchant>(sql_select, [result.lastID]);
-    
+
     if (!newMerchant) {
       throw new Error('创建商户后查询失败');
     }
@@ -195,14 +212,16 @@ export class MerchantModel {
   /**
    * 获取商户的设置信息
    */
-  static async getSettings(id: number): Promise<any> {
+  static async getSettings(id: number): Promise<MerchantSettings> {
     const merchant = await this.findById(id);
     if (!merchant || !merchant.settings) {
       return {};
     }
 
     try {
-      return JSON.parse(merchant.settings);
+      return typeof merchant.settings === 'string'
+        ? JSON.parse(merchant.settings)
+        : merchant.settings as MerchantSettings;
     } catch (error) {
       console.error('解析商户设置失败:', error);
       return {};
@@ -212,9 +231,68 @@ export class MerchantModel {
   /**
    * 更新商户设置
    */
-  static async updateSettings(id: number, settings: any): Promise<Merchant> {
+  static async updateSettings(id: number, settings: MerchantSettings): Promise<Merchant> {
     const settingsJson = JSON.stringify(settings);
     return await this.update(id, { settings: settingsJson });
+  }
+
+  /**
+   * 获取商户订阅信息
+   */
+  static async getSubscription(id: number): Promise<MerchantSubscription | null> {
+    const merchant = await this.findById(id);
+    if (!merchant || !merchant.subscription) {
+      return null;
+    }
+
+    try {
+      return typeof merchant.subscription === 'string'
+        ? JSON.parse(merchant.subscription as string)
+        : merchant.subscription;
+    } catch (error) {
+      console.error('解析商户订阅信息失败:', error);
+      return null;
+    }
+  }
+
+  /**
+   * 更新商户订阅信息
+   */
+  static async updateSubscription(id: number, subscription: MerchantSubscription): Promise<Merchant> {
+    const subscriptionJson = JSON.stringify(subscription);
+    return await this.update(id, { subscription: subscriptionJson });
+  }
+
+  /**
+   * 检查商户订阅状态
+   */
+  static async checkSubscriptionStatus(id: number): Promise<{
+    isActive: boolean;
+    isExpired: boolean;
+    daysRemaining?: number;
+  }> {
+    const subscription = await this.getSubscription(id);
+
+    if (!subscription) {
+      return { isActive: false, isExpired: true };
+    }
+
+    const now = new Date();
+    const endDate = subscription.endDate ? new Date(subscription.endDate) : null;
+
+    const isActive = subscription.status === 'active';
+    const isExpired = endDate ? now > endDate : false;
+
+    let daysRemaining: number | undefined;
+    if (endDate && !isExpired) {
+      daysRemaining = Math.ceil((endDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+    }
+
+    return {
+      isActive: isActive && !isExpired,
+      isExpired,
+      daysRemaining
+    };
   }
 
   /**
@@ -365,5 +443,169 @@ export class MerchantModel {
 
     const result = await database.run(sql, params);
     return result.changes;
+  }
+
+  /**
+   * 获取商户及其员工信息
+   */
+  static async findWithEmployees(id: number): Promise<(Merchant & { employees?: any[] }) | null> {
+    const merchant = await this.findById(id);
+    if (!merchant) {
+      return null;
+    }
+
+    // 获取员工列表
+    const employeeSql = `
+      SELECT id, name, phone, user_type, status, created_at
+      FROM users 
+      WHERE merchant_id = ? AND user_type IN ('merchant_admin', 'employee') 
+      ORDER BY created_at DESC
+    `;
+
+    const employees = await database.all<any>(employeeSql, [id]);
+
+    return {
+      ...merchant,
+      employees,
+      createdAt: merchant.created_at,
+      updatedAt: merchant.updated_at
+    };
+  }
+
+  /**
+   * 获取商户的详细统计信息
+   */
+  static async getDetailedStatistics(merchantId: number): Promise<{
+    employees: {
+      total: number;
+      active: number;
+      inactive: number;
+      byType: Record<string, number>;
+    };
+    visitors: {
+      total: number;
+      pending: number;
+      approved: number;
+      rejected: number;
+      thisMonth: number;
+    };
+    access: {
+      total: number;
+      success: number;
+      failed: number;
+      today: number;
+    };
+  }> {
+    const [employeeStats, visitorStats, accessStats] = await Promise.all([
+      this.getEmployeeStatistics(merchantId),
+      this.getVisitorStatistics(merchantId),
+      this.getAccessStatistics(merchantId)
+    ]);
+
+    return {
+      employees: employeeStats,
+      visitors: visitorStats,
+      access: accessStats
+    };
+  }
+
+  /**
+   * 获取员工统计信息
+   */
+  private static async getEmployeeStatistics(merchantId: number): Promise<{
+    total: number;
+    active: number;
+    inactive: number;
+    byType: Record<string, number>;
+  }> {
+    const sql = `
+      SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as active,
+        SUM(CASE WHEN status = 'inactive' THEN 1 ELSE 0 END) as inactive,
+        user_type,
+        COUNT(*) as type_count
+      FROM users 
+      WHERE merchant_id = ? AND user_type IN ('merchant_admin', 'employee')
+      GROUP BY user_type
+    `;
+
+    const results = await database.all<any>(sql, [merchantId]);
+
+    let total = 0;
+    let active = 0;
+    let inactive = 0;
+    const byType: Record<string, number> = {};
+
+    results.forEach(row => {
+      total += row.total;
+      active += row.active;
+      inactive += row.inactive;
+      byType[row.user_type] = row.type_count;
+    });
+
+    return { total, active, inactive, byType };
+  }
+
+  /**
+   * 获取访客统计信息
+   */
+  private static async getVisitorStatistics(merchantId: number): Promise<{
+    total: number;
+    pending: number;
+    approved: number;
+    rejected: number;
+    thisMonth: number;
+  }> {
+    const sql = `
+      SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN status = 'pending' THEN 1 ELSE 0 END) as pending,
+        SUM(CASE WHEN status = 'approved' THEN 1 ELSE 0 END) as approved,
+        SUM(CASE WHEN status = 'rejected' THEN 1 ELSE 0 END) as rejected,
+        SUM(CASE WHEN created_at >= date('now', 'start of month') THEN 1 ELSE 0 END) as this_month
+      FROM visitor_applications 
+      WHERE merchant_id = ?
+    `;
+
+    const result = await database.get<any>(sql, [merchantId]);
+
+    return {
+      total: result?.total || 0,
+      pending: result?.pending || 0,
+      approved: result?.approved || 0,
+      rejected: result?.rejected || 0,
+      thisMonth: result?.this_month || 0
+    };
+  }
+
+  /**
+   * 获取通行统计信息
+   */
+  private static async getAccessStatistics(merchantId: number): Promise<{
+    total: number;
+    success: number;
+    failed: number;
+    today: number;
+  }> {
+    const sql = `
+      SELECT 
+        COUNT(*) as total,
+        SUM(CASE WHEN ar.result = 'success' THEN 1 ELSE 0 END) as success,
+        SUM(CASE WHEN ar.result = 'failed' THEN 1 ELSE 0 END) as failed,
+        SUM(CASE WHEN date(ar.timestamp) = date('now') THEN 1 ELSE 0 END) as today
+      FROM access_records ar
+      JOIN users u ON ar.user_id = u.id
+      WHERE u.merchant_id = ?
+    `;
+
+    const result = await database.get<any>(sql, [merchantId]);
+
+    return {
+      total: result?.total || 0,
+      success: result?.success || 0,
+      failed: result?.failed || 0,
+      today: result?.today || 0
+    };
   }
 }

@@ -279,13 +279,13 @@ export class MiniprogramTestFactory {
       type: 'visitor',
       ...overrides
     })
-    const expiryTime = passcode.expiryTime ? new Date(passcode.expiryTime) : new Date(Date.now() + 24 * 60 * 60 * 1000)
+    const expiryTime = passcode.expiry_time ? new Date(passcode.expiry_time) : new Date(Date.now() + 24 * 60 * 60 * 1000)
     
     return MiniprogramApiAdapter.createWxSuccessResponse({
       passcode,
       qrCodeUrl: `data:image/png;base64,mock-qr-code-${passcode.id}`,
       expiresIn: Math.floor((expiryTime.getTime() - Date.now()) / 1000),
-      usageRemaining: (passcode.usageLimit || 10) - passcode.usageCount,
+      usageRemaining: (passcode.usage_limit || 10) - passcode.usage_count,
       permissions: passcode.permissions
     }, '获取通行码成功')
   }
@@ -297,7 +297,7 @@ export class MiniprogramTestFactory {
     const passcode = passcodeFactory.create({
       status: 'active',
       type: 'employee',
-      usageLimit: 100,
+      usage_limit: 100,
       ...overrides
     })
     
@@ -306,7 +306,7 @@ export class MiniprogramTestFactory {
       qrCodeUrl: `data:image/png;base64,mock-employee-qr-code-${passcode.id}`,
       refreshInterval: 300, // 5分钟刷新一次
       autoRefresh: true,
-      usageRemaining: (passcode.usageLimit || 100) - passcode.usageCount,
+      usageRemaining: (passcode.usage_limit || 100) - passcode.usage_count,
       permissions: passcode.permissions
     }, '获取员工通行码成功')
   }
@@ -409,10 +409,10 @@ export class MiniprogramTestFactory {
     const passcode = passcodeFactory.create({ 
       type, 
       status: 'active',
-      usageLimit: type === 'employee' ? 100 : 10
+      usage_limit: type === 'employee' ? 100 : 10
     })
-    const usageRemaining = (passcode.usageLimit || 10) - passcode.usageCount
-    const isExpired = passcode.expiryTime ? new Date(passcode.expiryTime) < new Date() : false
+    const usageRemaining = (passcode.usage_limit || 10) - passcode.usage_count
+    const isExpired = passcode.expiry_time ? new Date(passcode.expiry_time) < new Date() : false
     
     return MiniprogramApiAdapter.createPageData({
       passcode,
@@ -496,19 +496,19 @@ export class MiniprogramTestFactory {
   static createSpaceHierarchyResponse() {
     const projects = projectFactory.createMany(2, { status: 'active' })
     const venues = projects.flatMap(project => 
-      venueFactory.createMany(2, { projectId: project.id, status: 'active' })
+      venueFactory.createMany(2, { project_id: project.id, status: 'active' })
     )
     const floors = venues.flatMap(venue => 
-      floorFactory.createMany(2, { venueId: venue.id, status: 'active' })
+      floorFactory.createMany(2, { venue_id: venue.id, status: 'active' })
     )
     
     const hierarchy = projects.map(project => ({
       ...project,
       venues: venues
-        .filter(venue => venue.projectId === project.id)
+        .filter(venue => venue.project_id === project.id)
         .map(venue => ({
           ...venue,
-          floors: floors.filter(floor => floor.venueId === venue.id)
+          floors: floors.filter(floor => floor.venue_id === venue.id)
         }))
     }))
     
@@ -520,7 +520,7 @@ export class MiniprogramTestFactory {
    */
   static createVisitorApplicationDetailPageData(applicationId: number) {
     const application = visitorApplicationFactory.create({ id: applicationId })
-    const merchant = merchantFactory.create({ id: application.merchantId })
+    const merchant = merchantFactory.create({ id: application.merchant_id })
     
     return MiniprogramApiAdapter.createPageData({
       application,
@@ -541,7 +541,7 @@ export class MiniprogramTestFactory {
    * 创建通行记录页面数据
    */
   static createAccessRecordsPageData(userId: number) {
-    const records = accessRecordFactory.createMany(10, { userId })
+    const records = accessRecordFactory.createMany(10, { user_id: userId })
     
     return MiniprogramApiAdapter.createPageData({
       records,

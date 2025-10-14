@@ -1,8 +1,26 @@
 import { Request, Response, NextFunction } from 'express';
-import { AuthService } from '../services/auth.service.js';
+import { AuthService, LoginCredentials } from '../services/auth.service.js';
 import { WechatUtils } from '../utils/wechat.js';
 import { AppError, ErrorCodes, asyncHandler } from '../middleware/error.middleware.js';
-import type { ApiResponse, UserType } from '../types/index.js';
+import type { 
+  ApiResponse, 
+  UserType,
+  AuthenticatedRequest,
+  AsyncControllerMethod,
+  LoginRequest,
+  WechatLoginRequest,
+  RefreshTokenRequest,
+  ChangePasswordRequest,
+  ResetPasswordRequest,
+  SendVerificationCodeRequest,
+  VerifyTokenRequest,
+  LoginResponse,
+  WechatLoginResponse,
+  RefreshTokenResponse,
+  VerifyTokenResponse,
+  CurrentUserResponse,
+  HealthCheckResponse
+} from '../types/index.js';
 
 /**
  * 认证控制器
@@ -18,7 +36,7 @@ export class AuthController {
   /**
    * 用户登录
    */
-  login = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  login = asyncHandler(async (req: Request<{}, ApiResponse<LoginResponse>, LoginRequest>, res: Response): Promise<void> => {
     const { phone, password, openId, userType } = req.body;
 
     // 验证必填字段
@@ -26,14 +44,16 @@ export class AuthController {
       throw new AppError('请提供手机号和密码或微信授权码', 400, ErrorCodes.MISSING_REQUIRED_FIELD);
     }
 
-    const result = await this.authService.login({
-      phone,
-      password,
-      openId,
-      userType,
-    });
+    // 构建登录凭据对象，只包含非undefined的字段
+    const loginCredentials: LoginCredentials = {};
+    if (phone !== undefined) loginCredentials.phone = phone;
+    if (password !== undefined) loginCredentials.password = password;
+    if (openId !== undefined) loginCredentials.openId = openId;
+    if (userType !== undefined) loginCredentials.userType = userType;
 
-    const response: ApiResponse = {
+    const result = await this.authService.login(loginCredentials);
+
+    const response: ApiResponse<LoginResponse> = {
       success: true,
       message: '登录成功',
       data: result,
@@ -46,7 +66,7 @@ export class AuthController {
   /**
    * 微信小程序登录
    */
-  wechatLogin = asyncHandler(async (req: Request, res: Response): Promise<void> => {
+  wechatLogin = asyncHandler(async (req: Request<{}, ApiResponse<WechatLoginResponse>, WechatLoginRequest>, res: Response): Promise<void> => {
     const { code, userType, userInfo } = req.body;
 
     // 验证必填字段
@@ -84,7 +104,7 @@ export class AuthController {
 
       const result = await this.authService.wechatLogin(wechatLoginData);
 
-      const response: ApiResponse = {
+      const response: ApiResponse<WechatLoginResponse> = {
         success: true,
         message: '微信登录成功',
         data: result,

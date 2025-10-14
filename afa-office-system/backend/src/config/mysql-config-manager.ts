@@ -111,7 +111,7 @@ export class MySQLConfigManager {
       port: this.getEnvNumberValue('PORT', 3306),
       user: this.getEnvValue('USER', 'root'),
       password: this.getEnvValue('PASSWORD', '111111'),
-      database: this.getEnvValue('NAME', undefined),
+      database: this.getOptionalEnvValue('NAME', 'afa_office'),
       
       // 连接池配置 - 根据环境调整
       connectionLimit: isTest ? 5 : (isProduction ? 20 : 10),
@@ -143,7 +143,17 @@ export class MySQLConfigManager {
   /**
    * 获取环境变量值
    */
-  private getEnvValue(suffix: string, defaultValue: string | undefined): string | undefined {
+  private getEnvValue(suffix: string, defaultValue: string): string {
+    const testKey = `TEST_DB_${suffix}`;
+    const prodKey = `DB_${suffix}`;
+    
+    return process.env[testKey] || process.env[prodKey] || defaultValue;
+  }
+
+  /**
+   * 获取可选环境变量值
+   */
+  private getOptionalEnvValue(suffix: string, defaultValue?: string): string | undefined {
     const testKey = `TEST_DB_${suffix}`;
     const prodKey = `DB_${suffix}`;
     
@@ -154,7 +164,7 @@ export class MySQLConfigManager {
    * 获取环境变量数字值
    */
   private getEnvNumberValue(suffix: string, defaultValue: number): number {
-    const value = this.getEnvValue(suffix, defaultValue.toString());
+    const value = this.getOptionalEnvValue(suffix, defaultValue.toString());
     return value ? parseInt(value, 10) : defaultValue;
   }
 
@@ -162,7 +172,7 @@ export class MySQLConfigManager {
    * 获取环境变量布尔值
    */
   private getEnvBooleanValue(suffix: string, defaultValue: boolean): boolean {
-    const value = this.getEnvValue(suffix, defaultValue.toString());
+    const value = this.getOptionalEnvValue(suffix, defaultValue.toString());
     return value ? value.toLowerCase() === 'true' : defaultValue;
   }
 
@@ -176,9 +186,9 @@ export class MySQLConfigManager {
     }
 
     return {
-      ca: this.getEnvValue('SSL_CA', undefined),
-      cert: this.getEnvValue('SSL_CERT', undefined),
-      key: this.getEnvValue('SSL_KEY', undefined),
+      ca: this.getOptionalEnvValue('SSL_CA'),
+      cert: this.getOptionalEnvValue('SSL_CERT'),
+      key: this.getOptionalEnvValue('SSL_KEY'),
       rejectUnauthorized: this.getEnvBooleanValue('SSL_REJECT_UNAUTHORIZED', true)
     };
   }

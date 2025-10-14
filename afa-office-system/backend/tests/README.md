@@ -1,372 +1,409 @@
-# AFA办公小程序通行系统测试文档
+# 测试类型工具库
 
-## 测试概述
+本目录包含了完整的测试类型工具库，为 AFA 办公小程序后端提供全面的测试支持。
 
-本文档描述了AFA办公小程序通行系统的完整测试套件，涵盖了通行码生成、验证、通行记录管理等核心功能的各种场景和边界条件测试。
-
-## 测试结构
+## 目录结构
 
 ```
 tests/
-├── unit/                           # 单元测试
-│   ├── services/                   # 服务层测试
-│   │   ├── passcode.service.test.ts        # 通行码服务测试
-│   │   └── access-record.service.test.ts   # 通行记录服务测试
-│   └── utils/                      # 工具类测试
-│       └── qrcode.test.ts          # 二维码工具测试
-├── integration/                    # 集成测试
-│   ├── access.test.ts              # 原有通行系统集成测试
-│   └── access-system.test.ts       # 完整通行系统集成测试
-├── performance/                    # 性能测试
-│   └── access-performance.test.ts  # 通行系统性能测试
-├── security/                       # 安全测试
-│   └── access-security.test.ts     # 通行系统安全测试
-├── helpers/                        # 测试辅助工具
-│   ├── database-mock.ts            # 数据库Mock
-│   └── test-data-factory.ts        # 测试数据工厂
-├── fixtures/                       # 测试数据
-│   └── test-data.json              # 静态测试数据
-└── setup.ts                        # 测试环境配置
+├── types/                      # 类型定义文件
+│   ├── index.d.ts             # 主要类型导出入口
+│   ├── global-test-types.d.ts # 全局测试类型
+│   ├── vitest-mocks.d.ts      # Vitest Mock 类型
+│   ├── api-test-types.d.ts    # API 测试类型
+│   ├── test-fixtures.d.ts     # 测试数据类型
+│   ├── test-type-config.d.ts  # 测试配置类型
+│   ├── third-party-mocks.d.ts # 第三方库 Mock 类型
+│   └── supertest-extensions.d.ts # Supertest 扩展类型
+├── utils/                      # 工具函数
+│   ├── test-type-utils.ts     # 核心类型工具
+│   ├── test-setup-utils.ts    # 测试设置工具
+│   ├── test-matchers.ts       # 自定义匹配器
+│   ├── mock-utils.ts          # Mock 工具
+│   └── api-test-client.ts     # API 测试客户端
+├── helpers/                    # 辅助工具
+│   └── test-data-factory.ts   # 测试数据工厂
+├── examples/                   # 使用示例
+│   └── test-type-utils-example.test.ts
+└── README.md                   # 本文档
 ```
 
-## 测试覆盖范围
+## 核心功能
 
-### 1. 通行码生成测试 (passcode.service.test.ts)
+### 1. 类型安全的 Mock 工具
 
-#### 核心功能测试
-- ✅ 员工通行码生成
-- ✅ 访客通行码生成
-- ✅ 动态二维码通行码生成
-- ✅ 时效性通行码生成
-- ✅ 批量通行码生成
+```typescript
+import { createTypedMock, createMockFunction, TypedMockGenerator } from '../types/index.js';
 
-#### 边界条件测试
-- ✅ 用户不存在的处理
-- ✅ 权限合并逻辑
-- ✅ 自定义选项处理
-- ✅ 极端过期时间处理
-- ✅ 使用次数限制处理
+// 创建类型安全的 Mock 对象
+interface UserService {
+  getUserById(id: number): Promise<User | null>;
+  createUser(data: Partial<User>): Promise<User>;
+}
 
-#### 验证功能测试
-- ✅ 有效通行码验证
-- ✅ 无效通行码拒绝
-- ✅ 过期通行码处理
-- ✅ 使用次数限制验证
-- ✅ 用户状态检查
-- ✅ 二维码验证
-- ✅ 时效性通行码验证
+const mockUserService = createTypedMock<UserService>();
 
-#### 管理功能测试
-- ✅ 通行码刷新
-- ✅ 通行码信息查询
-- ✅ 统计信息获取
-- ✅ 过期通行码清理
+// 创建类型安全的 Mock 函数
+const mockGetUser = createMockFunction<(id: number) => Promise<User | null>>();
 
-### 2. 通行记录测试 (access-record.service.test.ts)
-
-#### 记录管理测试
-- ✅ 成功通行记录
-- ✅ 失败通行记录
-- ✅ 批量记录创建
-- ✅ 记录查询和筛选
-- ✅ 分页查询
-
-#### 统计功能测试
-- ✅ 通行统计信息
-- ✅ 实时状态监控
-- ✅ 设备状态检测
-- ✅ 用户通行历史
-
-#### 数据完整性测试
-- ✅ 必需字段验证
-- ✅ 枚举值验证
-- ✅ 时间戳格式验证
-- ✅ 数据清理功能
-
-### 3. 二维码工具测试 (qrcode.test.ts)
-
-#### 加密解密测试
-- ✅ 二维码内容生成
-- ✅ 二维码内容解析
-- ✅ 加密数据完整性
-- ✅ 防篡改验证
-
-#### 时效性功能测试
-- ✅ 时效性通行码生成
-- ✅ 时效性通行码验证
-- ✅ 时间窗口容错处理
-- ✅ 过期检测
-
-#### 安全功能测试
-- ✅ 防重放攻击nonce
-- ✅ 强加密算法使用
-- ✅ 随机数生成质量
-- ✅ 校验码生成验证
-
-### 4. 系统集成测试 (access-system.test.ts)
-
-#### 完整流程测试
-- ✅ 员工通行完整生命周期
-- ✅ 访客通行完整流程
-- ✅ 二维码通行验证
-- ✅ 时效性通行码验证
-
-#### 权限安全测试
-- ✅ 禁用用户拒绝
-- ✅ 过期通行码拒绝
-- ✅ 使用次数限制
-- ✅ 并发验证处理
-
-#### 记录查询测试
-- ✅ 通行记录查询
-- ✅ 用户筛选
-- ✅ 设备筛选
-- ✅ 结果筛选
-- ✅ 日期范围查询
-- ✅ 统计信息获取
-
-#### 实时监控测试
-- ✅ 设备实时状态
-- ✅ 离线设备检测
-- ✅ 通行码管理
-
-### 5. 性能测试 (access-performance.test.ts)
-
-#### 通行码性能测试
-- ✅ 大量通行码生成性能
-- ✅ 高并发生成唯一性保证
-- ✅ 动态二维码生成效率
-- ✅ 通行码验证速度
-
-#### 通行记录性能测试
-- ✅ 大量通行日志记录
-- ✅ 批量记录操作效率
-- ✅ 大数据量查询性能
-- ✅ 复杂条件查询优化
-
-#### 工具性能测试
-- ✅ 二维码生成解析速度
-- ✅ 时效性通行码处理效率
-- ✅ 唯一ID生成性能
-- ✅ 加密解密性能
-
-#### 资源管理测试
-- ✅ 内存使用监控
-- ✅ 数据库连接池管理
-- ✅ 资源清理验证
-- ✅ 高负载稳定性
-
-### 6. 安全测试 (access-security.test.ts)
-
-#### 认证授权安全
-- ✅ 无效JWT token拒绝
-- ✅ 过期token处理
-- ✅ 篡改token检测
-- ✅ 权限提升防护
-- ✅ 跨用户数据访问防护
-
-#### 通行码安全
-- ✅ 暴力破解防护
-- ✅ 重放攻击防护
-- ✅ 枚举攻击防护
-- ✅ 随机性和唯一性保证
-
-#### 二维码安全
-- ✅ 内容篡改防护
-- ✅ 重放攻击防护
-- ✅ 时间操纵防护
-- ✅ 强加密保护
-
-#### 输入验证安全
-- ✅ SQL注入防护
-- ✅ XSS攻击防护
-- ✅ 输入长度限制
-- ✅ 字符集验证
-
-#### DoS防护测试
-- ✅ 大量并发请求处理
-- ✅ 恶意大请求体处理
-- ✅ 速率限制验证
-
-#### 数据安全测试
-- ✅ 敏感信息泄露防护
-- ✅ 错误消息安全
-- ✅ 日志记录安全
-- ✅ 加密哈希强度
-
-## 测试执行
-
-### 运行所有测试
-```bash
-pnpm test
+// 创建深度 Mock 对象
+const deepMock = TypedMockGenerator.createDeepMock<ComplexService>();
 ```
 
-### 运行特定测试套件
-```bash
-# 单元测试
-pnpm test tests/unit/
+### 2. 数据验证工具
 
-# 集成测试
-pnpm test tests/integration/
+```typescript
+import { TestDataValidator, validateInterface } from '../types/index.js';
 
-# 性能测试
-pnpm test tests/performance/
+// 验证对象接口
+const isValidUser = validateInterface<User>(testUser, ['id', 'name', 'phone']);
 
-# 安全测试
-pnpm test tests/security/
+// 验证 API 响应格式
+const isValidResponse = TestDataValidator.validateApiResponse(response);
+
+// 验证分页响应
+const isValidPaginated = TestDataValidator.validatePaginatedResponse(response);
 ```
 
-### 运行特定测试文件
-```bash
-# 通行码服务测试
-pnpm test tests/unit/services/passcode.service.test.ts
+### 3. 测试环境设置
 
-# 通行记录服务测试
-pnpm test tests/unit/services/access-record.service.test.ts
+```typescript
+import { setupTestEnvironment, TestSetupManager } from '../types/index.js';
 
-# 二维码工具测试
-pnpm test tests/unit/utils/qrcode.test.ts
+// 设置完整测试环境
+setupTestEnvironment({
+  test: DEFAULT_TEST_CONFIG,
+  mocks: DEFAULT_MOCK_CONFIG,
+  database: { cleanup: { strategy: 'truncate' } },
+  api: { authentication: { enabled: true } },
+});
 
-# 完整系统集成测试
-pnpm test tests/integration/access-system.test.ts
-
-# 性能测试
-pnpm test tests/performance/access-performance.test.ts
-
-# 安全测试
-pnpm test tests/security/access-security.test.ts
+// 手动管理测试设置
+await TestSetupManager.initialize(config);
+await TestSetupManager.cleanup();
 ```
 
-### 测试覆盖率
-```bash
-pnpm test:coverage
+### 4. 自定义匹配器
+
+```typescript
+import { setupCustomMatchers } from '../types/index.js';
+
+// 设置自定义匹配器
+setupCustomMatchers();
+
+// 使用自定义匹配器
+expect(response).toBeSuccessfulApiResponse();
+expect(user).toBeValidUser();
+expect(merchant).toBeValidMerchant();
+expect(response.body).toHaveValidApiStructure();
 ```
 
-## 测试数据
+### 5. 测试数据工厂
 
-### 测试数据工厂 (TestDataFactory)
-提供创建各种测试数据的便捷方法：
-- `createMerchant()` - 创建测试商户
-- `createUser()` - 创建测试用户
-- `createProject()` - 创建测试项目
-- `createVenue()` - 创建测试场地
-- `createFloor()` - 创建测试楼层
-- `createVisitorApplication()` - 创建测试访客申请
-- `createAccessRecord()` - 创建测试通行记录
+```typescript
+import { TestDataFactory, createTestUser, createTestMerchant } from '../types/index.js';
 
-### Mock配置
-- 数据库操作Mock
-- 外部服务Mock
-- 时间Mock (用于时效性测试)
-- 加密工具Mock
+// 创建单个测试数据
+const user = createTestUser();
+const merchant = createTestMerchant();
 
-## 测试环境
+// 创建批量测试数据
+const users = TestDataFactory.createBatch(() => TestDataFactory.createUser(), 10);
 
-### 数据库
-- 使用内存SQLite数据库进行测试
-- 每个测试前自动清理数据
-- 测试结束后关闭连接
+// 创建完整业务数据集
+const merchantData = TestDataFactory.createMerchantWithUsers(5);
+```
 
-### 配置
-- 测试专用配置文件
-- 环境变量隔离
-- Mock外部依赖
+### 6. API 测试客户端
 
-## 性能基准
+```typescript
+import { createApiTestClient, ApiTestAssertions } from '../types/index.js';
 
-### 通行码操作
-- 单个通行码生成: < 50ms
-- 批量通行码生成(50个): < 5s
-- 通行码验证: < 10ms
-- 二维码生成: < 20ms
+// 创建 API 测试客户端
+const apiClient = createApiTestClient(app);
 
-### 通行记录操作
-- 单条记录创建: < 10ms
-- 批量记录创建(100条): < 3s
-- 记录查询(分页): < 1s
-- 统计查询: < 2s
+// 执行认证请求
+const response = await apiClient.authenticatedGet('/api/v1/users/1', token);
 
-### 并发性能
-- 并发通行码验证(100个): < 3s
-- 并发记录创建(200个): < 8s
-- 高负载测试(500个操作): < 60s
+// 使用断言工具
+ApiTestAssertions.expectSuccessResponse(response);
+ApiTestAssertions.expectValidationError(response, 'email');
+```
 
-## 安全基准
+### 7. 异步测试工具
 
-### 认证安全
-- JWT token验证: 100% 拒绝无效token
-- 权限检查: 100% 防止越权访问
-- 会话管理: 正确处理过期和刷新
+```typescript
+import { AsyncTestUtils, waitFor } from '../types/index.js';
 
-### 数据安全
-- 输入验证: 100% 拒绝恶意输入
-- SQL注入防护: 100% 防护率
-- XSS防护: 100% 输出转义
+// 等待条件满足
+await waitFor(() => condition, 5000, 100);
 
-### 通行码安全
-- 随机性: 通过统计测试
-- 唯一性: 100% 保证
-- 防重放: 时间窗口和nonce保护
+// 重试异步操作
+const result = await AsyncTestUtils.retry(operation, 3, 1000);
 
-## 测试报告
+// 测试 Promise 拒绝
+const error = await AsyncTestUtils.expectRejection(promise, 'Expected error');
+```
 
-测试执行后会生成详细的测试报告，包括：
-- 测试通过率
-- 代码覆盖率
-- 性能指标
-- 安全检查结果
-- 失败测试详情
+### 8. 时间和环境工具
 
-## 持续集成
+```typescript
+import { TestTimeUtils, TestEnvironmentUtils } from '../types/index.js';
 
-测试套件集成到CI/CD流程中：
-- 代码提交时自动运行单元测试
-- 合并请求时运行完整测试套件
-- 发布前运行性能和安全测试
-- 定期运行压力测试
+// 时间工具
+TestTimeUtils.mockSystemTime('2024-01-01T00:00:00.000Z');
+const timestamp = TestTimeUtils.createRelativeTimestamp(1, 'hours');
 
-## 测试维护
+// 环境工具
+TestEnvironmentUtils.setupTestEnv({ TEST_VAR: 'value' });
+TestEnvironmentUtils.cleanupTestEnv(['TEST_VAR']);
+```
 
-### 添加新测试
-1. 确定测试类型和位置
-2. 使用现有的测试模式
-3. 添加必要的Mock配置
-4. 更新测试文档
+## 配置选项
 
-### 测试数据管理
-1. 使用TestDataFactory创建测试数据
-2. 保持测试数据的一致性
-3. 及时清理测试数据
-4. 避免测试间的数据污染
+### 全局测试配置
 
-### 性能监控
-1. 定期检查测试执行时间
-2. 监控性能基准变化
-3. 优化慢速测试
-4. 更新性能目标
+```typescript
+import type { GlobalTestConfig } from '../types/index.js';
+
+const config: GlobalTestConfig = {
+  test: {
+    database: { type: 'sqlite', path: ':memory:', resetBetweenTests: true },
+    api: { baseUrl: 'http://localhost:5100', timeout: 5000, retries: 3 },
+    auth: { jwtSecret: 'test-secret', tokenExpiry: 3600 },
+    wechat: { appId: 'test-app-id', appSecret: 'test-secret' },
+    logging: { level: 'error', enabled: false },
+  },
+  mocks: {
+    resetBetweenTests: true,
+    clearBetweenTests: true,
+    restoreBetweenTests: true,
+    globalMocks: {
+      database: true,
+      jwt: true,
+      bcrypt: true,
+      axios: true,
+      wechat: true,
+    },
+  },
+  database: {
+    migrations: { run: false, path: '' },
+    seeds: { run: false, path: '' },
+    cleanup: { strategy: 'truncate' },
+  },
+  api: {
+    authentication: { enabled: true },
+    validation: { strict: true, checkResponseFormat: true, checkStatusCodes: true },
+    performance: { enabled: false, thresholds: { responseTime: 1000, throughput: 100 } },
+  },
+};
+```
+
+## 使用指南
+
+### 1. 基本设置
+
+在测试文件开头添加以下设置：
+
+```typescript
+import { setupTestEnvironment, setupCustomMatchers } from '../types/index.js';
+
+// 设置测试环境
+setupTestEnvironment({
+  test: DEFAULT_TEST_CONFIG,
+  mocks: DEFAULT_MOCK_CONFIG,
+});
+
+// 设置自定义匹配器
+setupCustomMatchers();
+```
+
+### 2. 单元测试示例
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { createTestUser, createMockFunction } from '../types/index.js';
+
+describe('用户服务测试', () => {
+  it('应该能够获取用户', async () => {
+    // 创建测试数据
+    const testUser = createTestUser();
+    
+    // 创建 Mock 函数
+    const mockGetUser = createMockFunction<(id: number) => Promise<User | null>>();
+    mockGetUser.mockResolvedValue(testUser);
+    
+    // 执行测试
+    const result = await mockGetUser(1);
+    
+    // 验证结果
+    expect(result).toBeValidUser();
+    expect(mockGetUser).toHaveBeenCalledWith(1);
+  });
+});
+```
+
+### 3. 集成测试示例
+
+```typescript
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
+import { 
+  setupTestEnvironment, 
+  createApiTestClient, 
+  createTestUser,
+  TestSetupManager 
+} from '../types/index.js';
+
+describe('用户 API 集成测试', () => {
+  let apiClient: any;
+  
+  beforeAll(async () => {
+    await TestSetupManager.initialize();
+    apiClient = createApiTestClient(app);
+  });
+  
+  afterAll(async () => {
+    await TestSetupManager.cleanup();
+  });
+  
+  it('应该能够创建用户', async () => {
+    const userData = createTestUser();
+    const response = await apiClient.createUser(userData, token);
+    
+    expect(response).toBeSuccessfulApiResponse();
+    expect(response.body.data).toBeValidUser();
+  });
+});
+```
+
+### 4. 性能测试示例
+
+```typescript
+import { describe, it, expect } from 'vitest';
+import { AsyncTestUtils } from '../types/index.js';
+
+describe('性能测试', () => {
+  it('应该在指定时间内响应', async () => {
+    const startTime = Date.now();
+    
+    await AsyncTestUtils.retry(async () => {
+      // 执行操作
+      const result = await someOperation();
+      return result;
+    }, 3, 100);
+    
+    const endTime = Date.now();
+    const duration = endTime - startTime;
+    
+    expect(duration).toBeLessThan(1000); // 应该在 1 秒内完成
+  });
+});
+```
+
+## 最佳实践
+
+### 1. 测试组织
+
+- 使用描述性的测试名称
+- 按功能模块组织测试文件
+- 使用 `describe` 块分组相关测试
+- 在 `beforeEach` 中重置 Mock 状态
+
+### 2. Mock 使用
+
+- 优先使用类型安全的 Mock
+- 在测试间重置 Mock 状态
+- 使用具体的 Mock 返回值而不是通用值
+- 验证 Mock 函数的调用次数和参数
+
+### 3. 数据管理
+
+- 使用测试数据工厂创建一致的测试数据
+- 在测试间清理数据库状态
+- 使用唯一的测试数据避免冲突
+- 验证数据的完整性和一致性
+
+### 4. 断言策略
+
+- 使用自定义匹配器提高可读性
+- 验证关键业务逻辑而不是实现细节
+- 使用具体的断言而不是通用检查
+- 提供清晰的错误消息
+
+### 5. 异步测试
+
+- 使用 `async/await` 而不是回调
+- 设置合理的超时时间
+- 处理异步操作的错误情况
+- 使用重试机制处理不稳定的操作
 
 ## 故障排除
 
 ### 常见问题
-1. **Mock配置错误**: 检查Mock的返回值和调用次数
-2. **数据库连接问题**: 确保测试数据库正确初始化
-3. **异步测试问题**: 正确使用async/await
-4. **时间相关测试**: 使用vi.useFakeTimers()
+
+1. **类型错误**: 确保导入了正确的类型定义
+2. **Mock 不工作**: 检查 Mock 设置和重置逻辑
+3. **测试超时**: 增加超时时间或优化异步操作
+4. **数据冲突**: 使用唯一的测试数据或清理策略
 
 ### 调试技巧
-1. 使用console.log输出调试信息
-2. 检查Mock调用历史
-3. 验证测试数据状态
-4. 使用断点调试
 
-## 总结
+1. 使用 `console.log` 输出中间状态
+2. 检查 Mock 函数的调用历史
+3. 验证测试环境配置
+4. 使用断点调试复杂逻辑
 
-本测试套件全面覆盖了AFA办公小程序通行系统的各个方面，包括：
+## 扩展指南
 
-- **功能完整性**: 覆盖所有核心业务功能
-- **边界条件**: 测试各种异常和边界情况
-- **性能保证**: 验证系统在高负载下的表现
-- **安全防护**: 确保系统抵御各种安全威胁
-- **数据完整性**: 保证数据的准确性和一致性
+### 添加新的匹配器
 
-通过这套完整的测试体系，我们可以确保通行系统的可靠性、安全性和性能，为用户提供稳定的服务体验。
+```typescript
+// 在 test-matchers.ts 中添加
+const customMatchers = {
+  toBeValidCustomType(received: any): MatcherResult {
+    const pass = /* 验证逻辑 */;
+    return {
+      pass,
+      message: () => pass ? '...' : '...',
+    };
+  },
+};
+
+// 注册匹配器
+expect.extend(customMatchers);
+```
+
+### 添加新的工具函数
+
+```typescript
+// 在 test-type-utils.ts 中添加
+export class CustomTestUtils {
+  static customMethod(): any {
+    // 实现逻辑
+  }
+}
+```
+
+### 扩展配置选项
+
+```typescript
+// 在 test-type-config.d.ts 中添加
+export interface CustomTestConfig {
+  customOption: boolean;
+  customSettings: {
+    value: string;
+  };
+}
+```
+
+## 贡献指南
+
+1. 遵循现有的代码风格和命名约定
+2. 为新功能添加类型定义
+3. 编写测试用例验证新功能
+4. 更新文档说明新功能的使用方法
+5. 确保所有测试通过
+
+## 许可证
+
+本项目遵循 MIT 许可证。

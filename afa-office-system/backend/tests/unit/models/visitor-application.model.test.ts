@@ -124,7 +124,9 @@ describe('VisitorApplicationModel', () => {
           visit_purpose: '商务洽谈',
           scheduled_time: new Date().toISOString(),
           duration: 4,
-          status: 'pending'
+          status: 'pending',
+          usage_limit: 1,
+          usage_count: 0
         })
       ).rejects.toThrow('创建访客申请失败')
     })
@@ -142,7 +144,9 @@ describe('VisitorApplicationModel', () => {
           visit_purpose: '商务洽谈',
           scheduled_time: new Date().toISOString(),
           duration: 4,
-          status: 'pending'
+          status: 'pending',
+          usage_limit: 1,
+          usage_count: 0
         })
       ).rejects.toThrow('创建访客申请后查询失败')
     })
@@ -156,8 +160,10 @@ describe('VisitorApplicationModel', () => {
         visit_purpose: '商务洽谈',
         scheduled_time: new Date().toISOString(),
         duration: 4,
-        status: 'pending' as const
-        // 不包含可选字段
+        status: 'pending' as const,
+        usage_limit: 1,
+        usage_count: 0
+        // 包含必需字段
       }
 
       mockDatabase.run.mockResolvedValue({ lastID: 1 })
@@ -957,7 +963,9 @@ describe('VisitorApplicationModel', () => {
           visit_purpose: '商务洽谈',
           scheduled_time: new Date().toISOString(),
           duration: 4,
-          status: 'pending'
+          status: 'pending',
+          usage_limit: 1,
+          usage_count: 0
         })
       ).rejects.toThrow('SQL语法错误')
     })

@@ -3,7 +3,7 @@
  * 提供更多便捷方法、性能监控和详细诊断信息
  */
 
-import database from './database.js';
+import database from '../../src/utils/database.js';
 import { enhancedTestDataFactory } from './enhanced-test-data-factory.js';
 import { timeoutManager } from './timeout-manager.js';
 import { TestEnvironmentManager } from './test-environment-manager.js';

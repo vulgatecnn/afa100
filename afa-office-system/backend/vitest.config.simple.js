@@ -5,7 +5,7 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    setupFiles: ['./tests/simple-setup.js'],
+    setupFiles: ['./tests/simple-setup.js', './tests/utils/mock-utils.ts'],
     testTimeout: 10000,
     hookTimeout: 10000,
     pool: 'threads',

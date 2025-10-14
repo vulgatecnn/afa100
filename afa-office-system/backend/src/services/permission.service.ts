@@ -1,5 +1,4 @@
-import { PermissionModel } from '../models/permission.model.js';
-import { UserModel } from '../models/user.model.js';
+import { PermissionModel, UserModel } from '../models/index.js';
 import type { User, Permission, ResourceType, UserType } from '../types/index.js';
 
 /**

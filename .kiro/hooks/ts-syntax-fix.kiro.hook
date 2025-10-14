@@ -1,0 +1,17 @@
+{
+  "enabled": true,
+  "name": "TypeScript语法修复",
+  "description": "监听TypeScript文件变化，自动检查并修复语法错误，确保代码质量",
+  "version": "1",
+  "when": {
+    "type": "fileEdited",
+    "patterns": [
+      "**/*.ts",
+      "**/*.tsx"
+    ]
+  },
+  "then": {
+    "type": "askAgent",
+    "prompt": "检查并修复以下TypeScript文件的语法错误。请分析代码中的类型错误、语法问题、导入导出问题等，并提供修复建议。如果发现错误，请提供正确的代码修复方案。同时检查是否符合项目的TypeScript规范（严格类型、禁用any、正确的接口定义等）。"
+  }
+}

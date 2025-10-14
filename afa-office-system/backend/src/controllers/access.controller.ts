@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { PasscodeService } from '../services/passcode.service.js';
 import { AccessRecordService } from '../services/access-record.service.js';
 import { asyncHandler } from '../middleware/error.middleware.js';
-import type { ApiResponse } from '../types/index.js';
+import type { ApiResponse, AccessRecordQuery, AccessStatsQuery } from '../types/index.js';
 
 /**
  * 通行控制器
@@ -35,30 +35,30 @@ export class AccessController {
     if (result.valid) {
       // 记录通行日志
       await AccessRecordService.recordAccess({
-        userId: result.userId!,
-        passcodeId: result.passcodeId,
-        deviceId,
-        deviceType,
+        user_id: result.userId!,
+        passcode_id: result.passcodeId,
+        device_id: deviceId,
+        device_type: deviceType,
         direction: direction || 'in',
         result: 'success',
-        projectId,
-        venueId,
-        floorId,
+        project_id: projectId,
+        venue_id: venueId,
+        floor_id: floorId,
         timestamp: new Date().toISOString(),
       });
     } else {
       // 记录失败日志
       await AccessRecordService.recordAccess({
-        userId: result.userId || 0,
-        passcodeId: result.passcodeId,
-        deviceId,
-        deviceType,
+        user_id: result.userId || 0,
+        passcode_id: result.passcodeId,
+        device_id: deviceId,
+        device_type: deviceType,
         direction: direction || 'in',
         result: 'failed',
-        failReason: result.reason,
-        projectId,
-        venueId,
-        floorId,
+        fail_reason: result.reason,
+        project_id: projectId,
+        venue_id: venueId,
+        floor_id: floorId,
         timestamp: new Date().toISOString(),
       });
     }
@@ -68,7 +68,7 @@ export class AccessController {
       message: result.valid ? '通行验证成功' : result.reason || '通行验证失败',
       data: {
         valid: result.valid,
-        userId: result.userId,
+        user_id: result.userId,
         userName: result.userName,
         userType: result.userType,
         permissions: result.permissions,
@@ -85,17 +85,26 @@ export class AccessController {
    * 获取通行记录
    */
   getAccessRecords = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const query = {
-      page: parseInt(req.query.page as string) || 1,
-      limit: parseInt(req.query.limit as string) || 10,
-      userId: req.query.userId ? parseInt(req.query.userId as string) : undefined,
-      deviceId: req.query.deviceId as string,
-      result: req.query.result as 'success' | 'failed',
-      startDate: req.query.startDate as string,
-      endDate: req.query.endDate as string,
-      sortBy: req.query.sortBy as string,
-      sortOrder: req.query.sortOrder as 'asc' | 'desc',
+    // 构建查询参数，处理可选字段
+    const query: AccessRecordQuery = {
+      page: parseInt(req.query['page'] as string) || 1,
+      limit: parseInt(req.query['limit'] as string) || 10,
+      result: req.query['result'] as 'success' | 'failed',
+      startDate: req.query['startDate'] as string,
+      endDate: req.query['endDate'] as string,
+      sortBy: req.query['sortBy'] as string,
+      sortOrder: req.query['sortOrder'] as 'asc' | 'desc',
     };
+
+    // 处理可选的 userId 字段
+    if (req.query['userId'] !== undefined) {
+      query.userId = parseInt(req.query['userId'] as string);
+    }
+
+    // 处理可选的 deviceId 字段
+    if (req.query['deviceId'] !== undefined) {
+      query.deviceId = req.query['deviceId'] as string;
+    }
 
     const result = await AccessRecordService.getAccessRecords(query);
 
@@ -113,7 +122,7 @@ export class AccessController {
    * 获取用户通行记录
    */
   getUserAccessRecords = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const userIdParam = req.params.userId;
+    const userIdParam = req.params['userId'];
     if (!userIdParam) {
       const response: ApiResponse = {
         success: false,
@@ -127,12 +136,12 @@ export class AccessController {
 
     const userId = parseInt(userIdParam);
     const query = {
-      page: parseInt(req.query.page as string) || 1,
-      limit: parseInt(req.query.limit as string) || 10,
-      startDate: req.query.startDate as string,
-      endDate: req.query.endDate as string,
-      sortBy: req.query.sortBy as string,
-      sortOrder: req.query.sortOrder as 'asc' | 'desc',
+      page: parseInt(req.query['page'] as string) || 1,
+      limit: parseInt(req.query['limit'] as string) || 10,
+      startDate: req.query['startDate'] as string,
+      endDate: req.query['endDate'] as string,
+      sortBy: req.query['sortBy'] as string,
+      sortOrder: req.query['sortOrder'] as 'asc' | 'desc',
     };
 
     const result = await AccessRecordService.getUserAccessRecords(userId, query);
@@ -151,7 +160,7 @@ export class AccessController {
    * 获取设备通行记录
    */
   getDeviceAccessRecords = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const deviceId = req.params.deviceId;
+    const deviceId = req.params['deviceId'];
     if (!deviceId) {
       const response: ApiResponse = {
         success: false,
@@ -164,12 +173,12 @@ export class AccessController {
     }
 
     const query = {
-      page: parseInt(req.query.page as string) || 1,
-      limit: parseInt(req.query.limit as string) || 10,
-      startDate: req.query.startDate as string,
-      endDate: req.query.endDate as string,
-      sortBy: req.query.sortBy as string,
-      sortOrder: req.query.sortOrder as 'asc' | 'desc',
+      page: parseInt(req.query['page'] as string) || 1,
+      limit: parseInt(req.query['limit'] as string) || 10,
+      startDate: req.query['startDate'] as string,
+      endDate: req.query['endDate'] as string,
+      sortBy: req.query['sortBy'] as string,
+      sortOrder: req.query['sortOrder'] as 'asc' | 'desc',
     };
 
     const result = await AccessRecordService.getDeviceAccessRecords(deviceId, query);
@@ -188,12 +197,21 @@ export class AccessController {
    * 获取通行统计信息
    */
   getAccessStats = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const query = {
-      startDate: req.query.startDate as string,
-      endDate: req.query.endDate as string,
-      merchantId: req.query.merchantId ? parseInt(req.query.merchantId as string) : undefined,
-      deviceId: req.query.deviceId as string,
+    // 构建查询参数，处理可选字段
+    const query: AccessStatsQuery = {
+      startDate: req.query['startDate'] as string,
+      endDate: req.query['endDate'] as string,
     };
+
+    // 处理可选的 merchantId 字段
+    if (req.query['merchantId'] !== undefined) {
+      query.merchantId = parseInt(req.query['merchantId'] as string);
+    }
+
+    // 处理可选的 deviceId 字段
+    if (req.query['deviceId'] !== undefined) {
+      query.deviceId = req.query['deviceId'] as string;
+    }
 
     const stats = await AccessRecordService.getAccessStats(query);
 
@@ -211,7 +229,7 @@ export class AccessController {
    * 获取实时通行状态
    */
   getRealtimeStatus = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const deviceId = req.query.deviceId as string;
+    const deviceId = req.query['deviceId'] as string;
     const status = await AccessRecordService.getRealtimeStatus(deviceId);
 
     const response: ApiResponse = {
@@ -228,7 +246,7 @@ export class AccessController {
    * 获取通行码信息（用于硬件设备）
    */
   getPasscodeInfo = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const code = req.params.code;
+    const code = req.params['code'];
     if (!code) {
       const response: ApiResponse = {
         success: false,
@@ -330,30 +348,30 @@ export class AccessController {
     if (result.valid) {
       // 记录通行日志
       await AccessRecordService.recordAccess({
-        userId: result.userId!,
-        passcodeId: result.passcodeId,
-        deviceId,
-        deviceType,
+        user_id: result.userId!,
+        passcode_id: result.passcodeId,
+        device_id: deviceId,
+        device_type: deviceType,
         direction: direction || 'in',
         result: 'success',
-        projectId,
-        venueId,
-        floorId,
+        project_id: projectId,
+        venue_id: venueId,
+        floor_id: floorId,
         timestamp: new Date().toISOString(),
       });
     } else {
       // 记录失败日志
       await AccessRecordService.recordAccess({
-        userId: result.userId || 0,
-        passcodeId: result.passcodeId,
-        deviceId,
-        deviceType,
+        user_id: result.userId || 0,
+        passcode_id: result.passcodeId,
+        device_id: deviceId,
+        device_type: deviceType,
         direction: direction || 'in',
         result: 'failed',
-        failReason: result.reason,
-        projectId,
-        venueId,
-        floorId,
+        fail_reason: result.reason,
+        project_id: projectId,
+        venue_id: venueId,
+        floor_id: floorId,
         timestamp: new Date().toISOString(),
       });
     }
@@ -363,7 +381,7 @@ export class AccessController {
       message: result.valid ? '二维码验证成功' : result.reason || '二维码验证失败',
       data: {
         valid: result.valid,
-        userId: result.userId,
+        user_id: result.userId,
         userName: result.userName,
         userType: result.userType,
         permissions: result.permissions,
@@ -398,30 +416,30 @@ export class AccessController {
     if (result.valid) {
       // 记录通行日志
       await AccessRecordService.recordAccess({
-        userId: result.userId!,
-        passcodeId: result.passcodeId,
-        deviceId,
-        deviceType,
+        user_id: result.userId!,
+        passcode_id: result.passcodeId,
+        device_id: deviceId,
+        device_type: deviceType,
         direction: direction || 'in',
         result: 'success',
-        projectId,
-        venueId,
-        floorId,
+        project_id: projectId,
+        venue_id: venueId,
+        floor_id: floorId,
         timestamp: new Date().toISOString(),
       });
     } else {
       // 记录失败日志
       await AccessRecordService.recordAccess({
-        userId: result.userId || 0,
-        passcodeId: result.passcodeId,
-        deviceId,
-        deviceType,
+        user_id: result.userId || 0,
+        passcode_id: result.passcodeId,
+        device_id: deviceId,
+        device_type: deviceType,
         direction: direction || 'in',
         result: 'failed',
-        failReason: result.reason,
-        projectId,
-        venueId,
-        floorId,
+        fail_reason: result.reason,
+        project_id: projectId,
+        venue_id: venueId,
+        floor_id: floorId,
         timestamp: new Date().toISOString(),
       });
     }
@@ -431,7 +449,7 @@ export class AccessController {
       message: result.valid ? '时效性通行码验证成功' : result.reason || '时效性通行码验证失败',
       data: {
         valid: result.valid,
-        userId: result.userId,
+        user_id: result.userId,
         userName: result.userName,
         userType: result.userType,
         permissions: result.permissions,

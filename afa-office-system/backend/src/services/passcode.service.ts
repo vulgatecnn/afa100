@@ -1,7 +1,4 @@
-import { PasscodeModel } from '../models/passcode.model.js';
-import { UserModel } from '../models/user.model.js';
-import { VisitorApplicationModel } from '../models/visitor-application.model.js';
-import { PermissionModel } from '../models/permission.model.js';
+import { PasscodeModel, UserModel, VisitorApplicationModel, PermissionModel } from '../models/index.js';
 import { QRCodeUtils } from '../utils/qrcode.js';
 import { appConfig } from '../config/app.config.js';
 import type { Passcode, PasscodeType, PasscodeStatus } from '../types/index.js';

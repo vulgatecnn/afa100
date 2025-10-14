@@ -349,19 +349,19 @@ export class FrontendTestFactory {
   static createSpaceHierarchyResponse() {
     const projects = projectFactory.createMany(3, { status: 'active' })
     const venues = projects.flatMap(project => 
-      venueFactory.createMany(2, { projectId: project.id, status: 'active' })
+      venueFactory.createMany(2, { project_id: project.id, status: 'active' })
     )
     const floors = venues.flatMap(venue => 
-      floorFactory.createMany(3, { venueId: venue.id, status: 'active' })
+      floorFactory.createMany(3, { venue_id: venue.id, status: 'active' })
     )
     
     const hierarchy = projects.map(project => ({
       ...project,
       venues: venues
-        .filter(venue => venue.projectId === project.id)
+        .filter(venue => venue.project_id === project.id)
         .map(venue => ({
           ...venue,
-          floors: floors.filter(floor => floor.venueId === venue.id)
+          floors: floors.filter(floor => floor.venue_id === venue.id)
         }))
     }))
     

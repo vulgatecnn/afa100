@@ -52,7 +52,7 @@ describe('DatabaseService', () => {
       
       expect(status).toBe(ConnectionStatus.DISCONNECTED);
       expect(health.status).toBe(ConnectionStatus.DISCONNECTED);
-      expect(health.databaseType).toBe(DatabaseType.SQLITE);
+      expect(health.databaseType).toBe(DatabaseType.MYSQL);
       expect(health.lastPing).toBeNull();
       expect(health.errorCount).toBe(0);
       expect(health.lastError).toBeNull();

@@ -211,6 +211,12 @@ jobs:
           echo "::group::TypeScript类型检查"
           pnpm type-check || echo "TypeScript类型检查失败，但继续执行..."
           echo "::endgroup::"
+          
+          echo "::group::类型检查验证"
+          if [ -f "scripts/type-check-validation.js" ]; then
+            pnpm type-check:validate || echo "类型检查验证失败，但继续执行..."
+          fi
+          echo "::endgroup::"
 
       - name: 构建后端
         working-directory: afa-office-system/backend

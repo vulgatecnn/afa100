@@ -1,5 +1,5 @@
 import database from '../utils/database.js';
-import type { User, UserType, UserStatus, DatabaseResult } from '../types/index.js';
+import type { User, UserType, UserStatus, UserRole, DatabaseResult } from '../types/index.js';
 
 /**
  * 用户数据模型
@@ -9,10 +9,10 @@ export class UserModel {
   /**
    * 创建新用户
    */
-  static async create(userData: Omit<User, 'id' | 'created_at' | 'updated_at'>): Promise<User> {
+  static async create(userData: Omit<User, 'id' | 'created_at' | 'updated_at' | 'createdAt' | 'updatedAt' | 'merchant' | 'employee_applications' | 'visitor_applications' | 'passcodes' | 'access_records'>): Promise<User> {
     const sql = `
-      INSERT INTO users (open_id, union_id, phone, name, avatar, user_type, status, merchant_id)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO users (open_id, union_id, phone, name, avatar, user_type, role, status, permissions, merchant_id)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     
     const params = [
@@ -22,7 +22,9 @@ export class UserModel {
       userData.name,
       userData.avatar || null,
       userData.user_type,
+      userData.role || null,
       userData.status || 'active',
+      userData.permissions ? JSON.stringify(userData.permissions) : null,
       userData.merchant_id || null
     ];
 
@@ -192,11 +194,11 @@ export class UserModel {
   /**
    * 批量创建用户
    */
-  static async batchCreate(usersData: Omit<User, 'id' | 'created_at' | 'updated_at'>[]): Promise<User[]> {
+  static async batchCreate(usersData: Omit<User, 'id' | 'created_at' | 'updated_at' | 'createdAt' | 'updatedAt' | 'merchant' | 'employee_applications' | 'visitor_applications' | 'passcodes' | 'access_records'>[]): Promise<User[]> {
     const queries = usersData.map(userData => ({
       sql: `
-        INSERT INTO users (open_id, union_id, phone, name, avatar, user_type, status, merchant_id)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO users (open_id, union_id, phone, name, avatar, user_type, role, status, permissions, merchant_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `,
       params: [
         userData.open_id || null,
@@ -205,7 +207,9 @@ export class UserModel {
         userData.name,
         userData.avatar || null,
         userData.user_type,
+        userData.role || null,
         userData.status || 'active',
+        userData.permissions ? JSON.stringify(userData.permissions) : null,
         userData.merchant_id || null
       ]
     }));
@@ -273,16 +277,24 @@ export class UserModel {
       errors.push('用户类型无效');
     }
 
+    // 验证用户角色
+    if (userData.role && !['admin', 'manager', 'employee', 'visitor', 'guest'].includes(userData.role)) {
+      errors.push('用户角色无效');
+    }
+
     // 验证手机号格式
     if (userData.phone && !/^1[3-9]\d{9}$/.test(userData.phone)) {
       errors.push('手机号格式无效');
     }
 
-
-
     // 验证状态
     if (userData.status && !['active', 'inactive', 'pending'].includes(userData.status)) {
       errors.push('用户状态无效');
+    }
+
+    // 验证权限数组
+    if (userData.permissions && !Array.isArray(userData.permissions)) {
+      errors.push('用户权限必须是数组格式');
     }
 
     return {
@@ -346,5 +358,103 @@ export class UserModel {
   static async updateLastLogout(userId: number): Promise<void> {
     const sql = 'UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE id = ?';
     await database.run(sql, [userId]);
+  }
+
+  /**
+   * 更新用户权限
+   */
+  static async updatePermissions(userId: number, permissions: string[]): Promise<User> {
+    const sql = 'UPDATE users SET permissions = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?';
+    const result = await database.run(sql, [JSON.stringify(permissions), userId]);
+
+    if (result.changes === 0) {
+      throw new Error('用户不存在或更新权限失败');
+    }
+
+    const updatedUser = await this.findById(userId);
+    if (!updatedUser) {
+      throw new Error('更新权限后查询用户失败');
+    }
+
+    return updatedUser;
+  }
+
+  /**
+   * 获取用户权限
+   */
+  static async getUserPermissions(userId: number): Promise<string[]> {
+    const user = await this.findById(userId);
+    if (!user || !user.permissions) {
+      return [];
+    }
+
+    try {
+      return Array.isArray(user.permissions) ? user.permissions : JSON.parse(user.permissions as string);
+    } catch (error) {
+      return [];
+    }
+  }
+
+  /**
+   * 检查用户是否有特定权限
+   */
+  static async hasPermission(userId: number, permission: string): Promise<boolean> {
+    const permissions = await this.getUserPermissions(userId);
+    return permissions.includes(permission);
+  }
+
+  /**
+   * 根据角色查找用户
+   */
+  static async findByRole(role: UserRole): Promise<User[]> {
+    const sql = 'SELECT * FROM users WHERE role = ? ORDER BY created_at DESC';
+    return await database.all<User>(sql, [role]);
+  }
+
+  /**
+   * 获取用户关联的商户信息
+   */
+  static async findWithMerchant(userId: number): Promise<User & { merchant?: any } | null> {
+    const sql = `
+      SELECT u.*, m.name as merchant_name, m.code as merchant_code, m.status as merchant_status
+      FROM users u
+      LEFT JOIN merchants m ON u.merchant_id = m.id
+      WHERE u.id = ?
+    `;
+    
+    const result = await database.get<any>(sql, [userId]);
+    if (!result) {
+      return null;
+    }
+
+    // 构造返回对象
+    const user: User & { merchant?: any } = {
+      id: result.id,
+      open_id: result.open_id,
+      union_id: result.union_id,
+      phone: result.phone,
+      name: result.name,
+      avatar: result.avatar,
+      user_type: result.user_type,
+      role: result.role,
+      status: result.status,
+      permissions: result.permissions ? JSON.parse(result.permissions) : [],
+      merchant_id: result.merchant_id,
+      created_at: result.created_at,
+      updated_at: result.updated_at,
+      createdAt: result.created_at,
+      updatedAt: result.updated_at
+    };
+
+    if (result.merchant_name) {
+      user.merchant = {
+        id: result.merchant_id,
+        name: result.merchant_name,
+        code: result.merchant_code,
+        status: result.merchant_status
+      };
+    }
+
+    return user;
   }
 }

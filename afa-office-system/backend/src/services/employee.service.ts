@@ -1,5 +1,4 @@
-import { UserModel } from '../models/user.model.js';
-import { MerchantModel } from '../models/merchant.model.js';
+import { UserModel, MerchantModel } from '../models/index.js';
 import { PermissionService } from './permission.service.js';
 import type { 
   User, 

@@ -1,15 +1,20 @@
 {
   "extends": "./tsconfig.json",
   "compilerOptions": {
-    "noEmit": true,
-    "types": ["node", "vitest/globals"]
+    "types": ["node", "vitest/globals", "@types/supertest"],
+    "skipLibCheck": false,
+    "strict": true,
+    "noImplicitAny": true,
+    "typeRoots": [
+      "node_modules/@types",
+      "tests/types"
+    ]
   },
   "include": [
     "src/**/*",
-    "database/**/*",
     "tests/**/*",
-    "**/*.test.ts",
-    "**/*.spec.ts"
+    "database/**/*",
+    "tests/types/**/*"
   ],
   "exclude": [
     "node_modules",

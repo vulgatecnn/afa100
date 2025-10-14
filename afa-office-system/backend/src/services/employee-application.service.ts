@@ -1,6 +1,4 @@
-import { EmployeeApplicationModel } from '../models/employee-application.model.js';
-import { UserModel } from '../models/user.model.js';
-import { MerchantModel } from '../models/merchant.model.js';
+import { EmployeeApplicationModel, UserModel, MerchantModel } from '../models/index.js';
 import { EmployeeService } from './employee.service.js';
 import type { EmployeeApplication } from '../types/index.js';
 
@@ -76,14 +74,14 @@ export class EmployeeApplicationService {
 
     // 验证手机号格式
     const phoneRegex = /^1[3-9]\d{9}$/;
-    if (!phoneRegex.test(applicationData.phone)) {
+    if (!phoneRegex['test'](applicationData.phone)) {
       throw new Error('手机号格式不正确');
     }
 
     // 验证邮箱格式（如果提供）
     if (applicationData.email && applicationData.email.trim()) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(applicationData.email)) {
+      if (!emailRegex['test'](applicationData.email)) {
         throw new Error('邮箱格式不正确');
       }
     }
@@ -91,7 +89,7 @@ export class EmployeeApplicationService {
     // 验证身份证号格式（如果提供）
     if (applicationData.idCard && applicationData.idCard.trim()) {
       const idCardRegex = /(^\d{15}$)|(^\d{18}$)|(^\d{17}(\d|X|x)$)/;
-      if (!idCardRegex.test(applicationData.idCard)) {
+      if (!idCardRegex['test'](applicationData.idCard)) {
         throw new Error('身份证号格式不正确');
       }
     }
@@ -122,7 +120,7 @@ export class EmployeeApplicationService {
     }
     
     // 验证紧急联系人电话格式（如果提供）
-    if (hasEmergencyPhone && !phoneRegex.test(applicationData.emergencyPhone!)) {
+    if (hasEmergencyPhone && !phoneRegex['test'](applicationData.emergencyPhone!)) {
       throw new Error('紧急联系人电话格式不正确');
     }
 

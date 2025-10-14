@@ -22,12 +22,12 @@ export class TenantController {
    */
   getMerchants = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const query: MerchantListQuery = {
-      page: parseInt(req.query.page as string) || 1,
-      limit: parseInt(req.query.limit as string) || 10,
-      status: req.query.status as string,
-      search: req.query.search as string,
-      sortBy: req.query.sortBy as string,
-      sortOrder: req.query.sortOrder as 'asc' | 'desc',
+      page: parseInt(req.query['page'] as string) || 1,
+      limit: parseInt(req.query['limit'] as string) || 10,
+      status: req.query['status'] as string,
+      search: req.query['search'] as string,
+      sortBy: req.query['sortBy'] as string,
+      sortOrder: req.query['sortOrder'] as 'asc' | 'desc',
     };
 
     const result = await this.merchantService.getMerchants(query);
@@ -46,7 +46,7 @@ export class TenantController {
    * 获取商户详情
    */
   getMerchantById = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const merchantId = req.params.id ? parseInt(req.params.id) : NaN;
+    const merchantId = req.params['id'] ? parseInt(req.params['id']) : NaN;
     const merchant = await this.merchantService.getMerchantById(merchantId);
 
     const response: ApiResponse = {
@@ -80,7 +80,7 @@ export class TenantController {
    * 更新商户信息
    */
   updateMerchant = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const merchantId = req.params.id ? parseInt(req.params.id) : NaN;
+    const merchantId = req.params['id'] ? parseInt(req.params['id']) : NaN;
     const updateData: UpdateMerchantData = req.body;
     
     const merchant = await this.merchantService.updateMerchant(merchantId, updateData);
@@ -99,7 +99,7 @@ export class TenantController {
    * 删除商户
    */
   deleteMerchant = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const merchantId = req.params.id ? parseInt(req.params.id) : NaN;
+    const merchantId = req.params['id'] ? parseInt(req.params['id']) : NaN;
     await this.merchantService.deleteMerchant(merchantId);
 
     const response: ApiResponse = {
@@ -116,7 +116,7 @@ export class TenantController {
    * 更新商户状态
    */
   updateMerchantStatus = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const merchantId = req.params.id ? parseInt(req.params.id) : NaN;
+    const merchantId = req.params['id'] ? parseInt(req.params['id']) : NaN;
     const { status } = req.body;
     
     await this.merchantService.updateMerchantStatus(merchantId, status);
@@ -135,7 +135,7 @@ export class TenantController {
    * 为商户分配权限
    */
   assignPermissions = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const merchantId = req.params.id ? parseInt(req.params.id) : NaN;
+    const merchantId = req.params['id'] ? parseInt(req.params['id']) : NaN;
     const { permissionIds } = req.body;
     
     await this.merchantService.assignPermissions(merchantId, permissionIds);
@@ -154,7 +154,7 @@ export class TenantController {
    * 获取商户统计信息
    */
   getMerchantStats = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const merchantId = req.params.id ? parseInt(req.params.id) : NaN;
+    const merchantId = req.params['id'] ? parseInt(req.params['id']) : NaN;
     const stats = await this.merchantService.getMerchantStats(merchantId);
 
     const response: ApiResponse = {
@@ -171,7 +171,7 @@ export class TenantController {
    * 获取空间层级结构
    */
   getSpaceHierarchy = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const projectId = req.query.projectId ? parseInt(req.query.projectId as string) : undefined;
+    const projectId = req.query['projectId'] ? parseInt(req.query['projectId'] as string) : undefined;
     const hierarchy = await this.spaceService.getSpaceHierarchy(projectId);
 
     const response: ApiResponse = {
@@ -189,12 +189,12 @@ export class TenantController {
    */
   getProjects = asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const query = {
-      page: parseInt(req.query.page as string) || 1,
-      limit: parseInt(req.query.limit as string) || 10,
-      status: req.query.status as string,
-      search: req.query.search as string,
-      sortBy: req.query.sortBy as string,
-      sortOrder: req.query.sortOrder as 'asc' | 'desc',
+      page: parseInt(req.query['page'] as string) || 1,
+      limit: parseInt(req.query['limit'] as string) || 10,
+      status: req.query['status'] as string,
+      search: req.query['search'] as string,
+      sortBy: req.query['sortBy'] as string,
+      sortOrder: req.query['sortOrder'] as 'asc' | 'desc',
     };
 
     const result = await this.spaceService.getProjects(query);
@@ -230,7 +230,7 @@ export class TenantController {
    * 更新项目信息
    */
   updateProject = asyncHandler(async (req: Request, res: Response): Promise<void> => {
-    const projectId = req.params.id ? parseInt(req.params.id) : NaN;
+    const projectId = req.params['id'] ? parseInt(req.params['id']) : NaN;
     const updateData = req.body;
     
     const project = await this.spaceService.updateProject(projectId, updateData);

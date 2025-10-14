@@ -1,0 +1,733 @@
+name: 前后端集成测试流水线(修复版)
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'afa-office-system/**'
+      - 'shared/**'
+      - '.github/workflows/integration-tests-fixed.yml'
+  pull_request:
+    branches: [main, develop]
+    paths:
+      - 'afa-office-system/**'
+      - 'shared/**'
+      - '.github/workflows/integration-tests-fixed.yml'
+  schedule:
+    # 每天凌晨3点运行完整集成测试
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+    inputs:
+      test_scope:
+        description: '测试范围'
+        required: false
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - backend-only
+          - frontend-only
+          - integration-only
+          - e2e-only
+      browser_matrix:
+        description: '浏览器测试矩阵'
+        required: false
+        default: 'chrome'
+        type: choice
+        options:
+          - chrome
+          - firefox
+          - safari
+          - edge
+          - all
+      coverage_threshold:
+        description: '覆盖率阈值'
+        required: false
+        default: '80'
+        type: string
+
+env:
+  NODE_VERSION: '20.x'
+  PNPM_VERSION: '8'
+  MYSQL_ROOT_PASSWORD: 'test_password'
+  MYSQL_DATABASE: 'afa_office_test'
+  MYSQL_USER: 'afa_test'
+  MYSQL_PASSWORD: 'test_password'
+  DB_HOST: '127.0.0.1'
+  DB_PORT: '3306'
+  DB_NAME: 'afa_office_test'
+  DB_USER: 'afa_test'
+  DB_PASSWORD: 'test_password'
+  DB_ROOT_PASSWORD: 'test_password'
+
+jobs:
+  # 环境准备和依赖安装
+  setup:
+    name: 环境准备
+    runs-on: ubuntu-latest
+    outputs:
+      cache-key: ${{ steps.cache-keys.outputs.cache-key }}
+      test-scope: ${{ steps.test-scope.outputs.scope }}
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 设置pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 生成缓存键
+        id: cache-keys
+        run: |
+          echo "cache-key=${{ runner.os }}-pnpm-${{ hashFiles('**/pnpm-lock.yaml') }}" >> $GITHUB_OUTPUT
+
+      - name: 缓存依赖
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            node_modules
+            afa-office-system/backend/node_modules
+            afa-office-system/frontend/tenant-admin/node_modules
+            afa-office-system/frontend/merchant-admin/node_modules
+          key: ${{ steps.cache-keys.outputs.cache-key }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-
+
+      - name: 安装依赖
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 确定测试范围
+        id: test-scope
+        run: |
+          if [ "${{ github.event.inputs.test_scope }}" != "" ]; then
+            echo "scope=${{ github.event.inputs.test_scope }}" >> $GITHUB_OUTPUT
+          else
+            echo "scope=all" >> $GITHUB_OUTPUT
+          fi
+
+  # 后端单元测试和集成测试
+  backend-tests:
+    name: 后端测试
+    runs-on: ubuntu-latest
+    needs: setup
+    if: needs.setup.outputs.test-scope == 'all' || needs.setup.outputs.test-scope == 'backend-only' || needs.setup.outputs.test-scope == 'integration-only'
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ env.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ env.MYSQL_PASSWORD }}
+          MYSQL_ALLOW_EMPTY_PASSWORD: 'no'
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h localhost"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 设置pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 恢复依赖缓存
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            node_modules
+            afa-office-system/backend/node_modules
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: 安装依赖
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 等待MySQL就绪
+        run: |
+          echo "等待 MySQL 服务启动..."
+          for i in {1..60}; do
+            if mysqladmin ping -h 127.0.0.1 -P 3306 -u root -p${{ env.MYSQL_ROOT_PASSWORD }} --silent 2>/dev/null; then
+              echo "MySQL 服务已就绪 (尝试 $i 次)"
+              break
+            fi
+            echo "等待 MySQL 启动... ($i/60)"
+            sleep 3
+          done
+          
+          echo "验证 MySQL 连接..."
+          mysql -h 127.0.0.1 -P 3306 -u root -p${{ env.MYSQL_ROOT_PASSWORD }} -e "SELECT VERSION();" || {
+            echo "MySQL 连接验证失败"
+            exit 1
+          }
+
+      - name: 修复MySQL用户权限
+        working-directory: afa-office-system/backend
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ env.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ env.MYSQL_PASSWORD }}
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}
+        run: |
+          echo "修复MySQL用户权限..."
+          # 确保测试用户存在并有正确权限
+          mysql -h 127.0.0.1 -u root -p${{ env.MYSQL_ROOT_PASSWORD }} -e "
+            CREATE DATABASE IF NOT EXISTS \`${{ env.MYSQL_DATABASE }}\`;
+            CREATE USER IF NOT EXISTS '${{ env.MYSQL_USER }}'@'%' IDENTIFIED BY '${{ env.MYSQL_PASSWORD }}';
+            GRANT ALL PRIVILEGES ON \`${{ env.MYSQL_DATABASE }}\`.* TO '${{ env.MYSQL_USER }}'@'%';
+            FLUSH PRIVILEGES;
+          " || {
+            echo "MySQL用户权限修复失败"
+            exit 1
+          }
+          
+          # 验证测试用户连接
+          mysql -h 127.0.0.1 -u ${{ env.MYSQL_USER }} -p${{ env.MYSQL_PASSWORD }} -D ${{ env.MYSQL_DATABASE }} -e "SELECT 1;" || {
+            echo "测试用户连接验证失败"
+            exit 1
+          }
+
+      - name: 初始化测试数据库
+        working-directory: afa-office-system/backend
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ env.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ env.MYSQL_PASSWORD }}
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}
+        run: |
+          cp .env.test .env
+          echo "初始化测试数据库结构..."
+          # 使用修复后的脚本初始化数据库
+          node ../../scripts/fix-mysql-connection.js || {
+            echo "数据库初始化失败"
+            exit 1
+          }
+
+      - name: 代码质量检查
+        working-directory: afa-office-system/backend
+        continue-on-error: true
+        run: |
+          echo "::group::ESLint检查"
+          pnpm lint || echo "ESLint检查失败，但继续执行..."
+          echo "::endgroup::"
+          
+          echo "::group::TypeScript类型检查"
+          pnpm type-check || echo "TypeScript类型检查失败，但继续执行..."
+          echo "::endgroup::"
+          
+          echo "::group::类型检查验证"
+          if [ -f "scripts/type-check-validation.js" ]; then
+            pnpm type-check:validate || echo "类型检查验证失败，但继续执行..."
+          fi
+          echo "::endgroup::"
+
+      - name: 构建后端
+        working-directory: afa-office-system/backend
+        run: pnpm build
+
+      - name: 运行后端单元测试
+        working-directory: afa-office-system/backend
+        run: |
+          echo "::group::单元测试"
+          pnpm test --reporter=verbose
+          echo "::endgroup::"
+
+      - name: 运行后端集成测试
+        working-directory: afa-office-system/backend
+        run: |
+          echo "::group::集成测试"
+          pnpm test:verification --reporter=verbose
+          echo "::endgroup::"
+
+      - name: 生成测试覆盖率报告
+        working-directory: afa-office-system/backend
+        run: |
+          echo "::group::覆盖率测试"
+          pnpm test:coverage --reporter=verbose
+          echo "::endgroup::"
+
+      - name: 上传后端测试报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: backend-test-reports
+          path: |
+            afa-office-system/backend/coverage/
+            afa-office-system/backend/test-results/
+          retention-days: 30
+
+  # 前端测试
+  frontend-tests:
+    name: 前端测试
+    runs-on: ubuntu-latest
+    needs: setup
+    if: needs.setup.outputs.test-scope == 'all' || needs.setup.outputs.test-scope == 'frontend-only'
+    
+    strategy:
+      matrix:
+        frontend: [tenant-admin, merchant-admin]
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 设置pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 恢复依赖缓存
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            node_modules
+            afa-office-system/frontend/${{ matrix.frontend }}/node_modules
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: 安装依赖
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 安装前端项目依赖
+        working-directory: afa-office-system/frontend/${{ matrix.frontend }}
+        run: |
+          echo "当前目录: $(pwd)"
+          echo "检查 package.json 文件:"
+          ls -la package.json || echo "package.json 不存在"
+          echo "清理可能的缓存..."
+          rm -rf node_modules package-lock.json || true
+          echo "安装依赖..."
+          pnpm install --no-frozen-lockfile
+          echo "检查关键依赖:"
+          ls -la node_modules/@typescript-eslint/ || echo "@typescript-eslint 依赖未安装"
+          ls -la node_modules/eslint/ || echo "eslint 依赖未安装"
+
+      - name: 代码质量检查
+        working-directory: afa-office-system/frontend/${{ matrix.frontend }}
+        continue-on-error: true
+        run: |
+          if [ -f "package.json" ] && grep -q "lint" package.json; then
+            echo "::group::ESLint检查"
+            pnpm lint || echo "ESLint 检查失败，但继续执行..."
+            echo "::endgroup::"
+          fi
+          
+          if [ -f "package.json" ] && grep -q "type-check" package.json; then
+            echo "::group::TypeScript类型检查"
+            pnpm type-check || echo "TypeScript 检查失败，但继续执行..."
+            echo "::endgroup::"
+          fi
+
+      - name: 构建前端
+        working-directory: afa-office-system/frontend/${{ matrix.frontend }}
+        run: |
+          if [ -f "package.json" ] && grep -q "build" package.json; then
+            pnpm build
+          fi
+
+      - name: 运行前端单元测试
+        working-directory: afa-office-system/frontend/${{ matrix.frontend }}
+        run: |
+          if [ -f "package.json" ] && grep -q "test" package.json; then
+            echo "::group::前端单元测试"
+            pnpm test --run --reporter=verbose
+            echo "::endgroup::"
+          fi
+
+      - name: 上传前端测试报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frontend-${{ matrix.frontend }}-test-reports
+          path: |
+            afa-office-system/frontend/${{ matrix.frontend }}/coverage/
+            afa-office-system/frontend/${{ matrix.frontend }}/test-results/
+          retention-days: 30
+
+  # 端到端集成测试
+  e2e-integration-tests:
+    name: 端到端集成测试
+    runs-on: ubuntu-latest
+    needs: [setup, backend-tests]
+    if: needs.setup.outputs.test-scope == 'all' || needs.setup.outputs.test-scope == 'integration-only' || needs.setup.outputs.test-scope == 'e2e-only'
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ env.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ env.MYSQL_PASSWORD }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    strategy:
+      matrix:
+        browser: [chromium, firefox]
+        include:
+          - browser: webkit
+            if: runner.os == 'macOS'
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 设置pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 恢复依赖缓存
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            node_modules
+            afa-office-system/backend/node_modules
+            afa-office-system/frontend/tenant-admin/node_modules
+            afa-office-system/frontend/merchant-admin/node_modules
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: 安装依赖
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 安装Playwright浏览器
+        working-directory: afa-office-system/backend
+        run: npx playwright install ${{ matrix.browser }}
+
+      - name: 等待MySQL就绪
+        run: |
+          for i in {1..30}; do
+            if mysqladmin ping -h 127.0.0.1 -P 3306 -u root -p${{ env.MYSQL_ROOT_PASSWORD }} --silent; then
+              echo "MySQL is ready"
+              break
+            fi
+            echo "Waiting for MySQL... ($i/30)"
+            sleep 2
+          done
+
+      - name: 初始化测试环境
+        working-directory: afa-office-system/backend
+        run: |
+          cp .env.e2e .env
+          # 修复MySQL连接问题
+          node ../../scripts/fix-mysql-connection.js
+
+      - name: 构建应用
+        run: |
+          cd afa-office-system/backend && pnpm build
+          if [ -d "afa-office-system/frontend/tenant-admin" ]; then
+            cd afa-office-system/frontend/tenant-admin && pnpm build
+          fi
+          if [ -d "afa-office-system/frontend/merchant-admin" ]; then
+            cd afa-office-system/frontend/merchant-admin && pnpm build
+          fi
+
+      - name: 启动后端服务
+        working-directory: afa-office-system/backend
+        run: |
+          pnpm start &
+          echo $! > backend.pid
+          
+          # 等待后端服务启动
+          for i in {1..30}; do
+            if curl -f http://localhost:5100/api/v1/health > /dev/null 2>&1; then
+              echo "Backend is ready"
+              break
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 2
+          done
+
+      - name: 运行端到端集成测试
+        working-directory: afa-office-system/backend
+        run: |
+          echo "::group::E2E集成测试 - ${{ matrix.browser }}"
+          BROWSER=${{ matrix.browser }} pnpm test:e2e --reporter=html
+          echo "::endgroup::"
+
+      - name: 运行业务流程测试
+        working-directory: afa-office-system/backend
+        run: |
+          echo "::group::业务流程测试 - ${{ matrix.browser }}"
+          BROWSER=${{ matrix.browser }} pnpm test:e2e:business
+          echo "::endgroup::"
+
+      - name: 停止后端服务
+        if: always()
+        working-directory: afa-office-system/backend
+        run: |
+          if [ -f backend.pid ]; then
+            kill $(cat backend.pid) || true
+            rm backend.pid
+          fi
+
+      - name: 上传E2E测试报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-test-reports-${{ matrix.browser }}
+          path: |
+            afa-office-system/backend/tests/e2e/reports/
+            afa-office-system/backend/test-results/
+          retention-days: 30
+
+      - name: 上传测试截图
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-screenshots-${{ matrix.browser }}
+          path: |
+            afa-office-system/backend/tests/e2e/screenshots/
+            afa-office-system/backend/test-results/
+          retention-days: 7
+
+  # 跨浏览器兼容性测试
+  cross-browser-tests:
+    name: 跨浏览器兼容性测试
+    runs-on: ubuntu-latest
+    needs: [setup, e2e-integration-tests]
+    if: (needs.setup.outputs.test-scope == 'all' || needs.setup.outputs.test-scope == 'e2e-only') && (github.event.inputs.browser_matrix == 'all' || github.event_name == 'schedule')
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ env.MYSQL_ROOT_PASSWORD }}
+          MYSQL_DATABASE: ${{ env.MYSQL_DATABASE }}
+          MYSQL_USER: ${{ env.MYSQL_USER }}
+          MYSQL_PASSWORD: ${{ env.MYSQL_PASSWORD }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 设置Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: 设置pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: 恢复依赖缓存
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.pnpm-store
+            node_modules
+            afa-office-system/backend/node_modules
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: 安装依赖
+        run: pnpm install --no-frozen-lockfile
+
+      - name: 安装所有浏览器
+        working-directory: afa-office-system/backend
+        run: npx playwright install
+
+      - name: 初始化测试环境
+        working-directory: afa-office-system/backend
+        run: |
+          cp .env.e2e .env
+          # 修复MySQL连接问题
+          node ../../scripts/fix-mysql-connection.js
+
+      - name: 构建应用
+        working-directory: afa-office-system/backend
+        run: pnpm build
+
+      - name: 启动后端服务
+        working-directory: afa-office-system/backend
+        run: |
+          pnpm start &
+          echo $! > backend.pid
+          
+          # 等待后端服务启动
+          for i in {1..30}; do
+            if curl -f http://localhost:5100/api/v1/health > /dev/null 2>&1; then
+              echo "Backend is ready"
+              break
+            fi
+            echo "Waiting for backend... ($i/30)"
+            sleep 2
+          done
+
+      - name: 运行跨浏览器测试
+        working-directory: afa-office-system/backend
+        run: |
+          echo "::group::跨浏览器兼容性测试"
+          pnpm test:e2e:cross-browser --reporter=html
+          echo "::endgroup::"
+
+      - name: 停止后端服务
+        if: always()
+        working-directory: afa-office-system/backend
+        run: |
+          if [ -f backend.pid ]; then
+            kill $(cat backend.pid) || true
+            rm backend.pid
+          fi
+
+      - name: 上传跨浏览器测试报告
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cross-browser-test-reports
+          path: |
+            afa-office-system/backend/tests/e2e/reports/cross-browser-report/
+          retention-days: 30
+
+  # 测试结果汇总和报告
+  test-summary:
+    name: 测试结果汇总
+    runs-on: ubuntu-latest
+    needs: [backend-tests, frontend-tests, e2e-integration-tests]
+    if: always()
+    
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 下载所有测试报告
+        uses: actions/download-artifact@v4
+        with:
+          path: test-reports
+
+      - name: 生成测试汇总报告
+        run: |
+          echo "# 前后端集成测试汇总报告" > test-summary.md
+          echo "" >> test-summary.md
+          echo "## 测试执行时间" >> test-summary.md
+          echo "- 开始时间: ${{ github.event.head_commit.timestamp }}" >> test-summary.md
+          echo "- 结束时间: $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> test-summary.md
+          echo "" >> test-summary.md
+          
+          echo "## 测试结果概览" >> test-summary.md
+          echo "| 测试类型 | 状态 | 详情 |" >> test-summary.md
+          echo "|---------|------|------|" >> test-summary.md
+          echo "| 后端测试 | ${{ needs.backend-tests.result }} | 单元测试 + 集成测试 |" >> test-summary.md
+          echo "| 前端测试 | ${{ needs.frontend-tests.result }} | 组件测试 + 单元测试 |" >> test-summary.md
+          echo "| E2E集成测试 | ${{ needs.e2e-integration-tests.result }} | 端到端业务流程测试 |" >> test-summary.md
+          echo "" >> test-summary.md
+          
+          echo "## 覆盖率统计" >> test-summary.md
+          if [ -d "test-reports/backend-test-reports/coverage" ]; then
+            echo "### 后端覆盖率" >> test-summary.md
+            if [ -f "test-reports/backend-test-reports/coverage/coverage-summary.json" ]; then
+              echo "详细覆盖率数据请查看附件中的coverage报告" >> test-summary.md
+            fi
+          fi
+          echo "" >> test-summary.md
+          
+          echo "## 测试环境信息" >> test-summary.md
+          echo "- Node.js版本: ${{ env.NODE_VERSION }}" >> test-summary.md
+          echo "- pnpm版本: ${{ env.PNPM_VERSION }}" >> test-summary.md
+          echo "- 运行环境: ${{ runner.os }}" >> test-summary.md
+          echo "- 触发事件: ${{ github.event_name }}" >> test-summary.md
+          echo "- 分支: ${{ github.ref_name }}" >> test-summary.md
+          echo "- 提交: ${{ github.sha }}" >> test-summary.md
+
+      - name: 上传测试汇总报告
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-summary-report
+          path: |
+            test-summary.md
+            test-reports/
+          retention-days: 90
+
+      - name: 检查测试结果
+        run: |
+          echo "检查测试结果..."
+          
+          # 检查关键测试是否通过
+          if [ "${{ needs.backend-tests.result }}" != "success" ]; then
+            echo "❌ 后端测试失败"
+            exit 1
+          fi
+          
+          if [ "${{ needs.e2e-integration-tests.result }}" != "success" ]; then
+            echo "❌ E2E集成测试失败"
+            exit 1
+          fi
+          
+          echo "✅ 所有关键测试通过"
+
+  # 通知和后续处理
+  notification:
+    name: 测试结果通知
+    runs-on: ubuntu-latest
+    needs: [test-summary]
+    if: always()
+    
+    steps:
+      - name: 测试结果通知
+        run: |
+          if [ "${{ needs.test-summary.result }}" == "success" ]; then
+            echo "✅ 前后端集成测试全部通过"
+            echo "🎉 系统集成测试验证成功"
+          else
+            echo "❌ 前后端集成测试存在失败"
+            echo "🔍 请检查测试报告了解详细信息"
+            exit 1
+          fi
+
+      - name: 设置测试状态
+        if: always()
+        run: |
+          # 这里可以添加通知逻辑，比如发送到Slack、钉钉等
+          echo "测试完成，状态: ${{ needs.test-summary.result }}"

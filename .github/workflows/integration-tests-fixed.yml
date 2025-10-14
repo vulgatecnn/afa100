@@ -230,60 +230,23 @@ jobs:
           cp .env.test .env
           echo "初始化测试数据库结构..."
           # 直接在工作流中执行数据库初始化
-          npm install mysql2 dotenv
-          node -e "
-            const mysql = require('mysql2/promise');
-            async function initDB() {
-              try {
-                console.log('🔧 开始初始化测试数据库...');
-                
-                // 创建连接
-                const connection = await mysql.createConnection({
-                  host: process.env.DB_HOST,
-                  port: parseInt(process.env.DB_PORT),
-                  user: 'root',
-                  password: process.env.MYSQL_ROOT_PASSWORD
-                });
-                
-                // 创建测试数据库
-                await connection.execute(\`CREATE DATABASE IF NOT EXISTS \` + process.env.MYSQL_DATABASE + \` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci\`);
-                console.log('✅ 测试数据库创建成功');
-                
-                // 创建测试用户
-                await connection.execute(\`CREATE USER IF NOT EXISTS '\` + process.env.MYSQL_USER + \`'@'%' IDENTIFIED BY '\` + process.env.MYSQL_PASSWORD + \`'\`);
-                console.log('✅ 测试用户创建成功');
-                
-                // 授予权限
-                await connection.execute(\`GRANT ALL PRIVILEGES ON \` + process.env.MYSQL_DATABASE + \`.* TO '\` + process.env.MYSQL_USER + \`'@'%'\`);
-                await connection.execute('FLUSH PRIVILEGES');
-                console.log('✅ 权限授予成功');
-                
-                // 验证连接
-                const testConnection = await mysql.createConnection({
-                  host: process.env.DB_HOST,
-                  port: parseInt(process.env.DB_PORT),
-                  user: process.env.MYSQL_USER,
-                  password: process.env.MYSQL_PASSWORD,
-                  database: process.env.MYSQL_DATABASE
-                });
-                
-                await testConnection.execute('SELECT 1 as test');
-                console.log('✅ 测试用户连接验证成功');
-                
-                await testConnection.end();
-                await connection.end();
-                
-                console.log('🎉 数据库初始化完成!');
-              } catch (error) {
-                console.error('❌ 数据库初始化失败:', error.message);
-                process.exit(1);
-              }
-            }
-            initDB();
+          mysql -h 127.0.0.1 -u root -p${{ env.MYSQL_ROOT_PASSWORD }} -e "
+            CREATE DATABASE IF NOT EXISTS \`${{ env.MYSQL_DATABASE }}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+            CREATE USER IF NOT EXISTS '${{ env.MYSQL_USER }}'@'%' IDENTIFIED BY '${{ env.MYSQL_PASSWORD }}';
+            GRANT ALL PRIVILEGES ON \`${{ env.MYSQL_DATABASE }}\`.* TO '${{ env.MYSQL_USER }}'@'%';
+            FLUSH PRIVILEGES;
           " || {
             echo "数据库初始化失败"
             exit 1
           }
+          
+          # 验证测试用户连接
+          mysql -h 127.0.0.1 -u ${{ env.MYSQL_USER }} -p${{ env.MYSQL_PASSWORD }} -D ${{ env.MYSQL_DATABASE }} -e "SELECT 1 as test;" || {
+            echo "测试用户连接验证失败"
+            exit 1
+          }
+          
+          echo "✅ 数据库初始化完成!"
 
       - name: 代码质量检查
         working-directory: afa-office-system/backend

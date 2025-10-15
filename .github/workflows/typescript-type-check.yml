@@ -151,13 +151,18 @@ jobs:
       - name: 解析类型错误
         working-directory: ${{ matrix.path }}
         if: always()
+        id: parse-errors
         run: |
           echo "::group::类型错误统计"
           
           if [ -f "type-check-output.log" ]; then
-            # 统计错误数量
-            ERROR_COUNT=$(grep -c "error TS" type-check-output.log || echo "0")
-            WARNING_COUNT=$(grep -c "warning TS" type-check-output.log || echo "0")
+            # 统计错误数量 - 确保返回有效的数字
+            ERROR_COUNT=$(grep "error TS" type-check-output.log | wc -l | tr -d ' ')
+            WARNING_COUNT=$(grep "warning TS" type-check-output.log | wc -l | tr -d ' ')
+            
+            # 确保变量不为空
+            ERROR_COUNT=${ERROR_COUNT:-0}
+            WARNING_COUNT=${WARNING_COUNT:-0}
             
             echo "TypeScript 错误数量: $ERROR_COUNT"
             echo "TypeScript 警告数量: $WARNING_COUNT"
@@ -170,23 +175,23 @@ jobs:
             echo "- 检查状态: ${{ steps.type-check.outputs.type_check_exit_code == '0' && '✅ 通过' || '❌ 失败' }}" >> type-check-summary.md
             echo "" >> type-check-summary.md
             
-            if [ "$ERROR_COUNT" -gt "0" ]; then
+            if [ "$ERROR_COUNT" -gt 0 ]; then
               echo "### 错误详情" >> type-check-summary.md
               echo '```' >> type-check-summary.md
               grep "error TS" type-check-output.log | head -20 >> type-check-summary.md
-              if [ "$ERROR_COUNT" -gt "20" ]; then
+              if [ "$ERROR_COUNT" -gt 20 ]; then
                 echo "... 还有 $((ERROR_COUNT - 20)) 个错误" >> type-check-summary.md
               fi
               echo '```' >> type-check-summary.md
             fi
             
             # 设置 GitHub 输出
-            echo "error_count=$ERROR_COUNT" >> $GITHUB_OUTPUT
-            echo "warning_count=$WARNING_COUNT" >> $GITHUB_OUTPUT
+            echo "error_count=$ERROR_COUNT" >> "$GITHUB_OUTPUT"
+            echo "warning_count=$WARNING_COUNT" >> "$GITHUB_OUTPUT"
           else
             echo "未找到类型检查输出文件"
-            echo "error_count=0" >> $GITHUB_OUTPUT
-            echo "warning_count=0" >> $GITHUB_OUTPUT
+            echo "error_count=0" >> "$GITHUB_OUTPUT"
+            echo "warning_count=0" >> "$GITHUB_OUTPUT"
           fi
           
           echo "::endgroup::"

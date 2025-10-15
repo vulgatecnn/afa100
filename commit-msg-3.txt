@@ -1,0 +1,9 @@
+fix(tests): 修复CORS配置和数据库初始化问题
+
+- 修复CORS配置以支持测试环境
+  * 测试环境允许所有来源
+  * 暴露access-control-allow-origin头部
+  
+- 修复Database初始化方法调用
+  * 将Database.getInstance().init()改为connect()
+  * 修复access.test.ts和access-system.test.ts中的调用

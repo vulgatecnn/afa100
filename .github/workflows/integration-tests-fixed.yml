@@ -244,6 +244,22 @@ jobs:
             exit 1
           }
 
+          # 创建数据库表结构
+          echo "创建数据库表结构..."
+          if [ -f "database/mysql-test-schema.sql" ]; then
+            mysql -h 127.0.0.1 -u ${{ env.MYSQL_USER }} -p${{ env.MYSQL_PASSWORD }} -D ${{ env.MYSQL_DATABASE }} < database/mysql-test-schema.sql || {
+              echo "创建表结构失败"
+              exit 1
+            }
+            echo "✅ 表结构创建成功"
+          else
+            echo "⚠️ 未找到mysql-test-schema.sql文件"
+          fi
+
+          # 验证表是否创建成功
+          TABLE_COUNT=$(mysql -h 127.0.0.1 -u ${{ env.MYSQL_USER }} -p${{ env.MYSQL_PASSWORD }} -D ${{ env.MYSQL_DATABASE }} -sN -e "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '${{ env.MYSQL_DATABASE }}';")
+          echo "已创建 $TABLE_COUNT 个表"
+
           echo "✅ 数据库初始化完成!"
 
       - name: 代码质量检查

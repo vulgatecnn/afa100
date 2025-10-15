@@ -17,7 +17,7 @@ describe('Access Integration Tests', () => {
 
   beforeAll(async () => {
     // 初始化测试数据库
-    await Database.getInstance().init();
+    await Database.getInstance().connect();
   });
 
   afterAll(async () => {

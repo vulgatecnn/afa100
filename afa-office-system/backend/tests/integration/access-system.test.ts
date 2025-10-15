@@ -21,7 +21,7 @@ describe('通行系统集成测试', () => {
   let adminToken: string;
 
   beforeAll(async () => {
-    await Database.getInstance().init();
+    await Database.getInstance().connect();
   });
 
   afterAll(async () => {

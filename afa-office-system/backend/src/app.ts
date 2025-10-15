@@ -31,9 +31,12 @@ app.use(securityHeaders);
 
 // CORS配置
 const corsOptions: cors.CorsOptions = {
-  origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3001', 'http://localhost:3002'],
+  origin: process.env.NODE_ENV === 'test' 
+    ? true // 测试环境允许所有来源
+    : (process.env.CORS_ORIGIN?.split(',') || ['http://localhost:3001', 'http://localhost:3002']),
   credentials: true,
   optionsSuccessStatus: 200,
+  exposedHeaders: ['access-control-allow-origin'],
 };
 app.use(cors(corsOptions));
 

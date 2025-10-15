@@ -43,6 +43,55 @@ PowerShell 脚本，用于管理 AFA 开发环境的端口占用问题。
 .\kill-dev.cmd
 ```
 
+## CI/CD 状态监控脚本
+
+### monitor-ci-status.cjs / monitor-ci-status.ps1
+
+Node.js 和 PowerShell 脚本，用于监控 GitHub Actions CI/CD 流水线状态。
+
+**功能特性：**
+
+- 实时监控最新的 GitHub Actions 工作流运行状态
+- 显示详细的工作流作业和步骤执行情况
+- 自动检测新的工作流运行
+- 支持定时检查和手动触发检查
+- 生成详细的日志文件
+
+**使用方法：**
+
+```bash
+# 使用 Node.js 脚本
+node .\scripts\monitor-ci-status.cjs
+
+# 使用 PowerShell 脚本
+.\scripts\monitor-ci-status.ps1
+
+# 使用批处理文件（Windows）
+.\scripts\start-ci-monitor.bat
+```
+
+### start-ci-monitor.bat
+
+Windows 批处理文件，提供一键启动 CI/CD 监控的快捷方式。
+
+**使用方法：**
+
+```cmd
+# 双击运行或在命令行执行
+.\scripts\start-ci-monitor.bat
+```
+
+### setup-ci-monitor-task.ps1
+
+PowerShell 脚本，用于在 Windows 任务计划程序中创建定时监控任务。
+
+**使用方法：**
+
+```powershell
+# 以管理员身份运行
+.\scripts\setup-ci-monitor-task.ps1
+```
+
 ## 开发工作流建议
 
 1. **启动开发环境前：**
@@ -75,6 +124,7 @@ PowerShell 脚本，用于管理 AFA 开发环境的端口占用问题。
 - 建议在开发开始前运行清理脚本
 - 如果遇到权限问题，请以管理员身份运行 PowerShell
 - 脚本会自动处理中文字符编码问题
+- CI/CD 监控脚本需要已安装 GitHub CLI (gh)
 
 ## 故障排除
 
@@ -88,4 +138,12 @@ Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\kill-dev-ports.ps1 -All
+```
+
+**如果 GitHub CLI 未安装：**
+
+请访问 https://cli.github.com/ 下载并安装 GitHub CLI，然后进行身份验证：
+
+```bash
+gh auth login
 ```

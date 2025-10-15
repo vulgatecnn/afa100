@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { message } from 'antd'
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITEST ? '/api/v1' : (import.meta.env.VITE_API_BASE_URL || 'http://localhost:5100/api/v1'),
@@ -36,9 +37,30 @@ apiClient.interceptors.response.use(
     // 统一处理错误
     if (error.response) {
       const { status, data } = error.response
-      const message = data?.message || `请求失败 (${status})`
-      throw new Error(message)
+      
+      // 处理不同的HTTP状态码
+      switch (status) {
+        case 401:
+          message.error('登录已过期，请重新登录')
+          localStorage.removeItem('token')
+          window.location.href = '/login'
+          // 返回一个永远不会resolve的Promise，防止后续代码执行
+          return new Promise(() => {})
+        case 403:
+          message.error('权限不足')
+          throw new Error(data?.message || '请求失败 (403)')
+        case 404:
+          message.error('请求的资源不存在')
+          throw new Error(data?.message || '请求失败 (404)')
+        case 500:
+          message.error('服务器内部错误')
+          throw new Error(data?.message || '请求失败 (500)')
+        default:
+          const errorMessage = data?.message || `请求失败 (${status})`
+          throw new Error(errorMessage)
+      }
     } else if (error.request) {
+      message.error('网络连接失败，请检查网络设置')
       throw new Error('网络错误，请检查网络连接')
     } else {
       throw new Error(error.message || '未知错误')

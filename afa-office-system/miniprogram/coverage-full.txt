@@ -1,0 +1,833 @@
+
+> afa-office-miniprogram@1.0.0 test:coverage D:\vulgate\code\kiro\afa100\afa-office-system\miniprogram
+> vitest --coverage --run
+
+The CJS build of Vite's Node API is deprecated. See https://vite.dev/guide/troubleshooting.html#vite-cjs-node-api-deprecated for more details.
+
+[7m[1m[36m RUN [39m[22m[27m [36mv1.6.1[39m [90mD:/vulgate/code/kiro/afa100/afa-office-system/miniprogram[39m
+[2m      Coverage enabled with [22m[33mv8[39m
+
+ [32m✓[39m tests/unit/pages/visitor-apply.test.ts [2m ([22m[2m18 tests[22m[2m)[22m[90m 51[2mms[22m[39m
+ [32m✓[39m tests/unit/utils/validation.test.ts [2m ([22m[2m51 tests[22m[2m)[22m[90m 61[2mms[22m[39m
+ [32m✓[39m tests/unit/utils/storage.test.ts [2m ([22m[2m45 tests[22m[2m)[22m[90m 81[2mms[22m[39m
+ [33m❯[39m tests/e2e/passcode-accuracy.test.ts [2m ([22m[2m10 tests[22m [2m|[22m [31m5 failed[39m[2m)[22m[90m 183[2mms[22m[39m
+[31m   [33m❯[31m tests/e2e/passcode-accuracy.test.ts[2m > [22m通行码展示准确性测试[2m > [22m二维码生成准确性[2m > [22m应该根据通行码内容生成正确的二维码[39m
+[31m     → expected "spy" to be called with arguments: [ +0, +0, 200, 200 ][90m
+
+Received: 
+
+[31m[90m
+
+Number of calls: [1m0[22m
+[31m[39m
+[31m   [33m❯[31m tests/e2e/passcode-accuracy.test.ts[2m > [22m通行码展示准确性测试[2m > [22m二维码生成准确性[2m > [22m应该根据屏幕尺寸自适应二维码大小[39m
+[31m     → expected 177 to be 200 // Object.is equality[39m
+[31m   [33m❯[31m tests/e2e/passcode-accuracy.test.ts[2m > [22m通行码展示准确性测试[2m > [22m通行码状态实时更新[2m > [22m应该准确显示通行码的实时状态[39m
+[31m     → expected '已过期' to be '剩余 3 次使用' // Object.is equality[39m
+[31m   [33m❯[31m tests/e2e/passcode-accuracy.test.ts[2m > [22m通行码展示准确性测试[2m > [22m通行码状态实时更新[2m > [22m应该准确显示通行码的过期状态[39m
+[31m     → expected true to be false // Object.is equality[39m
+[31m   [33m❯[31m tests/e2e/passcode-accuracy.test.ts[2m > [22m通行码展示准确性测试[2m > [22m员工通行码自动刷新准确性[2m > [22m应该按照设定频率准确刷新员工通行码[39m
+[31m     → Aborting after running 10000 timers, assuming an infinite loop![39m
+ [33m❯[39m tests/unit/components/form-field.test.ts [2m ([22m[2m20 tests[22m [2m|[22m [31m11 failed[39m[2m)[22m[90m 76[2mms[22m[39m
+[31m   [33m❯[31m tests/unit/components/form-field.test.ts[2m > [22m表单字段组件测试[2m > [22m输入事件处理[2m > [22m应该处理输入事件并更新值[39m
+[31m     → this.setData is not a function[39m
+[31m   [33m❯[31m tests/unit/components/form-field.test.ts[2m > [22m表单字段组件测试[2m > [22m输入事件处理[2m > [22m应该处理焦点事件[39m
+[31m     → this.setData is not a function[39m
+[31m   [33m❯[31m tests/unit/components/form-field.test.ts[2m > [22m表单字段组件测试[2m > [22m表单验证[2m > [22m应该验证必填字段[39m
+[31m     → Cannot read properties of undefined (reading 'required')[39m
+[31m   [33m❯[31m tests/unit/components/form-field.test.ts[2m > [22m表单字段组件测试[2m > [22m表单验证[2m > [22m应该验证字段长度[39m
+[31m     → Cannot read properties of undefined (reading 'value')[39m
+[31m   [33m❯[31m tests/unit/components/form-field.test.ts[2m > [22m表单字段组件测试[2m > [22m表单验证[2m > [22m应该验证正则表达式[39m
+[31m     → Cannot read properties of undefined (reading 'value')[39m
+[31m   [33m❯[31m tests/unit/components/form-field.test.ts[2m > [22m表单字段组件测试[2m > [22m表单验证[2m > [22m应该支持自定义验证函数[39m
+[31m     → Cannot read properties of undefined (reading 'value')[39m
+[31m   [33m❯[31m tests/unit/components/form-field.test.ts[2m > [22m表单字段组件测试[2m > [22m表单验证[2m > [22m应该通过所有验证规则[39m
+[31m     → Cannot read properties of undefined (reading 'value')[39m
+[31m   [33m❯[31m tests/unit/components/form-field.test.ts[2m > [22m表单字段组件测试[2m > [22m样式计算[2m > [22m应该根据状态计算输入框样式[39m
+[31m     → Cannot read properties of undefined (reading 'focused')[39m
+[31m   [33m❯[31m tests/unit/components/form-field.test.ts[2m > [22m表单字段组件测试[2m > [22m样式计算[2m > [22m应该计算标签样式[39m
+[31m     → Cannot read properties of undefined (reading 'required')[39m
+[31m   [33m❯[31m tests/unit/components/form-field.test.ts[2m > [22m表单字段组件测试[2m > [22m不同字段类型[2m > [22m应该处理文本域类型[39m
+[31m     → expected "spy" to be called with arguments: [ { characterCount: 7 } ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  Array [[22m
+[2m    Object {[22m
+[32m-     "characterCount": 7,[90m
+[31m+     "characterCount": 6,[90m
+[2m    },[22m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+[31m   [33m❯[31m tests/unit/components/form-field.test.ts[2m > [22m表单字段组件测试[2m > [22m不同字段类型[2m > [22m应该处理数字类型[39m
+[31m     → Cannot read properties of undefined (reading 'type')[39m
+ [32m✓[39m tests/unit/services/notification.test.ts [2m ([22m[2m14 tests[22m[2m)[22m[90m 30[2mms[22m[39m
+ [32m✓[39m tests/unit/services/employee.test.ts [2m ([22m[2m26 tests[22m[2m)[22m[90m 156[2mms[22m[39m
+ [33m❯[39m tests/e2e/complete-visitor-flow.test.ts [2m ([22m[2m16 tests[22m [2m|[22m [31m3 failed[39m[2m)[22m[90m 295[2mms[22m[39m
+[31m   [33m❯[31m tests/e2e/complete-visitor-flow.test.ts[2m > [22m访客预约完整流程端到端测试[2m > [22m数据验证测试[2m > [22m应该验证访客申请数据格式[39m
+[31m     → expected '2024-01-01T10:00:00.000Z' to be '2024-01-01T10:00:00Z' // Object.is equality[39m
+[31m   [33m❯[31m tests/e2e/complete-visitor-flow.test.ts[2m > [22m访客预约完整流程端到端测试[2m > [22m数据验证测试[2m > [22m应该验证申请数据完整性[39m
+[31m     → expected false to be true // Object.is equality[39m
+[31m   [33m❯[31m tests/e2e/complete-visitor-flow.test.ts[2m > [22m访客预约完整流程端到端测试[2m > [22m通行码展示实时性测试[2m > [22m应该实时更新通行码状态[39m
+[31m     → expected 'active' to be 'expired' // Object.is equality[39m
+ [32m✓[39m tests/unit/pages/visitor-passcode.test.ts [2m ([22m[2m18 tests[22m[2m)[22m[90m 53[2mms[22m[39m
+ [32m✓[39m tests/unit/services/visitor.test.ts [2m ([22m[2m24 tests[22m[2m)[22m[90m 137[2mms[22m[39m
+ [33m❯[39m tests/unit/services/api.test.ts [2m ([22m[2m18 tests[22m [2m|[22m [31m1 failed[39m[2m)[22m[90m 289[2mms[22m[39m
+[31m   [33m❯[31m tests/unit/services/api.test.ts[2m > [22mAPI服务测试[2m > [22m并发请求[2m > [22m应该支持并发请求[39m
+[31m     → expected 3 to be 1 // Object.is equality[39m
+ [32m✓[39m tests/integration/passcode-display-flow.test.ts [2m ([22m[2m4 tests[22m[2m)[22m[90m 34[2mms[22m[39m
+ [33m❯[39m tests/unit/components/qr-code.test.ts [2m ([22m[2m16 tests[22m [2m|[22m [31m2 failed[39m[2m)[22m[90m 69[2mms[22m[39m
+[31m   [33m❯[31m tests/unit/components/qr-code.test.ts[2m > [22m二维码组件测试[2m > [22m属性变化监听[2m > [22m应该监听code属性变化并重新生成二维码[39m
+[31m     → [Function bound spy] is not a spy or a call to a spy![39m
+[31m   [33m❯[31m tests/unit/components/qr-code.test.ts[2m > [22m二维码组件测试[2m > [22m属性变化监听[2m > [22m应该监听size属性变化并重新生成二维码[39m
+[31m     → [Function bound spy] is not a spy or a call to a spy![39m
+ [33m❯[39m tests/unit/components/status-badge.test.ts [2m ([22m[2m16 tests[22m [2m|[22m [31m3 failed[39m[2m)[22m[90m 82[2mms[22m[39m
+[31m   [33m❯[31m tests/unit/components/status-badge.test.ts[2m > [22m状态徽章组件测试[2m > [22m状态配置[2m > [22m应该支持自定义状态配置[39m
+[31m     → expected "spy" to be called with arguments: [ { statusConfig: { …(2) } } ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  Array [[22m
+[2m    Object {[22m
+[2m      "statusConfig": Object {[22m
+[2m        "pending": Object {[22m
+[2m          "text": "待审批",[22m
+[2m          "type": "warning",[22m
+[2m        },[22m
+[31m+       "type": [Function Object],[90m
+[31m+       "value": Object {[90m
+[2m          "processing": Object {[22m
+[2m            "text": "处理中",[22m
+[2m            "type": "primary",[22m
+[31m+         },[90m
+[2m        },[22m
+[2m      },[22m
+[2m    },[22m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+[31m   [33m❯[31m tests/unit/components/status-badge.test.ts[2m > [22m状态徽章组件测试[2m > [22m条件渲染[2m > [22m应该根据状态控制显示隐藏[39m
+[31m     → expected "spy" to be called with arguments: [ { visible: true } ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  Array [[22m
+[2m    Object {[22m
+[32m-     "visible": true,[90m
+[31m+     "visible": "pending",[90m
+[2m    },[22m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+[31m   [33m❯[31m tests/unit/components/status-badge.test.ts[2m > [22m状态徽章组件测试[2m > [22m条件渲染[2m > [22m应该在状态为空时隐藏组件[39m
+[31m     → expected "spy" to be called with arguments: [ { visible: false } ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  Array [[22m
+[2m    Object {[22m
+[32m-     "visible": false,[90m
+[31m+     "visible": "",[90m
+[2m    },[22m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+ [32m✓[39m tests/e2e/passcode-display.test.ts [2m ([22m[2m7 tests[22m[2m)[22m[90m 26[2mms[22m[39m
+ [32m✓[39m tests/unit/pages/passcode-display.test.ts [2m ([22m[2m9 tests[22m[2m)[22m[90m 33[2mms[22m[39m
+ [33m❯[39m tests/integration/employee-flow.test.ts [2m ([22m[2m10 tests[22m [2m|[22m [31m2 failed[39m[2m)[22m[90m 58[2mms[22m[39m
+[31m   [33m❯[31m tests/integration/employee-flow.test.ts[2m > [22mEmployee Flow Integration Tests[2m > [22mPasscode Management[2m > [22mshould handle passcode refresh failure[39m
+[31m     → expected [Function] to throw error including '服务器错误，无法刷新通行码' but got 'HTTP 500: [object Object]'[39m
+[31m   [33m❯[31m tests/integration/employee-flow.test.ts[2m > [22mEmployee Flow Integration Tests[2m > [22mData Validation[2m > [22mshould validate ID card format[39m
+[31m     → expected true to be false // Object.is equality[39m
+ [32m✓[39m tests/unit/pages/index.test.ts [2m ([22m[2m22 tests[22m[2m)[22m[90m 71[2mms[22m[39m
+ [32m✓[39m tests/examples/component-test-example.test.ts [2m ([22m[2m17 tests[22m[2m)[22m[90m 185[2mms[22m[39m
+ [32m✓[39m tests/unit/utils/date.test.ts [2m ([22m[2m42 tests[22m[2m)[22m[90m 51[2mms[22m[39m
+ [33m❯[39m tests/examples/page-test-example.test.ts [2m ([22m[2m15 tests[22m [2m|[22m [31m5 failed[39m[2m)[22m[33m 535[2mms[22m[39m
+[31m   [33m❯[31m tests/examples/page-test-example.test.ts[2m > [22m小程序页面测试工具示例[2m > [22m表单验证测试[2m > [22m应该正确验证必填字段[39m
+[31m     → expected undefined to be truthy[39m
+[31m   [33m❯[31m tests/examples/page-test-example.test.ts[2m > [22m小程序页面测试工具示例[2m > [22m表单验证测试[2m > [22m应该正确验证密码长度[39m
+[31m     → expected undefined to be truthy[39m
+[31m   [33m❯[31m tests/examples/page-test-example.test.ts[2m > [22m小程序页面测试工具示例[2m > [22m网络请求测试[2m > [22m应该正确处理网络错误[39m
+[31m     → expected "spy" to be called with arguments: [ ObjectContaining{…} ][90m
+
+Received: 
+
+[1m  1st spy call:
+
+[22m[2m  Array [[22m
+[32m-   ObjectContaining {[90m
+[32m-     "icon": "none",[90m
+[32m-     "title": StringContaining "服务器错误",[90m
+[31m+   Object {[90m
+[31m+     "icon": "success",[90m
+[31m+     "title": "登录成功",[90m
+[2m    },[22m
+[2m  ][22m
+[31m[90m
+
+Number of calls: [1m1[22m
+[31m[39m
+[31m   [33m❯[31m tests/examples/page-test-example.test.ts[2m > [22m小程序页面测试工具示例[2m > [22m网络请求测试[2m > [22m应该正确处理网络超时[39m
+[31m     → MiniprogramApiTestHelper.mockWxRequestTimeout is not a function[39m
+[31m   [33m❯[31m tests/examples/page-test-example.test.ts[2m > [22m小程序页面测试工具示例[2m > [22m页面状态测试[2m > [22m应该正确显示加载状态[39m
+[31m     → expected "spy" to be called with arguments: [ Array(1) ][90m
+
+Received: 
+
+[31m[90m
+
+Number of calls: [1m0[22m
+[31m[39m
+ [32m✓[39m tests/unit/pages/login.test.ts [2m ([22m[2m14 tests[22m[2m)[22m[33m 1641[2mms[22m[39m
+ [32m✓[39m tests/unit/pages/employee-apply.test.ts [2m ([22m[2m9 tests[22m[2m)[22m[90m 27[2mms[22m[39m
+ [33m❯[39m tests/integration/visitor-flow.test.ts [2m ([22m[2m9 tests[22m [2m|[22m [31m2 failed[39m[2m)[22m[90m 29[2mms[22m[39m
+[31m   [33m❯[31m tests/integration/visitor-flow.test.ts[2m > [22mVisitor Flow Integration Tests[2m > [22mComplete Visitor Application Flow[2m > [22mshould handle usage limit exceeded[39m
+[31m     → expected [Function] to throw error including '通行码使用次数已达上限，无法刷新' but got 'HTTP 400: [object Object]'[39m
+[31m   [33m❯[31m tests/integration/visitor-flow.test.ts[2m > [22mVisitor Flow Integration Tests[2m > [22mError Handling[2m > [22mshould handle invalid application data[39m
+[31m     → expected [Function] to throw error including '申请数据无效' but got 'HTTP 400: [object Object]'[39m
+ [32m✓[39m tests/e2e/employee-application-flow.test.ts [2m ([22m[2m8 tests[22m[2m)[22m[90m 26[2mms[22m[39m
+
+⎯⎯⎯⎯⎯⎯ Failed Tests 34 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/e2e/complete-visitor-flow.test.ts > 访客预约完整流程端到端测试 > 数据验证测试 > 应该验证访客申请数据格式
+AssertionError: expected '2024-01-01T10:00:00.000Z' to be '2024-01-01T10:00:00Z' // Object.is equality
+
+- Expected
++ Received
+
+- 2024-01-01T10:00:00Z
++ 2024-01-01T10:00:00.000Z
+
+ ❯ tests/e2e/complete-visitor-flow.test.ts:439:36
+    437|         const date = new Date(time);
+    438|         expect(isNaN(date.getTime())).toBe(false);
+    439|         expect(date.toISOString()).toBe(time);
+       |                                    ^
+    440|       });
+    441| 
+ ❯ tests/e2e/complete-visitor-flow.test.ts:436:18
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/34]⎯
+
+ FAIL  tests/e2e/complete-visitor-flow.test.ts > 访客预约完整流程端到端测试 > 数据验证测试 > 应该验证申请数据完整性
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/e2e/complete-visitor-flow.test.ts:478:33
+    476|           return !value || (field === 'merchantId' && value <= 0) || (…
+    477|         });
+    478|         expect(hasInvalidField).toBe(true);
+       |                                 ^
+    479|       });
+    480|     });
+ ❯ tests/e2e/complete-visitor-flow.test.ts:473:27
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/34]⎯
+
+ FAIL  tests/e2e/complete-visitor-flow.test.ts > 访客预约完整流程端到端测试 > 通行码展示实时性测试 > 应该实时更新通行码状态
+AssertionError: expected 'active' to be 'expired' // Object.is equality
+
+- Expected
++ Received
+
+- expired
++ active
+
+ ❯ tests/e2e/complete-visitor-flow.test.ts:716:44
+    714| 
+    715|       await checkPasscodeStatus();
+    716|       expect(pageData.passcodeInfo.status).toBe('expired');
+       |                                            ^
+    717|     });
+    718| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/34]⎯
+
+ FAIL  tests/e2e/passcode-accuracy.test.ts > 通行码展示准确性测试 > 二维码生成准确性 > 应该根据通行码内容生成正确的二维码
+AssertionError: expected "spy" to be called with arguments: [ +0, +0, 200, 200 ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+ ❯ tests/e2e/passcode-accuracy.test.ts:131:33
+    129|       
+    130|       const mockCtx = mockWx.createCanvasContext();
+    131|       expect(mockCtx.clearRect).toHaveBeenCalledWith(0, 0, 200, 200);
+       |                                 ^
+    132|       expect(mockCtx.setFillStyle).toHaveBeenCalledWith('#ffffff');
+    133|       expect(mockCtx.fillRect).toHaveBeenCalledWith(0, 0, 200, 200);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/34]⎯
+
+ FAIL  tests/e2e/passcode-accuracy.test.ts > 通行码展示准确性测试 > 二维码生成准确性 > 应该根据屏幕尺寸自适应二维码大小
+AssertionError: expected 177 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 177
+
+ ❯ tests/e2e/passcode-accuracy.test.ts:169:24
+    167| 
+    168|         const qrSize = calculateQRSize(width);
+    169|         expect(qrSize).toBe(expectedSize);
+       |                        ^
+    170|       });
+    171|     });
+ ❯ tests/e2e/passcode-accuracy.test.ts:147:19
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/34]⎯
+
+ FAIL  tests/e2e/passcode-accuracy.test.ts > 通行码展示准确性测试 > 通行码状态实时更新 > 应该准确显示通行码的实时状态
+AssertionError: expected '已过期' to be '剩余 3 次使用' // Object.is equality
+
+- Expected
++ Received
+
+- 剩余 3 次使用
++ 已过期
+
+ ❯ tests/e2e/passcode-accuracy.test.ts:273:44
+    271|       // 初始加载
+    272|       await passcodePage.loadPasscodeInfo();
+    273|       expect(passcodePage.data.statusText).toBe('剩余 3 次使用');
+       |                                            ^
+    274|       expect(passcodePage.data.isExpired).toBe(false);
+    275| 
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/34]⎯
+
+ FAIL  tests/e2e/passcode-accuracy.test.ts > 通行码展示准确性测试 > 通行码状态实时更新 > 应该准确显示通行码的过期状态
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/e2e/passcode-accuracy.test.ts:386:34
+    384| 
+    385|         const result = checkPasscodeStatus(passcode);
+    386|         expect(result.isExpired).toBe(expected.isExpired);
+       |                                  ^
+    387|         expect(result.statusText).toBe(expected.statusText);
+    388|       });
+ ❯ tests/e2e/passcode-accuracy.test.ts:366:17
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/34]⎯
+
+ FAIL  tests/e2e/passcode-accuracy.test.ts > 通行码展示准确性测试 > 员工通行码自动刷新准确性 > 应该按照设定频率准确刷新员工通行码
+Error: Aborting after running 10000 timers, assuming an infinite loop!
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/34]⎯
+
+ FAIL  tests/examples/page-test-example.test.ts > 小程序页面测试工具示例 > 表单验证测试 > 应该正确验证必填字段
+AssertionError: expected undefined to be truthy
+
+- Expected: 
+undefined
+
++ Received: 
+false
+
+ ❯ Function.expectFormValidation tests/utils/page-test-helper.ts:358:47
+    356|       expect(pageContext.data[validationKey]).toBeFalsy()
+    357|     } else {
+    358|       expect(pageContext.data[validationKey]).toBeTruthy()
+       |                                               ^
+    359|       
+    360|       if (errorMessage) {
+ ❯ tests/examples/page-test-example.test.ts:214:14
+ ❯ tests/utils/page-test-helper.ts:460:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[9/34]⎯
+
+ FAIL  tests/examples/page-test-example.test.ts > 小程序页面测试工具示例 > 表单验证测试 > 应该正确验证密码长度
+AssertionError: expected undefined to be truthy
+
+- Expected: 
+undefined
+
++ Received: 
+false
+
+ ❯ Function.expectFormValidation tests/utils/page-test-helper.ts:358:47
+    356|       expect(pageContext.data[validationKey]).toBeFalsy()
+    357|     } else {
+    358|       expect(pageContext.data[validationKey]).toBeTruthy()
+       |                                               ^
+    359|       
+    360|       if (errorMessage) {
+ ❯ tests/examples/page-test-example.test.ts:229:14
+ ❯ tests/utils/page-test-helper.ts:460:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[10/34]⎯
+
+ FAIL  tests/examples/page-test-example.test.ts > 小程序页面测试工具示例 > 网络请求测试 > 应该正确处理网络错误
+AssertionError: expected "spy" to be called with arguments: [ ObjectContaining{…} ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+-   ObjectContaining {
+-     "icon": "none",
+-     "title": StringContaining "服务器错误",
++   Object {
++     "icon": "success",
++     "title": "登录成功",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ Function.expectPageError tests/utils/page-test-helper.ts:259:28
+    257|   ): void {
+    258|     if (errorType === 'toast') {
+    259|       expect(wx.showToast).toHaveBeenCalledWith(
+       |                            ^
+    260|         expect.objectContaining({
+    261|           title: expect.stringContaining(errorMessage),
+ ❯ tests/examples/page-test-example.test.ts:271:14
+ ❯ tests/utils/page-test-helper.ts:460:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[11/34]⎯
+
+ FAIL  tests/examples/page-test-example.test.ts > 小程序页面测试工具示例 > 网络请求测试 > 应该正确处理网络超时
+TypeError: MiniprogramApiTestHelper.mockWxRequestTimeout is not a function
+ ❯ Function.simulateNetworkScenario tests/utils/page-test-helper.ts:388:34
+    386|         break
+    387|       case 'timeout':
+    388|         MiniprogramApiTestHelper.mockWxRequestTimeout()
+       |                                  ^
+    389|         break
+    390|     }
+ ❯ tests/examples/page-test-example.test.ts:282:20
+ ❯ tests/utils/page-test-helper.ts:460:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[12/34]⎯
+
+ FAIL  tests/examples/page-test-example.test.ts > 小程序页面测试工具示例 > 页面状态测试 > 应该正确显示加载状态
+AssertionError: expected "spy" to be called with arguments: [ Array(1) ]
+
+Received: 
+
+
+
+Number of calls: 0
+
+ ❯ Function.expectPageLoading tests/utils/page-test-helper.ts:309:30
+    307|   ): void {
+    308|     if (isLoading) {
+    309|       expect(wx.showLoading).toHaveBeenCalledWith(
+       |                              ^
+    310|         expect.objectContaining({
+    311|           title: loadingText
+ ❯ tests/examples/page-test-example.test.ts:303:14
+ ❯ tests/utils/page-test-helper.ts:460:13
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[13/34]⎯
+
+ FAIL  tests/integration/employee-flow.test.ts > Employee Flow Integration Tests > Passcode Management > should handle passcode refresh failure
+AssertionError: expected [Function] to throw error including '服务器错误，无法刷新通行码' but got 'HTTP 500: [object Object]'
+
+- Expected
++ Received
+
+- 服务器错误，无法刷新通行码
++ HTTP 500: [object Object]
+
+ ❯ tests/integration/employee-flow.test.ts:335:7
+    333|       });
+    334| 
+    335|       await expect(EmployeeService.refreshEmployeePasscode())
+       |       ^
+    336|         .rejects.toThrow('服务器错误，无法刷新通行码');
+    337|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[14/34]⎯
+
+ FAIL  tests/integration/employee-flow.test.ts > Employee Flow Integration Tests > Data Validation > should validate ID card format
+AssertionError: expected true to be false // Object.is equality
+
+- Expected
++ Received
+
+- false
++ true
+
+ ❯ tests/integration/employee-flow.test.ts:439:42
+    437| 
+    438|       invalidIdCards.forEach(idCard => {
+    439|         expect(idCardRegex.test(idCard)).toBe(false);
+       |                                          ^
+    440|       });
+    441|     });
+ ❯ tests/integration/employee-flow.test.ts:438:22
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[15/34]⎯
+
+ FAIL  tests/integration/visitor-flow.test.ts > Visitor Flow Integration Tests > Complete Visitor Application Flow > should handle usage limit exceeded
+AssertionError: expected [Function] to throw error including '通行码使用次数已达上限，无法刷新' but got 'HTTP 400: [object Object]'
+
+- Expected
++ Received
+
+- 通行码使用次数已达上限，无法刷新
++ HTTP 400: [object Object]
+
+ ❯ tests/integration/visitor-flow.test.ts:245:7
+    243|       });
+    244| 
+    245|       await expect(VisitorService.refreshPasscode(1))
+       |       ^
+    246|         .rejects.toThrow('通行码使用次数已达上限，无法刷新');
+    247|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[16/34]⎯
+
+ FAIL  tests/integration/visitor-flow.test.ts > Visitor Flow Integration Tests > Error Handling > should handle invalid application data
+AssertionError: expected [Function] to throw error including '申请数据无效' but got 'HTTP 400: [object Object]'
+
+- Expected
++ Received
+
+- 申请数据无效
++ HTTP 400: [object Object]
+
+ ❯ tests/integration/visitor-flow.test.ts:293:7
+    291|       });
+    292| 
+    293|       await expect(VisitorService.submitApplication(invalidData))
+       |       ^
+    294|         .rejects.toThrow('申请数据无效');
+    295|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[17/34]⎯
+
+ FAIL  tests/unit/components/form-field.test.ts > 表单字段组件测试 > 输入事件处理 > 应该处理输入事件并更新值
+TypeError: this.setData is not a function
+ ❯ Object.onInput tests/unit/components/form-field.test.ts:196:18
+    194|           onInput(e) {
+    195|             const value = e.detail.value;
+    196|             this.setData({
+       |                  ^
+    197|               internalValue: value,
+    198|               error: '',
+ ❯ tests/unit/components/form-field.test.ts:212:34
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[18/34]⎯
+
+ FAIL  tests/unit/components/form-field.test.ts > 表单字段组件测试 > 输入事件处理 > 应该处理焦点事件
+TypeError: this.setData is not a function
+ ❯ Object.onFocus tests/unit/components/form-field.test.ts:231:18
+    229|         methods: {
+    230|           onFocus(e) {
+    231|             this.setData({ focused: true });
+       |                  ^
+    232|             this.triggerEvent('focus', e.detail);
+    233|           },
+ ❯ tests/unit/components/form-field.test.ts:244:34
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[19/34]⎯
+
+ FAIL  tests/unit/components/form-field.test.ts > 表单字段组件测试 > 表单验证 > 应该验证必填字段
+TypeError: Cannot read properties of undefined (reading 'required')
+ ❯ Object.validate tests/unit/components/form-field.test.ts:270:33
+    268|         methods: {
+    269|           validate() {
+    270|             if (this.properties.required && !this.properties.value.tri…
+       |                                 ^
+    271|               const message = `${this.properties.label || '此字段'}为…
+    272|               this.setData({
+ ❯ tests/unit/components/form-field.test.ts:288:49
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[20/34]⎯
+
+ FAIL  tests/unit/components/form-field.test.ts > 表单字段组件测试 > 表单验证 > 应该验证字段长度
+TypeError: Cannot read properties of undefined (reading 'value')
+ ❯ Object.validate tests/unit/components/form-field.test.ts:315:43
+    313|         methods: {
+    314|           validate() {
+    315|             const value = this.properties.value;
+       |                                           ^
+    316|             const rules = this.properties.rules;
+    317|             
+ ❯ tests/unit/components/form-field.test.ts:345:49
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[21/34]⎯
+
+ FAIL  tests/unit/components/form-field.test.ts > 表单字段组件测试 > 表单验证 > 应该验证正则表达式
+TypeError: Cannot read properties of undefined (reading 'value')
+ ❯ Object.validate tests/unit/components/form-field.test.ts:371:43
+    369|         methods: {
+    370|           validate() {
+    371|             const value = this.properties.value;
+       |                                           ^
+    372|             const rules = this.properties.rules;
+    373|             
+ ❯ tests/unit/components/form-field.test.ts:393:49
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[22/34]⎯
+
+ FAIL  tests/unit/components/form-field.test.ts > 表单字段组件测试 > 表单验证 > 应该支持自定义验证函数
+TypeError: Cannot read properties of undefined (reading 'value')
+ ❯ Object.validate tests/unit/components/form-field.test.ts:424:43
+    422|         methods: {
+    423|           validate() {
+    424|             const value = this.properties.value;
+       |                                           ^
+    425|             const rules = this.properties.rules;
+    426|             
+ ❯ tests/unit/components/form-field.test.ts:448:49
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[23/34]⎯
+
+ FAIL  tests/unit/components/form-field.test.ts > 表单字段组件测试 > 表单验证 > 应该通过所有验证规则
+TypeError: Cannot read properties of undefined (reading 'value')
+ ❯ Object.validate tests/unit/components/form-field.test.ts:475:43
+    473|         methods: {
+    474|           validate() {
+    475|             const value = this.properties.value;
+       |                                           ^
+    476|             
+    477|             // 必填验证
+ ❯ tests/unit/components/form-field.test.ts:507:49
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[24/34]⎯
+
+ FAIL  tests/unit/components/form-field.test.ts > 表单字段组件测试 > 样式计算 > 应该根据状态计算输入框样式
+TypeError: Cannot read properties of undefined (reading 'focused')
+ ❯ Object.computeInputClass tests/unit/components/form-field.test.ts:531:42
+    529|           computeInputClass() {
+    530|             const baseClass = 'form-field__input';
+    531|             const focusClass = this.data.focused ? 'form-field__input-…
+       |                                          ^
+    532|             const errorClass = this.data.showError ? 'form-field__inpu…
+    533|             const disabledClass = this.properties.disabled ? 'form-fie…
+ ❯ tests/unit/components/form-field.test.ts:544:34
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[25/34]⎯
+
+ FAIL  tests/unit/components/form-field.test.ts > 表单字段组件测试 > 样式计算 > 应该计算标签样式
+TypeError: Cannot read properties of undefined (reading 'required')
+ ❯ Object.computeLabelClass tests/unit/components/form-field.test.ts:562:51
+    560|           computeLabelClass() {
+    561|             const baseClass = 'form-field__label';
+    562|             const requiredClass = this.properties.required ? 'form-fie…
+       |                                                   ^
+    563|             
+    564|             const classes = [baseClass, requiredClass]
+ ❯ tests/unit/components/form-field.test.ts:573:34
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[26/34]⎯
+
+ FAIL  tests/unit/components/form-field.test.ts > 表单字段组件测试 > 不同字段类型 > 应该处理文本域类型
+AssertionError: expected "spy" to be called with arguments: [ { characterCount: 7 } ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    Object {
+-     "characterCount": 7,
++     "characterCount": 6,
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ tests/unit/components/form-field.test.ts:702:42
+    700|       formFieldComponent.updateCharacterCount();
+    701| 
+    702|       expect(formFieldComponent.setData).toHaveBeenCalledWith({
+       |                                          ^
+    703|         characterCount: 7
+    704|       });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[27/34]⎯
+
+ FAIL  tests/unit/components/form-field.test.ts > 表单字段组件测试 > 不同字段类型 > 应该处理数字类型
+TypeError: Cannot read properties of undefined (reading 'type')
+ ❯ Object.onInput tests/unit/components/form-field.test.ts:717:33
+    715|             
+    716|             // 数字类型只允许数字
+    717|             if (this.properties.type === 'number') {
+       |                                 ^
+    718|               value = value.replace(/[^\d]/g, '');
+    719|             }
+ ❯ tests/unit/components/form-field.test.ts:731:34
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[28/34]⎯
+
+ FAIL  tests/unit/components/qr-code.test.ts > 二维码组件测试 > 属性变化监听 > 应该监听code属性变化并重新生成二维码
+TypeError: [Function bound spy] is not a spy or a call to a spy!
+ ❯ tests/unit/components/qr-code.test.ts:187:46
+    185|       qrCodeComponent.observers.code.call(qrCodeComponent, 'NEW123');
+    186| 
+    187|       expect(qrCodeComponent.generateQRCode).toHaveBeenCalled();
+       |                                              ^
+    188|       expect(qrCodeComponent.setData).toHaveBeenCalledWith({ lastCode:…
+    189|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[29/34]⎯
+
+ FAIL  tests/unit/components/qr-code.test.ts > 二维码组件测试 > 属性变化监听 > 应该监听size属性变化并重新生成二维码
+TypeError: [Function bound spy] is not a spy or a call to a spy!
+ ❯ tests/unit/components/qr-code.test.ts:210:46
+    208|       qrCodeComponent.observers.size.call(qrCodeComponent, 300);
+    209| 
+    210|       expect(qrCodeComponent.generateQRCode).toHaveBeenCalled();
+       |                                              ^
+    211|     });
+    212|   });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[30/34]⎯
+
+ FAIL  tests/unit/components/status-badge.test.ts > 状态徽章组件测试 > 状态配置 > 应该支持自定义状态配置
+AssertionError: expected "spy" to be called with arguments: [ { statusConfig: { …(2) } } ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    Object {
+      "statusConfig": Object {
+        "pending": Object {
+          "text": "待审批",
+          "type": "warning",
+        },
++       "type": [Function Object],
++       "value": Object {
+          "processing": Object {
+            "text": "处理中",
+            "type": "primary",
++         },
+        },
+      },
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ tests/unit/components/status-badge.test.ts:396:44
+    394|       statusBadgeComponent.mergeConfig.call(statusBadgeComponent);
+    395| 
+    396|       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
+       |                                            ^
+    397|         statusConfig: {
+    398|           pending: { text: '待审批', type: 'warning' },
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[31/34]⎯
+
+ FAIL  tests/unit/components/status-badge.test.ts > 状态徽章组件测试 > 条件渲染 > 应该根据状态控制显示隐藏
+AssertionError: expected "spy" to be called with arguments: [ { visible: true } ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    Object {
+-     "visible": true,
++     "visible": "pending",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ tests/unit/components/status-badge.test.ts:510:44
+    508|       statusBadgeComponent.updateVisibility.call(statusBadgeComponent);
+    509| 
+    510|       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
+       |                                            ^
+    511|         visible: true
+    512|       });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[32/34]⎯
+
+ FAIL  tests/unit/components/status-badge.test.ts > 状态徽章组件测试 > 条件渲染 > 应该在状态为空时隐藏组件
+AssertionError: expected "spy" to be called with arguments: [ { visible: false } ]
+
+Received: 
+
+  1st spy call:
+
+  Array [
+    Object {
+-     "visible": false,
++     "visible": "",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ tests/unit/components/status-badge.test.ts:535:44
+    533|       statusBadgeComponent.updateVisibility.call(statusBadgeComponent);
+    534| 
+    535|       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
+       |                                            ^
+    536|         visible: false
+    537|       });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[33/34]⎯
+
+ FAIL  tests/unit/services/api.test.ts > API服务测试 > 并发请求 > 应该支持并发请求
+AssertionError: expected 3 to be 1 // Object.is equality
+
+- Expected
++ Received
+
+- 1
++ 3
+
+ ❯ tests/unit/services/api.test.ts:696:34
+    694|       expect(results).toHaveLength(3);
+    695|       expect(wx.request).toHaveBeenCalledTimes(3);
+    696|       expect(results[0].data.id).toBe(1);
+       |                                  ^
+    697|       expect(results[1].data.id).toBe(2);
+    698|       expect(results[2].data.id).toBe(3);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[34/34]⎯
+
+[2m Test Files [22m [1m[31m9 failed[39m[22m[2m | [22m[1m[32m16 passed[39m[22m[90m (25)[39m
+[2m      Tests [22m [1m[31m34 failed[39m[22m[2m | [22m[1m[32m424 passed[39m[22m[90m (458)[39m
+[2m   Start at [22m 14:19:44
+[2m   Duration [22m 18.94s[2m (transform 3.80s, setup 2.37s, collect 4.81s, tests 4.28s, environment 124.53s, prepare 25.67s)[22m
+
+ ELIFECYCLE  Command failed with exit code 1.

@@ -361,11 +361,17 @@ export class SpaceService {
    * 删除场地
    */
   async deleteVenue(id: number): Promise<void> {
+    // 先检查场地是否存在
+    const venue = await this.getVenueById(id);
+    if (!venue) {
+      throw new AppError('场地不存在', 404, ErrorCodes.VENUE_NOT_FOUND);
+    }
+
     const sql = 'DELETE FROM venues WHERE id = ?';
     const result = await this.db.run(sql, [id]);
 
     if (result.changes === 0) {
-      throw new AppError('场地不存在或删除失败', 404, ErrorCodes.VENUE_NOT_FOUND);
+      throw new AppError('删除场地失败', 500, ErrorCodes.DATABASE_ERROR);
     }
   }
 

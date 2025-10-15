@@ -1,0 +1,478 @@
+微信小程序 测试失败摘要 (2025/10/15 19:19:04)
+============================================================
+
+失败测试数量: 39
+提取到的错误详情: 78 个
+
+1. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 输入事件处理 > 应该处理输入事件并更新值
+   错误信息: this.setData is not a function
+   错误类型: test_failure
+
+2. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 输入事件处理 > 应该处理焦点事件
+   错误信息: this.setData is not a function
+   错误类型: test_failure
+
+3. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 表单验证 > 应该验证必填字段
+   错误信息: Cannot read properties of undefined (reading 'required')
+   错误类型: test_failure
+
+4. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 表单验证 > 应该验证字段长度
+   错误信息: Cannot read properties of undefined (reading 'value')
+   错误类型: test_failure
+
+5. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 表单验证 > 应该验证正则表达式
+   错误信息: Cannot read properties of undefined (reading 'value')
+   错误类型: test_failure
+
+6. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 表单验证 > 应该支持自定义验证函数
+   错误信息: Cannot read properties of undefined (reading 'value')
+   错误类型: test_failure
+
+7. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 表单验证 > 应该通过所有验证规则
+   错误信息: Cannot read properties of undefined (reading 'value')
+   错误类型: test_failure
+
+8. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 样式计算 > 应该根据状态计算输入框样式
+   错误信息: Cannot read properties of undefined (reading 'focused')
+   错误类型: test_failure
+
+9. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 样式计算 > 应该计算标签样式
+   错误信息: Cannot read properties of undefined (reading 'required')
+   错误类型: test_failure
+
+10. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 不同字段类型 > 应该处理文本域类型
+   错误信息: expected "spy" to be called with arguments: [ { characterCount: 7 } ] | Received:
+   错误类型: test_failure
+
+11. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 不同字段类型 > 应该处理数字类型
+   错误信息: Cannot read properties of undefined (reading 'type')
+   错误类型: test_failure
+
+12. tests/unit/utils/storage.test.ts
+   测试套件: 本地存储工具函数测试
+   测试名称: get 方法 > 应该处理JSON解析异常
+   错误信息: +   [SyntaxError: Unexpected token 'i', "invalid-json" is not valid JSON],
+   错误类型: error
+
+13. tests/unit/utils/storage.test.ts
+   测试套件: 本地存储工具函数测试
+   测试名称: get 方法 > 应该处理微信API异常
+   错误信息: +   [Error: 获取失败],
+   错误类型: error
+
+14. tests/unit/utils/storage.test.ts
+   测试套件: 本地存储工具函数测试
+   测试名称: getInfo 方法 > 应该处理获取信息异常
+   错误信息: +   [Error: 获取信息失败],
+   错误类型: error
+
+15. tests/unit/utils/storage.test.ts
+   测试套件: 本地存储工具函数测试
+   测试名称: getBatch 方法 > 应该处理获取异常
+   错误信息: +   [Error: 获取失败],
+   错误类型: error
+
+16. tests/unit/utils/storage.test.ts
+   测试套件: 本地存储工具函数测试
+   测试名称: getUsageRate 方法 > 应该处理获取信息失败
+   错误信息: +   [Error: 获取信息失败],
+   错误类型: error
+
+17. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 二维码生成准确性 > 应该根据通行码内容生成正确的二维码
+   错误信息: expected "spy" to be called with arguments: [ +0, +0, 200, 200 ] | Received:
+   错误类型: test_failure
+
+18. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 二维码生成准确性 > 应该根据屏幕尺寸自适应二维码大小
+   错误信息: expected 177 to be 200 // Object.is equality
+   错误类型: test_failure
+
+19. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 通行码状态实时更新 > 应该准确显示通行码的实时状态
+   错误信息: expected '已过期' to be '剩余 3 次使用' // Object.is equality
+   错误类型: test_failure
+
+20. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 通行码状态实时更新 > 应该准确显示通行码的过期状态
+   错误信息: expected true to be false // Object.is equality
+   错误类型: test_failure
+
+21. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 员工通行码自动刷新准确性 > 应该按照设定频率准确刷新员工通行码
+   错误信息: Aborting after running 10000 timers, assuming an infinite loop!
+   错误类型: test_failure
+
+22. tests/e2e/complete-visitor-flow.test.ts
+   测试套件: 访客预约完整流程端到端测试
+   测试名称: 数据验证测试 > 应该验证访客申请数据格式
+   错误信息: expected '2024-01-01T10:00:00.000Z' to be '2024-01-01T10:00:00Z' // Object.is equality
+   错误类型: test_failure
+
+23. tests/e2e/complete-visitor-flow.test.ts
+   测试套件: 访客预约完整流程端到端测试
+   测试名称: 数据验证测试 > 应该验证申请数据完整性
+   错误信息: expected false to be true // Object.is equality
+   错误类型: test_failure
+
+24. tests/e2e/complete-visitor-flow.test.ts
+   测试套件: 访客预约完整流程端到端测试
+   测试名称: 通行码展示实时性测试 > 应该实时更新通行码状态
+   错误信息: expected 'active' to be 'expired' // Object.is equality
+   错误类型: test_failure
+
+25. tests/unit/services/api.test.ts
+   测试套件: API服务测试
+   测试名称: 并发请求 > 应该支持并发请求
+   错误信息: expected 3 to be 1 // Object.is equality
+   错误类型: test_failure
+
+26. tests/unit/components/qr-code.test.ts
+   测试套件: 二维码组件测试
+   测试名称: 属性变化监听 > 应该监听code属性变化并重新生成二维码
+   错误信息: [Function bound spy] is not a spy or a call to a spy!
+   错误类型: test_failure
+
+27. tests/unit/components/qr-code.test.ts
+   测试套件: 二维码组件测试
+   测试名称: 属性变化监听 > 应该监听size属性变化并重新生成二维码
+   错误信息: [Function bound spy] is not a spy or a call to a spy!
+   错误类型: test_failure
+
+28. tests/unit/components/status-badge.test.ts
+   测试套件: 状态徽章组件测试
+   测试名称: 状态配置 > 应该支持自定义状态配置
+   错误信息: expected "spy" to be called with arguments: [ { statusConfig: { …(2) } } ] | Received:
+   错误类型: test_failure
+
+29. tests/unit/components/status-badge.test.ts
+   测试套件: 状态徽章组件测试
+   测试名称: 条件渲染 > 应该根据状态控制显示隐藏
+   错误信息: expected "spy" to be called with arguments: [ { visible: true } ] | Received:
+   错误类型: test_failure
+
+30. tests/unit/components/status-badge.test.ts
+   测试套件: 状态徽章组件测试
+   测试名称: 条件渲染 > 应该在状态为空时隐藏组件
+   错误信息: expected "spy" to be called with arguments: [ { visible: false } ] | Received:
+   错误类型: test_failure
+
+31. tests/integration/employee-flow.test.ts
+   测试套件: Employee Flow Integration Tests
+   测试名称: Passcode Management > should handle passcode refresh failure
+   错误信息: expected [Function] to throw error including '服务器错误，无法刷新通行码' but got 'HTTP 500: [object Object]'
+   错误类型: test_failure
+
+32. tests/integration/employee-flow.test.ts
+   测试套件: Employee Flow Integration Tests
+   测试名称: Data Validation > should validate ID card format
+   错误信息: expected true to be false // Object.is equality
+   错误类型: test_failure
+
+33. tests/examples/page-test-example.test.ts
+   测试套件: 小程序页面测试工具示例
+   测试名称: 表单验证测试 > 应该正确验证必填字段
+   错误信息: expected undefined to be truthy
+   错误类型: test_failure
+
+34. tests/examples/page-test-example.test.ts
+   测试套件: 小程序页面测试工具示例
+   测试名称: 表单验证测试 > 应该正确验证密码长度
+   错误信息: expected undefined to be truthy
+   错误类型: test_failure
+
+35. tests/examples/page-test-example.test.ts
+   测试套件: 小程序页面测试工具示例
+   测试名称: 网络请求测试 > 应该正确处理网络错误
+   错误信息: expected "spy" to be called with arguments: [ ObjectContaining{…} ] | Received:
+   错误类型: test_failure
+
+36. tests/examples/page-test-example.test.ts
+   测试套件: 小程序页面测试工具示例
+   测试名称: 网络请求测试 > 应该正确处理网络超时
+   错误信息: MiniprogramApiTestHelper.mockWxRequestTimeout is not a function
+   错误类型: test_failure
+
+37. tests/examples/page-test-example.test.ts
+   测试套件: 小程序页面测试工具示例
+   测试名称: 页面状态测试 > 应该正确显示加载状态
+   错误信息: expected "spy" to be called with arguments: [ Array(1) ] | Received:
+   错误类型: test_failure
+
+38. tests/integration/visitor-flow.test.ts
+   测试套件: Visitor Flow Integration Tests
+   测试名称: Complete Visitor Application Flow > should handle usage limit exceeded
+   错误信息: expected [Function] to throw error including '通行码使用次数已达上限，无法刷新' but got 'HTTP 400: [object Object]'
+   错误类型: test_failure
+
+39. tests/integration/visitor-flow.test.ts
+   测试套件: Visitor Flow Integration Tests
+   测试名称: Error Handling > should handle invalid application data
+   错误信息: expected [Function] to throw error including '申请数据无效' but got 'HTTP 400: [object Object]'
+   错误类型: test_failure
+
+40. tests/e2e/complete-visitor-flow.test.ts
+   测试套件: 访客预约完整流程端到端测试
+   测试名称: 数据验证测试 > 应该验证访客申请数据格式
+   错误信息: AssertionError: expected '2024-01-01T10:00:00.000Z' to be '2024-01-01T10:00:00Z' // Object.is equality
+   错误类型: assertion
+
+41. tests/e2e/complete-visitor-flow.test.ts
+   测试套件: 访客预约完整流程端到端测试
+   测试名称: 数据验证测试 > 应该验证申请数据完整性
+   错误信息: AssertionError: expected false to be true // Object.is equality
+   错误类型: assertion
+
+42. tests/e2e/complete-visitor-flow.test.ts
+   测试套件: 访客预约完整流程端到端测试
+   测试名称: 通行码展示实时性测试 > 应该实时更新通行码状态
+   错误信息: AssertionError: expected 'active' to be 'expired' // Object.is equality
+   错误类型: assertion
+
+43. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 二维码生成准确性 > 应该根据通行码内容生成正确的二维码
+   错误信息: AssertionError: expected "spy" to be called with arguments: [ +0, +0, 200, 200 ] | Received:
+   错误类型: assertion
+
+44. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 二维码生成准确性 > 应该根据屏幕尺寸自适应二维码大小
+   错误信息: AssertionError: expected 177 to be 200 // Object.is equality
+   错误类型: assertion
+
+45. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 通行码状态实时更新 > 应该准确显示通行码的实时状态
+   错误信息: AssertionError: expected '已过期' to be '剩余 3 次使用' // Object.is equality
+   错误类型: assertion
+
+46. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 通行码状态实时更新 > 应该准确显示通行码的过期状态
+   错误信息: AssertionError: expected true to be false // Object.is equality
+   错误类型: assertion
+
+47. tests/e2e/passcode-accuracy.test.ts
+   测试套件: 通行码展示准确性测试
+   测试名称: 员工通行码自动刷新准确性 > 应该按照设定频率准确刷新员工通行码
+   错误信息: Error: Aborting after running 10000 timers, assuming an infinite loop!
+   错误类型: error
+
+48. tests/examples/page-test-example.test.ts
+   测试套件: 小程序页面测试工具示例
+   测试名称: 表单验证测试 > 应该正确验证必填字段
+   错误信息: AssertionError: expected undefined to be truthy | - Expected:
+   错误类型: assertion
+
+49. tests/examples/page-test-example.test.ts
+   测试套件: 小程序页面测试工具示例
+   测试名称: 表单验证测试 > 应该正确验证密码长度
+   错误信息: AssertionError: expected undefined to be truthy | - Expected:
+   错误类型: assertion
+
+50. tests/examples/page-test-example.test.ts
+   测试套件: 小程序页面测试工具示例
+   测试名称: 网络请求测试 > 应该正确处理网络错误
+   错误信息: AssertionError: expected "spy" to be called with arguments: [ ObjectContaining{…} ] | Received:
+   错误类型: assertion
+
+51. tests/examples/page-test-example.test.ts
+   测试套件: 小程序页面测试工具示例
+   测试名称: 网络请求测试 > 应该正确处理网络超时
+   错误信息: TypeError: MiniprogramApiTestHelper.mockWxRequestTimeout is not a function
+   错误类型: error
+
+52. tests/examples/page-test-example.test.ts
+   测试套件: 小程序页面测试工具示例
+   测试名称: 页面状态测试 > 应该正确显示加载状态
+   错误信息: AssertionError: expected "spy" to be called with arguments: [ Array(1) ] | Received:
+   错误类型: assertion
+
+53. tests/integration/employee-flow.test.ts
+   测试套件: Employee Flow Integration Tests
+   测试名称: Passcode Management > should handle passcode refresh failure
+   错误信息: AssertionError: expected [Function] to throw error including '服务器错误，无法刷新通行码' but got 'HTTP 500: [object Object]'
+   错误类型: assertion
+
+54. tests/integration/employee-flow.test.ts
+   测试套件: Employee Flow Integration Tests
+   测试名称: Data Validation > should validate ID card format
+   错误信息: AssertionError: expected true to be false // Object.is equality
+   错误类型: assertion
+
+55. tests/integration/visitor-flow.test.ts
+   测试套件: Visitor Flow Integration Tests
+   测试名称: Complete Visitor Application Flow > should handle usage limit exceeded
+   错误信息: AssertionError: expected [Function] to throw error including '通行码使用次数已达上限，无法刷新' but got 'HTTP 400: [object Object]'
+   错误类型: assertion
+
+56. tests/integration/visitor-flow.test.ts
+   测试套件: Visitor Flow Integration Tests
+   测试名称: Error Handling > should handle invalid application data
+   错误信息: AssertionError: expected [Function] to throw error including '申请数据无效' but got 'HTTP 400: [object Object]'
+   错误类型: assertion
+
+57. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 输入事件处理 > 应该处理输入事件并更新值
+   错误信息: TypeError: this.setData is not a function
+   错误类型: error
+
+58. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 输入事件处理 > 应该处理焦点事件
+   错误信息: TypeError: this.setData is not a function
+   错误类型: error
+
+59. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 表单验证 > 应该验证必填字段
+   错误信息: TypeError: Cannot read properties of undefined (reading 'required')
+   错误类型: error
+
+60. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 表单验证 > 应该验证字段长度
+   错误信息: TypeError: Cannot read properties of undefined (reading 'value')
+   错误类型: error
+
+61. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 表单验证 > 应该验证正则表达式
+   错误信息: TypeError: Cannot read properties of undefined (reading 'value')
+   错误类型: error
+
+62. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 表单验证 > 应该支持自定义验证函数
+   错误信息: TypeError: Cannot read properties of undefined (reading 'value')
+   错误类型: error
+
+63. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 表单验证 > 应该通过所有验证规则
+   错误信息: TypeError: Cannot read properties of undefined (reading 'value')
+   错误类型: error
+
+64. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 样式计算 > 应该根据状态计算输入框样式
+   错误信息: TypeError: Cannot read properties of undefined (reading 'focused')
+   错误类型: error
+
+65. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 样式计算 > 应该计算标签样式
+   错误信息: TypeError: Cannot read properties of undefined (reading 'required')
+   错误类型: error
+
+66. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 不同字段类型 > 应该处理文本域类型
+   错误信息: AssertionError: expected "spy" to be called with arguments: [ { characterCount: 7 } ] | Received:
+   错误类型: assertion
+
+67. tests/unit/components/form-field.test.ts
+   测试套件: 表单字段组件测试
+   测试名称: 不同字段类型 > 应该处理数字类型
+   错误信息: TypeError: Cannot read properties of undefined (reading 'type')
+   错误类型: error
+
+68. tests/unit/components/qr-code.test.ts
+   测试套件: 二维码组件测试
+   测试名称: 属性变化监听 > 应该监听code属性变化并重新生成二维码
+   错误信息: TypeError: [Function bound spy] is not a spy or a call to a spy!
+   错误类型: error
+
+69. tests/unit/components/qr-code.test.ts
+   测试套件: 二维码组件测试
+   测试名称: 属性变化监听 > 应该监听size属性变化并重新生成二维码
+   错误信息: TypeError: [Function bound spy] is not a spy or a call to a spy!
+   错误类型: error
+
+70. tests/unit/components/status-badge.test.ts
+   测试套件: 状态徽章组件测试
+   测试名称: 状态配置 > 应该支持自定义状态配置
+   错误信息: AssertionError: expected "spy" to be called with arguments: [ { statusConfig: { …(2) } } ] | Received:
+   错误类型: assertion
+
+71. tests/unit/components/status-badge.test.ts
+   测试套件: 状态徽章组件测试
+   测试名称: 条件渲染 > 应该根据状态控制显示隐藏
+   错误信息: AssertionError: expected "spy" to be called with arguments: [ { visible: true } ] | Received:
+   错误类型: assertion
+
+72. tests/unit/components/status-badge.test.ts
+   测试套件: 状态徽章组件测试
+   测试名称: 条件渲染 > 应该在状态为空时隐藏组件
+   错误信息: AssertionError: expected "spy" to be called with arguments: [ { visible: false } ] | Received:
+   错误类型: assertion
+
+73. tests/unit/services/api.test.ts
+   测试套件: API服务测试
+   测试名称: 并发请求 > 应该支持并发请求
+   错误信息: AssertionError: expected 3 to be 1 // Object.is equality
+   错误类型: assertion
+
+74. tests/unit/utils/storage.test.ts
+   测试套件: 本地存储工具函数测试
+   测试名称: get 方法 > 应该处理JSON解析异常
+   错误信息: +   [SyntaxError: Unexpected token 'i', "invalid-json" is not valid JSON],
+   错误类型: error
+
+75. tests/unit/utils/storage.test.ts
+   测试套件: 本地存储工具函数测试
+   测试名称: get 方法 > 应该处理微信API异常
+   错误信息: +   [Error: 获取失败],
+   错误类型: error
+
+76. tests/unit/utils/storage.test.ts
+   测试套件: 本地存储工具函数测试
+   测试名称: getInfo 方法 > 应该处理获取信息异常
+   错误信息: +   [Error: 获取信息失败],
+   错误类型: error
+
+77. tests/unit/utils/storage.test.ts
+   测试套件: 本地存储工具函数测试
+   测试名称: getBatch 方法 > 应该处理获取异常
+   错误信息: +   [Error: 获取失败],
+   错误类型: error
+
+78. tests/unit/utils/storage.test.ts
+   测试套件: 本地存储工具函数测试
+   测试名称: getUsageRate 方法 > 应该处理获取信息失败
+   错误信息: +   [Error: 获取信息失败],
+   错误类型: error
+
+------------------------------------------------------------
+📄 完整测试日志: 2025-10-15-18236-test-execution.log
+📄 详细错误日志: 2025-10-15-18236-test-errors.log
+============================================================

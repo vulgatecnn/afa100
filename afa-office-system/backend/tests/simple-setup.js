@@ -36,8 +36,8 @@ beforeAll(async () => {
     const adminConnection = await mysql.createConnection({
       host: process.env.TEST_DB_HOST || '127.0.0.1',
       port: parseInt(process.env.TEST_DB_PORT || '3306'),
-      user: process.env.MYSQL_ADMIN_USER || 'root',
-      password: process.env.MYSQL_ADMIN_PASSWORD || '111111',
+      user: process.env.MYSQL_ADMIN_USER || process.env.MYSQL_ROOT_USER || 'root',
+      password: process.env.MYSQL_ADMIN_PASSWORD || process.env.MYSQL_ROOT_PASSWORD || '111111',
       multipleStatements: true
     });
 
@@ -54,8 +54,8 @@ beforeAll(async () => {
     testConnection = await mysql.createConnection({
       host: process.env.TEST_DB_HOST || '127.0.0.1',
       port: parseInt(process.env.TEST_DB_PORT || '3306'),
-      user: process.env.MYSQL_ADMIN_USER || 'root',
-      password: process.env.MYSQL_ADMIN_PASSWORD || '111111',
+      user: process.env.MYSQL_ADMIN_USER || process.env.MYSQL_ROOT_USER || 'root',
+      password: process.env.MYSQL_ADMIN_PASSWORD || process.env.MYSQL_ROOT_PASSWORD || '111111',
       database: testDatabaseName,
       multipleStatements: true
     });
@@ -123,8 +123,8 @@ afterAll(async () => {
       const adminConnection = await mysql.createConnection({
         host: process.env.TEST_DB_HOST || '127.0.0.1',
         port: parseInt(process.env.TEST_DB_PORT || '3306'),
-        user: process.env.MYSQL_ADMIN_USER || 'root',
-        password: process.env.MYSQL_ADMIN_PASSWORD || '111111'
+        user: process.env.MYSQL_ADMIN_USER || process.env.MYSQL_ROOT_USER || 'root',
+        password: process.env.MYSQL_ADMIN_PASSWORD || process.env.MYSQL_ROOT_PASSWORD || '111111'
       });
 
       await adminConnection.execute(`DROP DATABASE IF EXISTS \`${testDatabaseName}\``);

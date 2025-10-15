@@ -22,6 +22,37 @@ if ($Token) {
 
 Write-Host "=====================================" -ForegroundColor Green
 
+# 检查GitHub Actions CI/CD状态的PowerShell脚本
+
+Write-Host "🔍 检查GitHub Actions CI/CD状态..." -ForegroundColor Yellow
+
+try {
+    # 检查是否安装了GitHub CLI
+    $ghInstalled = Get-Command gh -ErrorAction SilentlyContinue
+    if (-not $ghInstalled) {
+        Write-Host "❌ 未找到GitHub CLI (gh)" -ForegroundColor Red
+        Write-Host "💡 请先安装GitHub CLI: https://cli.github.com/" -ForegroundColor Yellow
+        exit 1
+    }
+
+    # 获取最近的工作流运行状态
+    Write-Host "📋 获取最近的CI/CD运行状态..." -ForegroundColor Yellow
+    $runs = gh run list --limit 5 --json status,conclusion,event,workflowName,createdAt | ConvertFrom-Json
+    
+    if ($runs) {
+        Write-Host "📋 最近的CI/CD运行状态:" -ForegroundColor Yellow
+        $runs | Where-Object { $_.event -eq "push" } | ForEach-Object {
+            $status = if ($_.conclusion) { "$($_.status) $($_.conclusion)" } else { $_.status }
+            Write-Host "工作流: $($_.workflowName) | 状态: $status | 时间: $($_.createdAt)" -ForegroundColor Cyan
+        }
+    } else {
+        Write-Host "⚠️  没有找到最近的CI/CD运行记录" -ForegroundColor Yellow
+    }
+} catch {
+    Write-Host "❌ 检查CI/CD状态时出错: $($_.Exception.Message)" -ForegroundColor Red
+    Write-Host "💡 提示: 确保已安装GitHub CLI (gh) 并已登录" -ForegroundColor Yellow
+}
+
 # 定义检查函数
 function Check-WorkflowRuns {
     Write-Host "`n正在检查工作流状态..." -ForegroundColor Cyan

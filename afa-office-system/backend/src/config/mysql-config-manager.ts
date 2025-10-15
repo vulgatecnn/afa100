@@ -144,10 +144,12 @@ export class MySQLConfigManager {
    * 获取环境变量值
    */
   private getEnvValue(suffix: string, defaultValue: string): string {
+    // 优先使用测试环境变量，然后是生产环境变量，最后是默认值
     const testKey = `TEST_DB_${suffix}`;
     const prodKey = `DB_${suffix}`;
+    const mysqlKey = `MYSQL_${suffix}`;
     
-    return process.env[testKey] || process.env[prodKey] || defaultValue;
+    return process.env[testKey] || process.env[prodKey] || process.env[mysqlKey] || defaultValue;
   }
 
   /**
@@ -156,8 +158,9 @@ export class MySQLConfigManager {
   private getOptionalEnvValue(suffix: string, defaultValue?: string): string | undefined {
     const testKey = `TEST_DB_${suffix}`;
     const prodKey = `DB_${suffix}`;
+    const mysqlKey = `MYSQL_${suffix}`;
     
-    return process.env[testKey] || process.env[prodKey] || defaultValue;
+    return process.env[testKey] || process.env[prodKey] || process.env[mysqlKey] || defaultValue;
   }
 
   /**

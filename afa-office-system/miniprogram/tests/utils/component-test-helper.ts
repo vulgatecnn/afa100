@@ -1,5 +1,6 @@
 /**
  * 小程序组件测试工具 - 专门用于测试小程序组件
+ * 修复版本：正确绑定 this 上下文
  */
 
 import { MiniprogramApiTestHelper } from './api-test-helper'
@@ -54,20 +55,19 @@ interface ComponentProperty {
 export class ComponentTestHelper {
   /**
    * 创建组件测试上下文
+   * 修复：正确绑定 this 上下文，使方法可以访问 data 和 properties
    */
   static createComponentContext(
     initialData: Record<string, any> = {},
     properties: Record<string, any> = {},
     methods: Record<string, Function> = {}
   ): ComponentTestContext {
-    const data = { ...initialData }
-    const componentProperties = { ...properties }
-    
     const context: ComponentTestContext = {
-      data,
-      properties: componentProperties,
-      setData: vi.fn((newData: Record<string, any>, callback?: () => void) => {
-        Object.assign(data, newData)
+      data: { ...initialData },
+      properties: { ...properties },
+      setData: vi.fn(function(this: ComponentTestContext, newData: Record<string, any>, callback?: () => void) {
+        // 关键修复：更新 context.data 而不是闭包中的局部变量
+        Object.assign(context.data, newData)
         if (callback) {
           setTimeout(callback, 0)
         }
@@ -82,9 +82,13 @@ export class ComponentTestHelper {
       selectAllComponents: vi.fn((selector: string) => {
         console.log(`选择所有组件: ${selector}`)
         return []
-      }),
-      ...methods
+      })
     }
+
+    // 关键修复：将 methods 绑定到 context，使 this 指向 context
+    Object.entries(methods).forEach(([key, method]) => {
+      context[key] = method.bind(context)
+    })
 
     return context
   }

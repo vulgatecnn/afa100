@@ -97,12 +97,15 @@ export class AccessController {
     };
 
     // 处理可选的 userId 字段
-    if (req.query['userId'] !== undefined) {
-      query.userId = parseInt(req.query['userId'] as string);
+    if (req.query['userId'] !== undefined && req.query['userId'] !== null) {
+      const userId = parseInt(req.query['userId'] as string);
+      if (!isNaN(userId)) {
+        query.userId = userId;
+      }
     }
 
     // 处理可选的 deviceId 字段
-    if (req.query['deviceId'] !== undefined) {
+    if (req.query['deviceId'] !== undefined && req.query['deviceId'] !== null) {
       query.deviceId = req.query['deviceId'] as string;
     }
 
@@ -204,21 +207,24 @@ export class AccessController {
     };
 
     // 处理可选的 merchantId 字段
-    if (req.query['merchantId'] !== undefined) {
-      query.merchantId = parseInt(req.query['merchantId'] as string);
+    if (req.query['merchantId'] !== undefined && req.query['merchantId'] !== null) {
+      const merchantId = parseInt(req.query['merchantId'] as string);
+      if (!isNaN(merchantId)) {
+        query.merchantId = merchantId;
+      }
     }
 
     // 处理可选的 deviceId 字段
-    if (req.query['deviceId'] !== undefined) {
+    if (req.query['deviceId'] !== undefined && req.query['deviceId'] !== null) {
       query.deviceId = req.query['deviceId'] as string;
     }
 
-    const stats = await AccessRecordService.getAccessStats(query);
+    const result = await AccessRecordService.getAccessStats(query);
 
     const response: ApiResponse = {
       success: true,
       message: '获取通行统计信息成功',
-      data: stats,
+      data: result,
       timestamp: new Date().toISOString(),
     };
 

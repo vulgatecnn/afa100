@@ -31,11 +31,102 @@ global.IntersectionObserver = vi.fn().mockImplementation(() => ({
   disconnect: vi.fn(),
 }))
 
+// Mock window.location
+Object.defineProperty(window, 'location', {
+  value: {
+    href: 'http://localhost:3002',
+    origin: 'http://localhost:3002',
+    protocol: 'http:',
+    host: 'localhost:3002',
+    hostname: 'localhost',
+    port: '3002',
+    pathname: '/',
+    search: '',
+    hash: '',
+    assign: vi.fn(),
+    replace: vi.fn(),
+    reload: vi.fn(),
+  },
+  writable: true,
+})
+
+// Mock localStorage with actual storage behavior
+const createLocalStorageMock = () => {
+  let store: Record<string, string> = {}
+  
+  return {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
+      store[key] = value
+    }),
+    removeItem: vi.fn((key: string) => {
+      delete store[key]
+    }),
+    clear: vi.fn(() => {
+      store = {}
+    }),
+    get length() {
+      return Object.keys(store).length
+    },
+    key: vi.fn((index: number) => Object.keys(store)[index] || null)
+  }
+}
+
+const localStorageMock = createLocalStorageMock()
+Object.defineProperty(window, 'localStorage', {
+  value: localStorageMock,
+})
+
+// Mock sessionStorage with actual storage behavior
+const createSessionStorageMock = () => {
+  let store: Record<string, string> = {}
+  
+  return {
+    getItem: vi.fn((key: string) => store[key] || null),
+    setItem: vi.fn((key: string, value: string) => {
+      store[key] = value
+    }),
+    removeItem: vi.fn((key: string) => {
+      delete store[key]
+    }),
+    clear: vi.fn(() => {
+      store = {}
+    }),
+    get length() {
+      return Object.keys(store).length
+    },
+    key: vi.fn((index: number) => Object.keys(store)[index] || null)
+  }
+}
+
+const sessionStorageMock = createSessionStorageMock()
+Object.defineProperty(window, 'sessionStorage', {
+  value: sessionStorageMock,
+})
+
+// Mock fetch API
+global.fetch = vi.fn()
+
+// Mock URL.createObjectURL
+global.URL.createObjectURL = vi.fn(() => 'mocked-url')
+
 // 启动MSW服务器
-beforeAll(() => server.listen())
+beforeAll(() => server.listen({ 
+  onUnhandledRequest: 'warn' // 改为warn，避免测试中断
+}))
 
 // 重置所有请求处理程序
 afterEach(() => server.resetHandlers())
 
 // 关闭MSW服务器
 afterAll(() => server.close())
+
+// Mock console.error to reduce noise in test output
+const originalError = console.error
+console.error = vi.fn((...args) => {
+  // 忽略特定的警告信息
+  if (typeof args[0] === 'string' && args[0].includes('Warning:')) {
+    return
+  }
+  originalError(...args)
+})

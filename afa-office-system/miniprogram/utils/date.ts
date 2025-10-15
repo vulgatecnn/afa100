@@ -6,6 +6,11 @@ export class DateUtils {
    * @param format 格式字符串，如 'YYYY-MM-DD HH:mm:ss'
    */
   static format(date: Date | number | string, format: string = 'YYYY-MM-DD HH:mm:ss'): string {
+    // 处理空值
+    if (date === null || date === undefined || date === '') {
+      return '';
+    }
+    
     const d = new Date(date);
     
     if (isNaN(d.getTime())) {

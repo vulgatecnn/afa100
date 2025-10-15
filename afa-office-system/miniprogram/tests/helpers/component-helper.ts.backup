@@ -1,0 +1,378 @@
+/**
+ * 小程序组件测试辅助工具
+ */
+
+import { MiniprogramTestFactory } from '../../../shared/test-factories/miniprogram-adapter'
+
+/**
+ * 小程序组件测试辅助类
+ */
+export class MiniprogramComponentHelper {
+  /**
+   * 创建模拟的组件上下文
+   */
+  static mockComponentContext(properties = {}, initialData = {}, methods = {}) {
+    const data = { ...initialData }
+    const props = { ...properties }
+    
+    return {
+      properties: props,
+      data,
+      setData: vi.fn(function(this: any, newData: any, callback?: () => void) {
+        Object.assign(this.data, newData)
+        if (callback) {
+          setTimeout(callback, 0) // 模拟异步行为
+        }
+      }),
+      triggerEvent: vi.fn(),
+      selectComponent: vi.fn(),
+      selectAllComponents: vi.fn(),
+      getRelationNodes: vi.fn(),
+      createSelectorQuery: vi.fn().mockReturnValue({
+        select: vi.fn().mockReturnThis(),
+        selectAll: vi.fn().mockReturnThis(),
+        boundingClientRect: vi.fn().mockReturnThis(),
+        scrollOffset: vi.fn().mockReturnThis(),
+        fields: vi.fn().mockReturnThis(),
+        exec: vi.fn()
+      }),
+      createIntersectionObserver: vi.fn().mockReturnValue({
+        observe: vi.fn(),
+        unobserve: vi.fn(),
+        disconnect: vi.fn()
+      }),
+      // 生命周期方法
+      created: vi.fn(),
+      attached: vi.fn(),
+      ready: vi.fn(),
+      moved: vi.fn(),
+      detached: vi.fn(),
+      error: vi.fn(),
+      // 自定义方法
+      ...methods
+    }
+  }
+  
+  /**
+   * 验证组件事件触发
+   */
+  static expectComponentEvent(component: any, eventName: string, eventDetail?: any) {
+    expect(component.triggerEvent).toHaveBeenCalledWith(eventName, eventDetail)
+  }
+  
+  /**
+   * 验证组件数据更新
+   */
+  static expectComponentData(component: any, expectedData: any) {
+    expect(component.data).toMatchObject(expectedData)
+  }
+  
+  /**
+   * 验证组件属性
+   */
+  static expectComponentProperties(component: any, expectedProps: any) {
+    expect(component.properties).toMatchObject(expectedProps)
+  }
+  
+  /**
+   * 模拟组件属性变化
+   */
+  static simulatePropertiesChange(component: any, newProperties: any) {
+    Object.assign(component.properties, newProperties)
+    
+    // 触发属性变化的观察器（如果有的话）
+    if (component.observers) {
+      Object.keys(newProperties).forEach(key => {
+        const observer = component.observers[key]
+        if (typeof observer === 'function') {
+          observer.call(component, newProperties[key])
+        }
+      })
+    }
+  }
+  
+  /**
+   * 模拟组件生命周期
+   */
+  static async simulateComponentLifecycle(component: any) {
+    // 模拟组件创建
+    if (component.created) {
+      await component.created()
+    }
+    
+    // 模拟组件附加到页面
+    if (component.attached) {
+      await component.attached()
+    }
+    
+    // 模拟组件准备完毕
+    if (component.ready) {
+      await component.ready()
+    }
+  }
+  
+  /**
+   * 模拟组件销毁
+   */
+  static async simulateComponentDestroy(component: any) {
+    if (component.detached) {
+      await component.detached()
+    }
+  }
+  
+  /**
+   * 模拟组件方法调用
+   */
+  static async simulateMethodCall(component: any, methodName: string, ...args: any[]) {
+    const method = component[methodName]
+    if (typeof method === 'function') {
+      return await method.apply(component, args)
+    } else {
+      throw new Error(`组件方法 ${methodName} 不存在`)
+    }
+  }
+  
+  /**
+   * 模拟用户点击事件
+   */
+  static simulateClick(component: any, eventData = {}) {
+    const mockEvent = {
+      type: 'tap',
+      target: { dataset: {} },
+      currentTarget: { dataset: {} },
+      detail: { x: 0, y: 0 },
+      ...eventData
+    }
+    
+    if (component.onTap) {
+      return component.onTap(mockEvent)
+    } else if (component.handleClick) {
+      return component.handleClick(mockEvent)
+    }
+  }
+  
+  /**
+   * 模拟长按事件
+   */
+  static simulateLongPress(component: any, eventData = {}) {
+    const mockEvent = {
+      type: 'longpress',
+      target: { dataset: {} },
+      currentTarget: { dataset: {} },
+      detail: { x: 0, y: 0 },
+      ...eventData
+    }
+    
+    if (component.onLongPress) {
+      return component.onLongPress(mockEvent)
+    } else if (component.handleLongPress) {
+      return component.handleLongPress(mockEvent)
+    }
+  }
+  
+  /**
+   * 模拟输入事件
+   */
+  static simulateInput(component: any, value: string, eventData = {}) {
+    const mockEvent = {
+      type: 'input',
+      target: { dataset: {} },
+      currentTarget: { dataset: {} },
+      detail: { value },
+      ...eventData
+    }
+    
+    if (component.onInput) {
+      return component.onInput(mockEvent)
+    } else if (component.handleInput) {
+      return component.handleInput(mockEvent)
+    }
+  }
+  
+  /**
+   * 模拟表单提交事件
+   */
+  static simulateFormSubmit(component: any, formData: any) {
+    const mockEvent = {
+      type: 'submit',
+      target: { dataset: {} },
+      currentTarget: { dataset: {} },
+      detail: { value: formData }
+    }
+    
+    if (component.onSubmit) {
+      return component.onSubmit(mockEvent)
+    } else if (component.handleSubmit) {
+      return component.handleSubmit(mockEvent)
+    }
+  }
+  
+  /**
+   * 模拟滚动事件
+   */
+  static simulateScroll(component: any, scrollTop: number, scrollLeft = 0) {
+    const mockEvent = {
+      type: 'scroll',
+      target: { dataset: {} },
+      currentTarget: { dataset: {} },
+      detail: { scrollTop, scrollLeft }
+    }
+    
+    if (component.onScroll) {
+      return component.onScroll(mockEvent)
+    } else if (component.handleScroll) {
+      return component.handleScroll(mockEvent)
+    }
+  }
+  
+  /**
+   * 创建通用的组件测试套件
+   */
+  static createComponentTestSuite(componentName: string, componentFactory: () => any) {
+    return {
+      [`${componentName} 组件测试`]: () => {
+        let component: any
+        
+        beforeEach(() => {
+          component = componentFactory()
+        })
+        
+        afterEach(() => {
+          vi.clearAllMocks()
+        })
+        
+        return {
+          component,
+          
+          // 基础测试方法
+          testLifecycle: async () => {
+            await MiniprogramComponentHelper.simulateComponentLifecycle(component)
+            expect(component.created).toHaveBeenCalled()
+            expect(component.attached).toHaveBeenCalled()
+            expect(component.ready).toHaveBeenCalled()
+          },
+          
+          testPropertiesChange: (newProps: any) => {
+            MiniprogramComponentHelper.simulatePropertiesChange(component, newProps)
+            MiniprogramComponentHelper.expectComponentProperties(component, newProps)
+          },
+          
+          testEventTrigger: (eventName: string, eventDetail?: any) => {
+            component.triggerEvent(eventName, eventDetail)
+            MiniprogramComponentHelper.expectComponentEvent(component, eventName, eventDetail)
+          },
+          
+          testDataUpdate: (newData: any) => {
+            component.setData(newData)
+            MiniprogramComponentHelper.expectComponentData(component, newData)
+          }
+        }
+      }
+    }
+  }
+  
+  /**
+   * 创建表单组件测试辅助
+   */
+  static createFormComponentHelper(component: any) {
+    return {
+      // 设置表单值
+      setValue: (value: any) => {
+        component.setData({ value })
+      },
+      
+      // 获取表单值
+      getValue: () => {
+        return component.data.value
+      },
+      
+      // 模拟用户输入
+      simulateUserInput: (value: string) => {
+        MiniprogramComponentHelper.simulateInput(component, value)
+      },
+      
+      // 验证表单验证
+      expectValidation: (isValid: boolean, errorMessage?: string) => {
+        expect(component.data.isValid).toBe(isValid)
+        if (errorMessage) {
+          expect(component.data.errorMessage).toBe(errorMessage)
+        }
+      },
+      
+      // 模拟表单提交
+      simulateSubmit: () => {
+        const formData = { value: component.data.value }
+        return MiniprogramComponentHelper.simulateFormSubmit(component, formData)
+      }
+    }
+  }
+  
+  /**
+   * 创建列表组件测试辅助
+   */
+  static createListComponentHelper(component: any) {
+    return {
+      // 设置列表数据
+      setListData: (items: any[]) => {
+        component.setData({ items })
+      },
+      
+      // 获取列表数据
+      getListData: () => {
+        return component.data.items || []
+      },
+      
+      // 模拟列表项点击
+      simulateItemClick: (index: number, item?: any) => {
+        const mockEvent = {
+          type: 'tap',
+          target: { dataset: { index, item } },
+          currentTarget: { dataset: { index, item } },
+          detail: { index, item }
+        }
+        
+        if (component.onItemClick) {
+          return component.onItemClick(mockEvent)
+        }
+      },
+      
+      // 模拟下拉刷新
+      simulatePullRefresh: () => {
+        if (component.onPullDownRefresh) {
+          return component.onPullDownRefresh()
+        }
+      },
+      
+      // 模拟上拉加载
+      simulateLoadMore: () => {
+        if (component.onReachBottom) {
+          return component.onReachBottom()
+        }
+      },
+      
+      // 验证列表状态
+      expectListState: (loading: boolean, hasMore: boolean) => {
+        expect(component.data.loading).toBe(loading)
+        expect(component.data.hasMore).toBe(hasMore)
+      }
+    }
+  }
+  
+  /**
+   * 等待异步操作完成
+   */
+  static async waitForAsync(condition: () => boolean, timeout = 5000) {
+    const startTime = Date.now()
+    
+    while (Date.now() - startTime < timeout) {
+      if (condition()) {
+        return true
+      }
+      await new Promise(resolve => setTimeout(resolve, 100))
+    }
+    
+    throw new Error(`等待条件超时 (${timeout}ms)`)
+  }
+}
+
+export default MiniprogramComponentHelper

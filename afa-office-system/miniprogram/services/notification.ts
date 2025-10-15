@@ -56,8 +56,12 @@ class NotificationService {
     if (reason) {
       // 清理HTML标签和脚本
       const sanitizedReason = this.sanitizeContent(reason);
-      // 限制长度
-      const truncatedReason = sanitizedReason.length > 100 ? sanitizedReason.substring(0, 100) + '...' : sanitizedReason;
+      // 限制长度 - 确保总长度不超过104字符
+      // "拒绝原因：" 占5个字符，所以reason部分最多99个字符
+      const maxReasonLength = 99;
+      const truncatedReason = sanitizedReason.length > maxReasonLength 
+        ? sanitizedReason.substring(0, maxReasonLength - 3) + '...' 
+        : sanitizedReason;
       content = `拒绝原因：${truncatedReason}`;
     }
     

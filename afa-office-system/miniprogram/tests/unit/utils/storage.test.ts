@@ -463,7 +463,7 @@ describe('本地存储工具函数测试', () => {
       const result = StorageUtils.getBatch(['key1']);
       
       expect(result).toEqual({});
-      expect(consoleErrorSpy).toHaveBeenCalledWith('批量获取数据失败:', expect.any(Error));
+      expect(consoleErrorSpy).toHaveBeenCalledWith('获取存储数据失败:', expect.any(Error));
       
       consoleErrorSpy.mockRestore();
     });

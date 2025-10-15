@@ -15,26 +15,11 @@ describe('状态徽章组件测试', () => {
     it('应该有正确的初始属性和数据', () => {
       const statusBadgeComponent = createMockComponent({
         properties: {
-          status: {
-            type: String,
-            value: 'pending'
-          },
-          text: {
-            type: String,
-            value: ''
-          },
-          type: {
-            type: String,
-            value: 'default' // default, primary, success, warning, danger
-          },
-          size: {
-            type: String,
-            value: 'normal' // small, normal, large
-          },
-          round: {
-            type: Boolean,
-            value: false
-          }
+          status: 'pending',
+          text: '',
+          type: 'default', // default, primary, success, warning, danger
+          size: 'normal', // small, normal, large
+          round: false
         },
         data: {
           statusConfig: {
@@ -48,10 +33,10 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      expect(statusBadgeComponent.properties.status.value).toBe('pending');
-      expect(statusBadgeComponent.properties.type.value).toBe('default');
-      expect(statusBadgeComponent.properties.size.value).toBe('normal');
-      expect(statusBadgeComponent.properties.round.value).toBe(false);
+      expect(statusBadgeComponent.properties.status).toBe('pending');
+      expect(statusBadgeComponent.properties.type).toBe('default');
+      expect(statusBadgeComponent.properties.size).toBe('normal');
+      expect(statusBadgeComponent.properties.round).toBe(false);
       expect(statusBadgeComponent.data.statusConfig.pending.text).toBe('待审批');
     });
   });
@@ -60,8 +45,8 @@ describe('状态徽章组件测试', () => {
     it('应该在attached时初始化状态配置', () => {
       const statusBadgeComponent = createMockComponent({
         properties: {
-          status: { type: String, value: 'approved' },
-          text: { type: String, value: '' }
+          status: 'approved',
+          text: ''
         },
         data: {
           displayText: '',
@@ -97,7 +82,7 @@ describe('状态徽章组件测试', () => {
     it('应该在ready时检查属性有效性', () => {
       const statusBadgeComponent = createMockComponent({
         properties: {
-          status: { type: String, value: 'invalid_status' }
+          status: 'invalid_status'
         },
         data: {
           statusConfig: {
@@ -131,8 +116,8 @@ describe('状态徽章组件测试', () => {
     it('应该监听status属性变化并更新显示', () => {
       const statusBadgeComponent = createMockComponent({
         properties: {
-          status: { type: String, value: 'pending' },
-          text: { type: String, value: '' }
+          status: 'pending',
+          text: ''
         },
         data: {
           displayText: '待审批',
@@ -173,8 +158,8 @@ describe('状态徽章组件测试', () => {
     it('应该监听text属性变化并更新显示文本', () => {
       const statusBadgeComponent = createMockComponent({
         properties: {
-          status: { type: String, value: 'pending' },
-          text: { type: String, value: '自定义文本' }
+          status: 'pending',
+          text: '自定义文本'
         },
         data: {
           displayText: '待审批',
@@ -213,9 +198,9 @@ describe('状态徽章组件测试', () => {
     it('应该根据type属性计算样式类', () => {
       const statusBadgeComponent = createMockComponent({
         properties: {
-          type: { type: String, value: 'success' },
-          size: { type: String, value: 'normal' },
-          round: { type: Boolean, value: false }
+          type: 'success',
+          size: 'normal',
+          round: false
         },
         data: {
           badgeClass: ''
@@ -236,7 +221,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.computeBadgeClass.call(statusBadgeComponent);
+      statusBadgeComponent.computeBadgeClass.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         badgeClass: 'status-badge status-badge--success status-badge--normal'
@@ -246,9 +231,9 @@ describe('状态徽章组件测试', () => {
     it('应该支持圆角样式', () => {
       const statusBadgeComponent = createMockComponent({
         properties: {
-          type: { type: String, value: 'primary' },
-          size: { type: String, value: 'small' },
-          round: { type: Boolean, value: true }
+          type: 'primary',
+          size: 'small',
+          round: true
         },
         data: {
           badgeClass: ''
@@ -269,7 +254,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.computeBadgeClass.call(statusBadgeComponent);
+      statusBadgeComponent.computeBadgeClass.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         badgeClass: 'status-badge status-badge--primary status-badge--small status-badge--round'
@@ -281,7 +266,7 @@ describe('状态徽章组件测试', () => {
     it('应该处理点击事件', () => {
       const statusBadgeComponent = createMockComponent({
         properties: {
-          status: { type: String, value: 'pending' }
+          status: 'pending'
         },
         methods: {
           onTap(e) {
@@ -298,7 +283,7 @@ describe('状态徽章组件测试', () => {
         currentTarget: { dataset: {} }
       };
 
-      statusBadgeComponent.methods.onTap.call(statusBadgeComponent, mockEvent);
+      statusBadgeComponent.onTap.call(statusBadgeComponent, mockEvent);
 
       expect(statusBadgeComponent.triggerEvent).toHaveBeenCalledWith('tap', {
         status: 'pending',
@@ -309,8 +294,8 @@ describe('状态徽章组件测试', () => {
     it('应该支持禁用点击事件', () => {
       const statusBadgeComponent = createMockComponent({
         properties: {
-          status: { type: String, value: 'pending' },
-          disabled: { type: Boolean, value: true }
+          status: 'pending',
+          disabled: true
         },
         methods: {
           onTap(e) {
@@ -325,7 +310,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.onTap.call(statusBadgeComponent, {});
+      statusBadgeComponent.onTap.call(statusBadgeComponent, {});
 
       expect(statusBadgeComponent.triggerEvent).not.toHaveBeenCalled();
     });
@@ -351,15 +336,15 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      expect(statusBadgeComponent.methods.getStatusConfig('pending')).toEqual({
+      expect(statusBadgeComponent.getStatusConfig('pending')).toEqual({
         text: '待审批',
         type: 'warning'
       });
-      expect(statusBadgeComponent.methods.getStatusConfig('approved')).toEqual({
+      expect(statusBadgeComponent.getStatusConfig('approved')).toEqual({
         text: '已通过',
         type: 'success'
       });
-      expect(statusBadgeComponent.methods.getStatusConfig('rejected')).toEqual({
+      expect(statusBadgeComponent.getStatusConfig('rejected')).toEqual({
         text: '已拒绝',
         type: 'danger'
       });
@@ -391,7 +376,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.mergeConfig.call(statusBadgeComponent);
+      statusBadgeComponent.mergeConfig.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         statusConfig: {
@@ -406,8 +391,8 @@ describe('状态徽章组件测试', () => {
     it('应该正确绑定显示文本', () => {
       const statusBadgeComponent = createMockComponent({
         properties: {
-          status: { type: String, value: 'approved' },
-          text: { type: String, value: '' }
+          status: 'approved',
+          text: ''
         },
         data: {
           displayText: '',
@@ -424,7 +409,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.updateDisplayText.call(statusBadgeComponent);
+      statusBadgeComponent.updateDisplayText.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         displayText: '已通过'
@@ -434,8 +419,8 @@ describe('状态徽章组件测试', () => {
     it('应该优先使用自定义文本', () => {
       const statusBadgeComponent = createMockComponent({
         properties: {
-          status: { type: String, value: 'approved' },
-          text: { type: String, value: '审核通过' }
+          status: 'approved',
+          text: '审核通过'
         },
         data: {
           displayText: '',
@@ -452,7 +437,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.updateDisplayText.call(statusBadgeComponent);
+      statusBadgeComponent.updateDisplayText.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         displayText: '审核通过'
@@ -462,8 +447,8 @@ describe('状态徽章组件测试', () => {
     it('应该在没有配置时使用状态值作为显示文本', () => {
       const statusBadgeComponent = createMockComponent({
         properties: {
-          status: { type: String, value: 'unknown_status' },
-          text: { type: String, value: '' }
+          status: 'unknown_status',
+          text: ''
         },
         data: {
           displayText: '',
@@ -478,7 +463,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.updateDisplayText.call(statusBadgeComponent);
+      statusBadgeComponent.updateDisplayText.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         displayText: 'unknown_status'
@@ -490,8 +475,8 @@ describe('状态徽章组件测试', () => {
     it('应该根据状态控制显示隐藏', () => {
       const statusBadgeComponent = createMockComponent({
         properties: {
-          status: { type: String, value: 'pending' },
-          hideWhenEmpty: { type: Boolean, value: true }
+          status: 'pending',
+          hideWhenEmpty: true
         },
         data: {
           visible: true
@@ -505,7 +490,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.updateVisibility.call(statusBadgeComponent);
+      statusBadgeComponent.updateVisibility.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         visible: true
@@ -515,8 +500,8 @@ describe('状态徽章组件测试', () => {
     it('应该在状态为空时隐藏组件', () => {
       const statusBadgeComponent = createMockComponent({
         properties: {
-          status: { type: String, value: '' },
-          hideWhenEmpty: { type: Boolean, value: true }
+          status: '',
+          hideWhenEmpty: true
         },
         data: {
           visible: true
@@ -530,7 +515,7 @@ describe('状态徽章组件测试', () => {
         }
       });
 
-      statusBadgeComponent.methods.updateVisibility.call(statusBadgeComponent);
+      statusBadgeComponent.updateVisibility.call(statusBadgeComponent);
 
       expect(statusBadgeComponent.setData).toHaveBeenCalledWith({
         visible: false

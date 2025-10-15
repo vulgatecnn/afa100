@@ -26,26 +26,11 @@ describe('二维码组件测试', () => {
     it('应该有正确的初始属性和数据', () => {
       const qrCodeComponent = createMockComponent({
         properties: {
-          code: {
-            type: String,
-            value: ''
-          },
-          size: {
-            type: Number,
-            value: 200
-          },
-          backgroundColor: {
-            type: String,
-            value: '#ffffff'
-          },
-          foregroundColor: {
-            type: String,
-            value: '#000000'
-          },
-          showText: {
-            type: Boolean,
-            value: true
-          }
+          code: '',
+          size: 200,
+          backgroundColor: '#ffffff',
+          foregroundColor: '#000000',
+          showText: true
         },
         data: {
           canvasId: 'qr-canvas',
@@ -53,11 +38,11 @@ describe('二维码组件测试', () => {
         }
       });
 
-      expect(qrCodeComponent.properties.code.value).toBe('');
-      expect(qrCodeComponent.properties.size.value).toBe(200);
-      expect(qrCodeComponent.properties.backgroundColor.value).toBe('#ffffff');
-      expect(qrCodeComponent.properties.foregroundColor.value).toBe('#000000');
-      expect(qrCodeComponent.properties.showText.value).toBe(true);
+      expect(qrCodeComponent.properties.code).toBe('');
+      expect(qrCodeComponent.properties.size).toBe(200);
+      expect(qrCodeComponent.properties.backgroundColor).toBe('#ffffff');
+      expect(qrCodeComponent.properties.foregroundColor).toBe('#000000');
+      expect(qrCodeComponent.properties.showText).toBe(true);
       expect(qrCodeComponent.data.generated).toBe(false);
     });
   });
@@ -66,8 +51,8 @@ describe('二维码组件测试', () => {
     it('应该在attached时生成二维码', () => {
       const qrCodeComponent = createMockComponent({
         properties: {
-          code: { type: String, value: 'TEST123' },
-          size: { type: Number, value: 200 }
+          code: 'TEST123',
+          size: 200
         },
         data: {
           canvasId: 'qr-canvas',
@@ -113,7 +98,7 @@ describe('二维码组件测试', () => {
     it('应该在ready时检查二维码状态', () => {
       const qrCodeComponent = createMockComponent({
         properties: {
-          code: { type: String, value: '' }
+          code: ''
         },
         data: {
           generated: false
@@ -163,7 +148,7 @@ describe('二维码组件测试', () => {
     it('应该监听code属性变化并重新生成二维码', () => {
       const qrCodeComponent = createMockComponent({
         properties: {
-          code: { type: String, value: 'OLD123' }
+          code: 'OLD123'
         },
         data: {
           generated: false
@@ -184,14 +169,14 @@ describe('二维码组件测试', () => {
       // 模拟属性变化
       qrCodeComponent.observers.code.call(qrCodeComponent, 'NEW123');
 
-      expect(qrCodeComponent.methods.generateQRCode).toHaveBeenCalled();
+      expect(qrCodeComponent.generateQRCode).toHaveBeenCalled();
       expect(qrCodeComponent.setData).toHaveBeenCalledWith({ lastCode: 'NEW123' });
     });
 
     it('应该监听size属性变化并重新生成二维码', () => {
       const qrCodeComponent = createMockComponent({
         properties: {
-          size: { type: Number, value: 200 }
+          size: 200
         },
         methods: {
           generateQRCode: vi.fn()
@@ -207,7 +192,7 @@ describe('二维码组件测试', () => {
 
       qrCodeComponent.observers.size.call(qrCodeComponent, 300);
 
-      expect(qrCodeComponent.methods.generateQRCode).toHaveBeenCalled();
+      expect(qrCodeComponent.generateQRCode).toHaveBeenCalled();
     });
   });
 
@@ -227,10 +212,10 @@ describe('二维码组件测试', () => {
 
       const qrCodeComponent = createMockComponent({
         properties: {
-          code: { type: String, value: 'TEST123' },
-          size: { type: Number, value: 200 },
-          backgroundColor: { type: String, value: '#ffffff' },
-          foregroundColor: { type: String, value: '#000000' }
+          code: 'TEST123',
+          size: 200,
+          backgroundColor: '#ffffff',
+          foregroundColor: '#000000'
         },
         data: {
           canvasId: 'qr-canvas',
@@ -259,7 +244,7 @@ describe('二维码组件测试', () => {
         }
       });
 
-      qrCodeComponent.methods.generateQRCode();
+      qrCodeComponent.generateQRCode();
 
       expect(mockCtx.clearRect).toHaveBeenCalledWith(0, 0, 200, 200);
       expect(mockCtx.setFillStyle).toHaveBeenCalledWith('#ffffff');
@@ -277,8 +262,8 @@ describe('二维码组件测试', () => {
     it('应该处理空的二维码内容', () => {
       const qrCodeComponent = createMockComponent({
         properties: {
-          code: { type: String, value: '' },
-          size: { type: Number, value: 200 }
+          code: '',
+          size: 200
         },
         methods: {
           generateQRCode() {
@@ -292,7 +277,7 @@ describe('二维码组件测试', () => {
         }
       });
 
-      qrCodeComponent.methods.generateQRCode();
+      qrCodeComponent.generateQRCode();
 
       expect(qrCodeComponent.triggerEvent).toHaveBeenCalledWith('error', {
         message: '二维码内容不能为空'
@@ -304,7 +289,7 @@ describe('二维码组件测试', () => {
     it('应该处理点击事件', () => {
       const qrCodeComponent = createMockComponent({
         properties: {
-          code: { type: String, value: 'TEST123' }
+          code: 'TEST123'
         },
         methods: {
           onTap(e) {
@@ -321,7 +306,7 @@ describe('二维码组件测试', () => {
         currentTarget: { dataset: {} }
       };
 
-      qrCodeComponent.methods.onTap(mockEvent);
+      qrCodeComponent.onTap(mockEvent);
 
       expect(qrCodeComponent.triggerEvent).toHaveBeenCalledWith('tap', {
         code: 'TEST123',
@@ -332,7 +317,7 @@ describe('二维码组件测试', () => {
     it('应该处理长按事件', () => {
       const qrCodeComponent = createMockComponent({
         properties: {
-          code: { type: String, value: 'TEST123' }
+          code: 'TEST123'
         },
         methods: {
           onLongPress(e) {
@@ -357,7 +342,7 @@ describe('二维码组件测试', () => {
         }
       });
 
-      qrCodeComponent.methods.onLongPress({});
+      qrCodeComponent.onLongPress({});
 
       expect(wx.showActionSheet).toHaveBeenCalledWith({
         itemList: ['保存到相册', '分享'],
@@ -370,9 +355,9 @@ describe('二维码组件测试', () => {
     it('应该正确绑定属性到视图', () => {
       const qrCodeComponent = createMockComponent({
         properties: {
-          code: { type: String, value: 'TEST123' },
-          size: { type: Number, value: 200 },
-          showText: { type: Boolean, value: true }
+          code: 'TEST123',
+          size: 200,
+          showText: true
         },
         data: {
           displayText: ''
@@ -392,7 +377,7 @@ describe('二维码组件测试', () => {
         }
       });
 
-      qrCodeComponent.methods.updateDisplayText();
+      qrCodeComponent.updateDisplayText();
 
       expect(qrCodeComponent.setData).toHaveBeenCalledWith({
         displayText: '通行码: TEST123'
@@ -402,8 +387,8 @@ describe('二维码组件测试', () => {
     it('应该根据showText属性控制文本显示', () => {
       const qrCodeComponent = createMockComponent({
         properties: {
-          code: { type: String, value: 'TEST123' },
-          showText: { type: Boolean, value: false }
+          code: 'TEST123',
+          showText: false
         },
         data: {
           displayText: '通行码: TEST123'
@@ -423,7 +408,7 @@ describe('二维码组件测试', () => {
         }
       });
 
-      qrCodeComponent.methods.updateDisplayText();
+      qrCodeComponent.updateDisplayText();
 
       expect(qrCodeComponent.setData).toHaveBeenCalledWith({
         displayText: ''
@@ -435,7 +420,7 @@ describe('二维码组件测试', () => {
     it('应该根据size属性设置画布尺寸', () => {
       const qrCodeComponent = createMockComponent({
         properties: {
-          size: { type: Number, value: 300 }
+          size: 300
         },
         data: {
           canvasStyle: ''
@@ -450,7 +435,7 @@ describe('二维码组件测试', () => {
         }
       });
 
-      qrCodeComponent.methods.updateCanvasStyle();
+      qrCodeComponent.updateCanvasStyle();
 
       expect(qrCodeComponent.setData).toHaveBeenCalledWith({
         canvasStyle: 'width: 300px; height: 300px;'
@@ -460,7 +445,7 @@ describe('二维码组件测试', () => {
     it('应该支持自定义样式类', () => {
       const qrCodeComponent = createMockComponent({
         properties: {
-          customClass: { type: String, value: 'custom-qr-code' }
+          customClass: 'custom-qr-code'
         },
         data: {
           containerClass: ''
@@ -476,7 +461,7 @@ describe('二维码组件测试', () => {
         }
       });
 
-      qrCodeComponent.methods.updateContainerClass();
+      qrCodeComponent.updateContainerClass();
 
       expect(qrCodeComponent.setData).toHaveBeenCalledWith({
         containerClass: 'qr-code-container custom-qr-code'
@@ -490,7 +475,7 @@ describe('二维码组件测试', () => {
 
       const qrCodeComponent = createMockComponent({
         properties: {
-          code: { type: String, value: 'TEST123' }
+          code: 'TEST123'
         },
         methods: {
           generateQRCode() {
@@ -505,7 +490,7 @@ describe('二维码组件测试', () => {
         }
       });
 
-      qrCodeComponent.methods.generateQRCode();
+      qrCodeComponent.generateQRCode();
 
       expect(qrCodeComponent.triggerEvent).toHaveBeenCalledWith('error', {
         message: '画布创建失败'
@@ -529,8 +514,8 @@ describe('二维码组件测试', () => {
 
       const qrCodeComponent = createMockComponent({
         properties: {
-          code: { type: String, value: 'TEST123' },
-          size: { type: Number, value: 200 }
+          code: 'TEST123',
+          size: 200
         },
         methods: {
           generateQRCode() {
@@ -550,7 +535,7 @@ describe('二维码组件测试', () => {
         }
       });
 
-      qrCodeComponent.methods.generateQRCode();
+      qrCodeComponent.generateQRCode();
 
       expect(qrCodeComponent.triggerEvent).toHaveBeenCalledWith('error', {
         message: '绘制失败'

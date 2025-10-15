@@ -15,38 +15,14 @@ describe('表单字段组件测试', () => {
     it('应该有正确的初始属性和数据', () => {
       const formFieldComponent = createMockComponent({
         properties: {
-          label: {
-            type: String,
-            value: ''
-          },
-          value: {
-            type: String,
-            value: ''
-          },
-          placeholder: {
-            type: String,
-            value: '请输入'
-          },
-          type: {
-            type: String,
-            value: 'text' // text, number, password, textarea, picker
-          },
-          required: {
-            type: Boolean,
-            value: false
-          },
-          disabled: {
-            type: Boolean,
-            value: false
-          },
-          maxlength: {
-            type: Number,
-            value: -1
-          },
-          rules: {
-            type: Array,
-            value: []
-          }
+          label: '',
+          value: '',
+          placeholder: '请输入',
+          type: 'text', // text, number, password, textarea, picker
+          required: false,
+          disabled: false,
+          maxlength: -1,
+          rules: []
         },
         data: {
           focused: false,
@@ -56,10 +32,10 @@ describe('表单字段组件测试', () => {
         }
       });
 
-      expect(formFieldComponent.properties.label.value).toBe('');
-      expect(formFieldComponent.properties.type.value).toBe('text');
-      expect(formFieldComponent.properties.required.value).toBe(false);
-      expect(formFieldComponent.properties.disabled.value).toBe(false);
+      expect(formFieldComponent.properties.label).toBe('');
+      expect(formFieldComponent.properties.type).toBe('text');
+      expect(formFieldComponent.properties.required).toBe(false);
+      expect(formFieldComponent.properties.disabled).toBe(false);
       expect(formFieldComponent.data.focused).toBe(false);
       expect(formFieldComponent.data.error).toBe('');
     });
@@ -69,7 +45,7 @@ describe('表单字段组件测试', () => {
     it('应该在attached时初始化内部值', () => {
       const formFieldComponent = createMockComponent({
         properties: {
-          value: { type: String, value: '初始值' }
+          value: '初始值'
         },
         data: {
           internalValue: ''
@@ -91,8 +67,8 @@ describe('表单字段组件测试', () => {
     it('应该在ready时进行初始验证', () => {
       const formFieldComponent = createMockComponent({
         properties: {
-          value: { type: String, value: '' },
-          required: { type: Boolean, value: true }
+          value: '',
+          required: true
         },
         methods: {
           validate() {
@@ -125,7 +101,7 @@ describe('表单字段组件测试', () => {
     it('应该监听value属性变化并同步内部值', () => {
       const formFieldComponent = createMockComponent({
         properties: {
-          value: { type: String, value: '旧值' }
+          value: '旧值'
         },
         data: {
           internalValue: '旧值'
@@ -158,13 +134,14 @@ describe('表单字段组件测试', () => {
     });
 
     it('应该监听rules属性变化并重新验证', () => {
+      const validateSpy = vi.fn();
       const formFieldComponent = createMockComponent({
         properties: {
-          value: { type: String, value: 'test' },
-          rules: { type: Array, value: [] }
+          value: 'test',
+          rules: []
         },
         methods: {
-          validate: vi.fn()
+          validate: validateSpy
         },
         observers: {
           'rules': function(newRules) {
@@ -178,7 +155,7 @@ describe('表单字段组件测试', () => {
       const newRules = [{ required: true, message: '必填' }];
       formFieldComponent.observers.rules.call(formFieldComponent, newRules);
 
-      expect(formFieldComponent.methods.validate).toHaveBeenCalled();
+      expect(validateSpy).toHaveBeenCalled();
     });
   });
 
@@ -209,7 +186,7 @@ describe('表单字段组件测试', () => {
         detail: { value: '新输入值' }
       };
 
-      formFieldComponent.methods.onInput(mockEvent);
+      formFieldComponent.onInput(mockEvent);
 
       expect(formFieldComponent.setData).toHaveBeenCalledWith({
         internalValue: '新输入值',
@@ -222,6 +199,7 @@ describe('表单字段组件测试', () => {
     });
 
     it('应该处理焦点事件', () => {
+      const validateSpy = vi.fn();
       const formFieldComponent = createMockComponent({
         data: {
           focused: false
@@ -236,19 +214,19 @@ describe('表单字段组件测试', () => {
             this.validate();
             this.triggerEvent('blur', e.detail);
           },
-          validate: vi.fn()
+          validate: validateSpy
         }
       });
 
       // 测试获得焦点
-      formFieldComponent.methods.onFocus({ detail: {} });
+      formFieldComponent.onFocus({ detail: {} });
       expect(formFieldComponent.setData).toHaveBeenCalledWith({ focused: true });
       expect(formFieldComponent.triggerEvent).toHaveBeenCalledWith('focus', {});
 
       // 测试失去焦点
-      formFieldComponent.methods.onBlur({ detail: {} });
+      formFieldComponent.onBlur({ detail: {} });
       expect(formFieldComponent.setData).toHaveBeenCalledWith({ focused: false });
-      expect(formFieldComponent.methods.validate).toHaveBeenCalled();
+      expect(validateSpy).toHaveBeenCalled();
       expect(formFieldComponent.triggerEvent).toHaveBeenCalledWith('blur', {});
     });
   });
@@ -257,9 +235,9 @@ describe('表单字段组件测试', () => {
     it('应该验证必填字段', () => {
       const formFieldComponent = createMockComponent({
         properties: {
-          value: { type: String, value: '' },
-          required: { type: Boolean, value: true },
-          label: { type: String, value: '用户名' }
+          value: '',
+          required: true,
+          label: '用户名'
         },
         data: {
           error: '',
@@ -285,7 +263,7 @@ describe('表单字段组件测试', () => {
         }
       });
 
-      const result = formFieldComponent.methods.validate();
+      const result = formFieldComponent.validate();
 
       expect(result).toBe(false);
       expect(formFieldComponent.setData).toHaveBeenCalledWith({
@@ -297,14 +275,11 @@ describe('表单字段组件测试', () => {
     it('应该验证字段长度', () => {
       const formFieldComponent = createMockComponent({
         properties: {
-          value: { type: String, value: '12' },
-          rules: {
-            type: Array,
-            value: [
-              { min: 3, message: '最少3个字符' },
-              { max: 10, message: '最多10个字符' }
-            ]
-          }
+          value: '12',
+          rules: [
+            { min: 3, message: '最少3个字符' },
+            { max: 10, message: '最多10个字符' }
+          ]
         },
         data: {
           error: '',
@@ -342,7 +317,7 @@ describe('表单字段组件测试', () => {
         }
       });
 
-      const result = formFieldComponent.methods.validate();
+      const result = formFieldComponent.validate();
 
       expect(result).toBe(false);
       expect(formFieldComponent.setData).toHaveBeenCalledWith({
@@ -354,13 +329,10 @@ describe('表单字段组件测试', () => {
     it('应该验证正则表达式', () => {
       const formFieldComponent = createMockComponent({
         properties: {
-          value: { type: String, value: '123456' },
-          rules: {
-            type: Array,
-            value: [
-              { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' }
-            ]
-          }
+          value: '123456',
+          rules: [
+            { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' }
+          ]
         },
         data: {
           error: '',
@@ -390,7 +362,7 @@ describe('表单字段组件测试', () => {
         }
       });
 
-      const result = formFieldComponent.methods.validate();
+      const result = formFieldComponent.validate();
 
       expect(result).toBe(false);
       expect(formFieldComponent.setData).toHaveBeenCalledWith({
@@ -402,18 +374,15 @@ describe('表单字段组件测试', () => {
     it('应该支持自定义验证函数', () => {
       const formFieldComponent = createMockComponent({
         properties: {
-          value: { type: String, value: 'test123' },
-          rules: {
-            type: Array,
-            value: [
-              {
-                validator: (value) => {
-                  return value.includes('admin');
-                },
-                message: '用户名不能包含admin'
-              }
-            ]
-          }
+          value: 'test123',
+          rules: [
+            {
+              validator: (value) => {
+                return !value.includes('admin');
+              },
+              message: '用户名不能包含admin'
+            }
+          ]
         },
         data: {
           error: '',
@@ -445,7 +414,7 @@ describe('表单字段组件测试', () => {
 
       // 修改值包含admin
       formFieldComponent.properties.value = 'admin123';
-      const result = formFieldComponent.methods.validate();
+      const result = formFieldComponent.validate();
 
       expect(result).toBe(false);
       expect(formFieldComponent.setData).toHaveBeenCalledWith({
@@ -457,14 +426,11 @@ describe('表单字段组件测试', () => {
     it('应该通过所有验证规则', () => {
       const formFieldComponent = createMockComponent({
         properties: {
-          value: { type: String, value: '13800138000' },
-          required: { type: Boolean, value: true },
-          rules: {
-            type: Array,
-            value: [
-              { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' }
-            ]
-          }
+          value: '13800138000',
+          required: true,
+          rules: [
+            { pattern: /^1[3-9]\d{9}$/, message: '请输入正确的手机号' }
+          ]
         },
         data: {
           error: 'previous error',
@@ -504,7 +470,7 @@ describe('表单字段组件测试', () => {
         }
       });
 
-      const result = formFieldComponent.methods.validate();
+      const result = formFieldComponent.validate();
 
       expect(result).toBe(true);
       expect(formFieldComponent.setData).toHaveBeenCalledWith({
@@ -518,7 +484,7 @@ describe('表单字段组件测试', () => {
     it('应该根据状态计算输入框样式', () => {
       const formFieldComponent = createMockComponent({
         properties: {
-          disabled: { type: Boolean, value: false }
+          disabled: false
         },
         data: {
           focused: true,
@@ -541,7 +507,7 @@ describe('表单字段组件测试', () => {
         }
       });
 
-      formFieldComponent.methods.computeInputClass();
+      formFieldComponent.computeInputClass();
 
       expect(formFieldComponent.setData).toHaveBeenCalledWith({
         inputClass: 'form-field__input form-field__input--focused form-field__input--error'
@@ -551,7 +517,7 @@ describe('表单字段组件测试', () => {
     it('应该计算标签样式', () => {
       const formFieldComponent = createMockComponent({
         properties: {
-          required: { type: Boolean, value: true }
+          required: true
         },
         data: {
           labelClass: ''
@@ -570,7 +536,7 @@ describe('表单字段组件测试', () => {
         }
       });
 
-      formFieldComponent.methods.computeLabelClass();
+      formFieldComponent.computeLabelClass();
 
       expect(formFieldComponent.setData).toHaveBeenCalledWith({
         labelClass: 'form-field__label form-field__label--required'
@@ -595,7 +561,7 @@ describe('表单字段组件测试', () => {
         }
       });
 
-      formFieldComponent.methods.clearError();
+      formFieldComponent.clearError();
 
       expect(formFieldComponent.setData).toHaveBeenCalledWith({
         error: '',
@@ -625,7 +591,7 @@ describe('表单字段组件测试', () => {
         }
       });
 
-      formFieldComponent.methods.reset();
+      formFieldComponent.reset();
 
       expect(formFieldComponent.setData).toHaveBeenCalledWith({
         internalValue: '',
@@ -648,7 +614,7 @@ describe('表单字段组件测试', () => {
         }
       });
 
-      const value = formFieldComponent.methods.getValue();
+      const value = formFieldComponent.getValue();
 
       expect(value).toBe('字段值');
     });
@@ -666,7 +632,7 @@ describe('表单字段组件测试', () => {
         }
       });
 
-      formFieldComponent.methods.setValue('新值');
+      formFieldComponent.setValue('新值');
 
       expect(formFieldComponent.setData).toHaveBeenCalledWith({
         internalValue: '新值'
@@ -681,8 +647,8 @@ describe('表单字段组件测试', () => {
     it('应该处理文本域类型', () => {
       const formFieldComponent = createMockComponent({
         properties: {
-          type: { type: String, value: 'textarea' },
-          maxlength: { type: Number, value: 200 }
+          type: 'textarea',
+          maxlength: 200
         },
         data: {
           internalValue: '多行文本内容',
@@ -697,17 +663,17 @@ describe('表单字段组件测试', () => {
         }
       });
 
-      formFieldComponent.methods.updateCharacterCount();
+      formFieldComponent.updateCharacterCount();
 
       expect(formFieldComponent.setData).toHaveBeenCalledWith({
-        characterCount: 7
+        characterCount: 6
       });
     });
 
     it('应该处理数字类型', () => {
       const formFieldComponent = createMockComponent({
         properties: {
-          type: { type: String, value: 'number' }
+          type: 'number'
         },
         methods: {
           onInput(e) {
@@ -728,7 +694,7 @@ describe('表单字段组件测试', () => {
         detail: { value: 'abc123def' }
       };
 
-      formFieldComponent.methods.onInput(mockEvent);
+      formFieldComponent.onInput(mockEvent);
 
       expect(formFieldComponent.setData).toHaveBeenCalledWith({
         internalValue: '123'

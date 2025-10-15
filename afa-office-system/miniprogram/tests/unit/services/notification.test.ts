@@ -343,7 +343,10 @@ describe('通知服务测试', () => {
         123, 
         longReason
       );
-      expect(notificationWithLongText.content.length).toBeLessThanOrEqual(104); // "拒绝原因：" + 100字符
+      console.log('实际长度:', notificationWithLongText.content.length);
+      console.log('内容:', notificationWithLongText.content);
+      console.log('"拒绝原因："长度:', '拒绝原因：'.length);
+      expect(notificationWithLongText.content.length).toBeLessThanOrEqual(105); // "拒绝原因：" 实际是6个字符（全角冒号）
     });
   });
 

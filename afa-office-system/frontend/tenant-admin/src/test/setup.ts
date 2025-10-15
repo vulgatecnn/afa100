@@ -124,3 +124,19 @@ const sessionStorageMock = createSessionStorageMock()
 Object.defineProperty(window, 'sessionStorage', {
   value: sessionStorageMock,
 })
+
+// Mock fetch API
+global.fetch = vi.fn()
+
+// Mock URL.createObjectURL
+global.URL.createObjectURL = vi.fn(() => 'mocked-url')
+
+// Mock console.error to reduce noise in test output
+const originalError = console.error
+console.error = vi.fn((...args) => {
+  // 忽略特定的警告信息
+  if (typeof args[0] === 'string' && args[0].includes('Warning:')) {
+    return
+  }
+  originalError(...args)
+})

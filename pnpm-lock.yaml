@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      dotenv:
+        specifier: ^16.3.1
+        version: 16.6.1
     devDependencies:
       '@faker-js/faker':
         specifier: 10.0.0
@@ -54,7 +58,7 @@ importers:
         specifier: ^1.4.5-lts.1
         version: 1.4.5-lts.2
       mysql2:
-        specifier: 3.15.2
+        specifier: ^3.15.2
         version: 3.15.2
       qrcode:
         specifier: ^1.5.3
@@ -5614,7 +5618,7 @@ snapshots:
       std-env: 3.9.0
       strip-literal: 2.1.1
       test-exclude: 6.0.0
-      vitest: 1.6.1(@types/node@24.7.1)(@vitest/ui@1.6.1)(jsdom@23.2.0)(terser@5.44.0)
+      vitest: 1.6.1(@types/node@20.19.20)(@vitest/ui@1.6.1)(jsdom@23.2.0)(terser@5.44.0)
     transitivePeerDependencies:
       - supports-color
 
@@ -5649,7 +5653,7 @@ snapshots:
       pathe: 1.1.2
       picocolors: 1.1.1
       sirv: 2.0.4
-      vitest: 1.6.1(@types/node@24.7.1)(@vitest/ui@1.6.1)(jsdom@23.2.0)(terser@5.44.0)
+      vitest: 1.6.1(@types/node@20.19.20)(@vitest/ui@1.6.1)(jsdom@23.2.0)(terser@5.44.0)
 
   '@vitest/utils@1.6.1':
     dependencies:

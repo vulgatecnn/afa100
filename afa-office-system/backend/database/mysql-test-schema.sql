@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS `merchants` (
     `address` TEXT,
     `status` ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
     `settings` JSON,
+    `subscription` JSON,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     INDEX `idx_code` (`code`),

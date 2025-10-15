@@ -40,7 +40,7 @@ describe('简化数据库测试', () => {
     const merchantId = await insertTestData('merchants', {
       name: '测试商户',
       code: 'TEST_MERCHANT_001',
-      contact_person: '联系人',
+      contact: '联系人',
       phone: '13800138000',
       email: 'merchant@example.com',
       status: 'active'
@@ -60,7 +60,7 @@ describe('简化数据库测试', () => {
     const merchantId = await insertTestData('merchants', {
       name: '测试商户',
       code: 'TEST_MERCHANT_002',
-      contact_person: '联系人',
+      contact: '联系人',
       phone: '13800138001',
       status: 'active'
     });
@@ -95,7 +95,7 @@ describe('简化数据库测试', () => {
     const merchantId = await insertTestData('merchants', {
       name: '测试商户',
       code: 'TEST_MERCHANT_003',
-      contact_person: '联系人',
+      contact: '联系人',
       phone: '13800138002',
       status: 'active'
     });

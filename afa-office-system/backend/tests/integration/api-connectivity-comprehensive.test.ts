@@ -26,7 +26,7 @@ describe('API接口连通性全面验证测试', () => {
     testMerchantId = await insertTestData('merchants', {
       name: '测试商户',
       code: 'TEST_MERCHANT_001',
-      contact_person: '张三',
+      contact: '张三',
       phone: '13800138000',
       email: 'test@merchant.com',
       status: 'active'

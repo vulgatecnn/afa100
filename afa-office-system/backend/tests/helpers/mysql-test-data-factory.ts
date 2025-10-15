@@ -28,7 +28,7 @@ interface Merchant {
   id?: number;
   name: string;
   code: string;
-  contact_person: string;
+  contact: string;
   phone: string;
   email: string;
   address?: string;
@@ -180,7 +180,7 @@ export class MySQLTestDataFactory {
     const baseMerchant: Merchant = {
       name: faker.company.name(),
       code: `MERCHANT_${faker.number.int({ min: 1000, max: 9999 })}`,
-      contact_person: faker.person.fullName(),
+      contact: faker.person.fullName(),
       phone: faker.phone.number(),
       email: faker.internet.email(),
       address: faker.location.streetAddress(),
@@ -199,7 +199,7 @@ export class MySQLTestDataFactory {
       ...baseMerchant,
       name: this.validateStringLength(baseMerchant.name, 200),
       code: this.validateStringLength(baseMerchant.code, 50),
-      contact_person: this.validateStringLength(baseMerchant.contact_person, 100),
+      contact: this.validateStringLength(baseMerchant.contact, 100),
       phone: this.validateStringLength(baseMerchant.phone, 20),
       email: this.validateStringLength(baseMerchant.email, 100),
       address: baseMerchant.address ? this.validateStringLength(baseMerchant.address, 500) : null,
@@ -385,12 +385,12 @@ export class MySQLTestDataFactory {
         
         for (const merchantData of batch) {
           const result = await this.adapter.run(
-            `INSERT INTO merchants (name, code, contact_person, phone, email, address, status, settings, created_at, updated_at)
+            `INSERT INTO merchants (name, code, contact, phone, email, address, status, settings, created_at, updated_at)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
               merchantData.name,
               merchantData.code,
-              merchantData.contact_person,
+              merchantData.contact,
               merchantData.phone,
               merchantData.email,
               merchantData.address,

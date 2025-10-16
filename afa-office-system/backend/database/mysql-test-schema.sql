@@ -29,7 +29,9 @@ CREATE TABLE IF NOT EXISTS `users` (
     `name` VARCHAR(100) NOT NULL,
     `avatar` TEXT,
     `user_type` ENUM('tenant_admin', 'merchant_admin', 'employee', 'visitor') NOT NULL,
+    `role` VARCHAR(50),
     `status` ENUM('active', 'inactive', 'pending') NOT NULL DEFAULT 'active',
+    `permissions` JSON,
     `merchant_id` INT,
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -37,6 +39,7 @@ CREATE TABLE IF NOT EXISTS `users` (
     INDEX `idx_user_type` (`user_type`),
     INDEX `idx_status` (`status`),
     INDEX `idx_open_id` (`open_id`),
+    INDEX `idx_role` (`role`),
     FOREIGN KEY (`merchant_id`) REFERENCES `merchants`(`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

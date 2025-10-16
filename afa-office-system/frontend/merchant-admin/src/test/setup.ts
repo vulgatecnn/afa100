@@ -110,6 +110,34 @@ global.fetch = vi.fn()
 // Mock URL.createObjectURL
 global.URL.createObjectURL = vi.fn(() => 'mocked-url')
 
+// Mock getComputedStyle for Ant Design components
+Object.defineProperty(window, 'getComputedStyle', {
+  value: vi.fn().mockImplementation(() => ({
+    getPropertyValue: vi.fn(() => ''),
+    width: '0px',
+    height: '0px',
+    paddingLeft: '0px',
+    paddingRight: '0px',
+    paddingTop: '0px',
+    paddingBottom: '0px',
+    marginLeft: '0px',
+    marginRight: '0px',
+    marginTop: '0px',
+    marginBottom: '0px',
+    borderLeftWidth: '0px',
+    borderRightWidth: '0px',
+    borderTopWidth: '0px',
+    borderBottomWidth: '0px',
+    boxSizing: 'border-box',
+    display: 'block',
+    position: 'static',
+    overflow: 'visible',
+    overflowX: 'visible',
+    overflowY: 'visible'
+  })),
+  writable: true,
+})
+
 // 启动MSW服务器
 beforeAll(() => server.listen({ 
   onUnhandledRequest: 'warn' // 改为warn，避免测试中断

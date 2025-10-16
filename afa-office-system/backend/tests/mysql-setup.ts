@@ -246,19 +246,23 @@ async function createTestTables(): Promise<void> {
     await testConnection.execute(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(100) NOT NULL COMMENT '用户姓名',
-        email VARCHAR(255) UNIQUE NOT NULL COMMENT '邮箱地址',
-        phone VARCHAR(20) COMMENT '手机号码',
-        password_hash VARCHAR(255) NOT NULL COMMENT '密码哈希',
-        user_type ENUM('tenant_admin', 'merchant_admin', 'merchant_employee') NOT NULL COMMENT '用户类型',
-        status ENUM('active', 'inactive', 'pending') DEFAULT 'pending' COMMENT '用户状态',
-        merchant_id INT NULL COMMENT '所属商户ID',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-        INDEX idx_email (email),
-        INDEX idx_user_type (user_type),
+        open_id VARCHAR(255) UNIQUE,
+        union_id VARCHAR(255),
+        phone VARCHAR(20),
+        name VARCHAR(100) NOT NULL,
+        avatar TEXT,
+        user_type ENUM('tenant_admin', 'merchant_admin', 'employee', 'visitor') NOT NULL,
+        role VARCHAR(50),
+        status ENUM('active', 'inactive', 'pending') NOT NULL DEFAULT 'active',
+        permissions JSON,
+        merchant_id INT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         INDEX idx_merchant_id (merchant_id),
-        INDEX idx_status (status)
+        INDEX idx_user_type (user_type),
+        INDEX idx_status (status),
+        INDEX idx_open_id (open_id),
+        INDEX idx_role (role)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表'
     `);
 
@@ -266,15 +270,17 @@ async function createTestTables(): Promise<void> {
     await testConnection.execute(`
       CREATE TABLE IF NOT EXISTS merchants (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(200) NOT NULL COMMENT '商户名称',
-        code VARCHAR(50) UNIQUE NOT NULL COMMENT '商户编码',
-        contact_person VARCHAR(100) NOT NULL COMMENT '联系人',
-        phone VARCHAR(20) NOT NULL COMMENT '联系电话',
-        email VARCHAR(255) COMMENT '联系邮箱',
-        status ENUM('active', 'inactive', 'pending') DEFAULT 'pending' COMMENT '商户状态',
-        settings JSON COMMENT '商户配置信息',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+        name VARCHAR(200) NOT NULL,
+        code VARCHAR(50) UNIQUE NOT NULL,
+        contact VARCHAR(100),
+        phone VARCHAR(20),
+        email VARCHAR(100),
+        address TEXT,
+        status ENUM('active', 'inactive') NOT NULL DEFAULT 'active',
+        settings JSON,
+        subscription JSON,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         INDEX idx_code (code),
         INDEX idx_status (status),
         INDEX idx_name (name)

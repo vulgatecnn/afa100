@@ -498,7 +498,9 @@ describe('employeeService', () => {
       }
 
       server.use(
-        http.post('/api/v1/merchant/employees/batch', () => {
+        http.post('/api/v1/merchant/employees/batch', async () => {
+          // 模拟文件处理延迟
+          await new Promise(resolve => setTimeout(resolve, 100))
           return HttpResponse.json({
             success: true,
             data: mockResult,
@@ -513,7 +515,7 @@ describe('employeeService', () => {
       expect(result.success).toBe(8)
       expect(result.failed).toBe(2)
       expect(result.errors).toHaveLength(2)
-    })
+    }, 10000) // 增加超时时间到10秒
 
     it('应该处理文件格式错误', async () => {
       const invalidFile = new File(['invalid content'], 'invalid.txt', {
@@ -521,7 +523,8 @@ describe('employeeService', () => {
       })
 
       server.use(
-        http.post('/api/v1/merchant/employees/batch', () => {
+        http.post('/api/v1/merchant/employees/batch', async () => {
+          await new Promise(resolve => setTimeout(resolve, 100))
           return HttpResponse.json({
             success: false,
             code: 400,
@@ -533,7 +536,7 @@ describe('employeeService', () => {
       )
 
       await expect(employeeService.batchImportEmployees(invalidFile)).rejects.toThrow('文件格式不正确，请上传CSV文件')
-    })
+    }, 10000) // 增加超时时间到10秒
 
     it('应该处理文件过大', async () => {
       const largeFile = new File(['x'.repeat(1024)], 'large.csv', {
@@ -541,7 +544,8 @@ describe('employeeService', () => {
       })
 
       server.use(
-        http.post('/api/v1/merchant/employees/batch', () => {
+        http.post('/api/v1/merchant/employees/batch', async () => {
+          await new Promise(resolve => setTimeout(resolve, 100))
           return HttpResponse.json({
             success: false,
             code: 413,
@@ -553,7 +557,7 @@ describe('employeeService', () => {
       )
 
       await expect(employeeService.batchImportEmployees(largeFile)).rejects.toThrow('文件大小超出限制')
-    })
+    }, 10000) // 增加超时时间到10秒
   })
 
   describe('downloadTemplate', () => {

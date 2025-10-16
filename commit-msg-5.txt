@@ -1,0 +1,5 @@
+fix(schema): 在merchants表中添加subscription列
+
+- 修复mysql-test-schema.sql中缺少subscription列的问题
+- 解决"MySQL列不存在"错误
+- 确保表结构与Model定义一致

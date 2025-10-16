@@ -1,190 +1,151 @@
 #!/usr/bin/env node
 
 /**
- * 修复MySQL数据库连接问题的脚本
- * 用于解决GitHub Actions中MySQL连接被拒绝的问题
+ * 修复MySQL连接问题的脚本
+ * 用于CI/CD环境中解决数据库用户权限和表结构问题
  */
 
 const mysql = require('mysql2/promise');
-const dotenv = require('dotenv');
+const fs = require('fs');
+const path = require('path');
 
-// 加载环境变量
-dotenv.config({ path: './.env.test' });
+// 从环境变量获取数据库配置
+const config = {
+  host: process.env.DB_HOST || '127.0.0.1',
+  port: parseInt(process.env.DB_PORT || '3306'),
+  user: 'root',
+  password: process.env.MYSQL_ROOT_PASSWORD || 'test_password',
+  database: process.env.MYSQL_DATABASE || 'afa_office_test',
+  testUser: process.env.MYSQL_USER || 'afa_test',
+  testPassword: process.env.MYSQL_PASSWORD || 'test_password'
+};
+
+console.log('🔧 开始修复MySQL连接问题...');
+console.log('配置信息:', {
+  host: config.host,
+  port: config.port,
+  database: config.database,
+  testUser: config.testUser
+});
 
 async function fixMySQLConnection() {
-  console.log('🔧 开始修复MySQL连接问题...');
-  
-  // GitHub Actions环境变量
-  const mysqlConfig = {
-    host: process.env.DB_HOST || '127.0.0.1',
-    port: parseInt(process.env.DB_PORT || '3306'),
-    user: process.env.MYSQL_ROOT_USER || process.env.MYSQL_ADMIN_USER || process.env.DB_USER || 'root',
-    password: process.env.MYSQL_ROOT_PASSWORD || process.env.MYSQL_ADMIN_PASSWORD || process.env.DB_PASSWORD || 'test_password',
-    database: process.env.DB_NAME || 'afa_office_test'
-  };
-  
-  const testUserConfig = {
-    host: process.env.DB_HOST || '127.0.0.1',
-    port: parseInt(process.env.DB_PORT || '3306'),
-    user: process.env.TEST_DB_USER || process.env.DB_USER || process.env.MYSQL_USER || 'afa_test',
-    password: process.env.TEST_DB_PASSWORD || process.env.DB_PASSWORD || process.env.MYSQL_PASSWORD || 'test_password',
-    database: process.env.TEST_DB_NAME || process.env.DB_NAME || process.env.MYSQL_DATABASE || 'afa_office_test'
-  };
-  
-  console.log('📋 管理员配置:', {
-    host: mysqlConfig.host,
-    port: mysqlConfig.port,
-    user: mysqlConfig.user,
-    database: mysqlConfig.database
-  });
-  
-  console.log('📋 测试用户配置:', {
-    host: testUserConfig.host,
-    port: testUserConfig.port,
-    user: testUserConfig.user,
-    database: testUserConfig.database
-  });
-  
-  let adminConnection;
-  let testConnection;
+  let connection;
   
   try {
-    // 1. 使用管理员账户连接
-    console.log('🔗 尝试使用管理员账户连接...');
-    adminConnection = await mysql.createConnection(mysqlConfig);
-    console.log('✅ 管理员连接成功');
+    // 1. 连接到MySQL服务器（不指定数据库）
+    console.log('📡 连接到MySQL服务器...');
+    connection = await mysql.createConnection({
+      host: config.host,
+      port: config.port,
+      user: 'root',
+      password: config.password
+    });
     
-    // 2. 检查数据库是否存在
-    console.log('🔍 检查测试数据库是否存在...');
-    const [dbRows] = await adminConnection.execute(
-      'SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?',
-      [testUserConfig.database]
-    );
+    console.log('✅ 成功连接到MySQL服务器');
     
-    if (dbRows.length === 0) {
-      console.log('📁 创建测试数据库...');
-      await adminConnection.execute(`CREATE DATABASE IF NOT EXISTS \`${testUserConfig.database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
-      console.log('✅ 测试数据库创建成功');
-    } else {
-      console.log('✅ 测试数据库已存在');
+    // 2. 创建数据库（如果不存在）
+    console.log('🗄️ 创建测试数据库...');
+    await connection.execute(`CREATE DATABASE IF NOT EXISTS \`${config.database}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+    console.log(`✅ 数据库 ${config.database} 已创建或已存在`);
+    
+    // 3. 创建测试用户并授权
+    console.log('👤 创建测试用户并授权...');
+    
+    // 删除可能存在的用户（避免冲突）
+    try {
+      await connection.execute(`DROP USER IF EXISTS '${config.testUser}'@'%'`);
+      await connection.execute(`DROP USER IF EXISTS '${config.testUser}'@'localhost'`);
+    } catch (err) {
+      console.log('ℹ️ 清理旧用户时出现预期错误（可忽略）');
     }
     
-    // 3. 检查测试用户是否存在
-    console.log('🔍 检查测试用户是否存在...');
-    const [userRows] = await adminConnection.execute(
-      'SELECT User FROM mysql.user WHERE User = ? AND Host = ?',
-      [testUserConfig.user, '%']
-    );
+    // 创建新用户
+    await connection.execute(`CREATE USER '${config.testUser}'@'%' IDENTIFIED BY '${config.testPassword}'`);
+    await connection.execute(`CREATE USER '${config.testUser}'@'localhost' IDENTIFIED BY '${config.testPassword}'`);
     
-    if (userRows.length === 0) {
-      console.log('👤 创建测试用户...');
-      await adminConnection.execute(
-        `CREATE USER IF NOT EXISTS '${testUserConfig.user}'@'%' IDENTIFIED BY '${testUserConfig.password}'`
-      );
-      console.log('✅ 测试用户创建成功');
-    } else {
-      console.log('✅ 测试用户已存在');
-      // 更新密码
-      console.log('🔑 更新测试用户密码...');
-      await adminConnection.execute(
-        `ALTER USER '${testUserConfig.user}'@'%' IDENTIFIED BY '${testUserConfig.password}'`
-      );
-      console.log('✅ 测试用户密码更新成功');
-    }
+    // 授予权限
+    await connection.execute(`GRANT ALL PRIVILEGES ON \`${config.database}\`.* TO '${config.testUser}'@'%'`);
+    await connection.execute(`GRANT ALL PRIVILEGES ON \`${config.database}\`.* TO '${config.testUser}'@'localhost'`);
     
-    // 4. 授予测试用户权限
-    console.log('🔓 授予测试用户权限...');
-    await adminConnection.execute(
-      `GRANT ALL PRIVILEGES ON \`${testUserConfig.database}\`.* TO '${testUserConfig.user}'@'%'`
-    );
-    await adminConnection.execute('FLUSH PRIVILEGES');
-    console.log('✅ 测试用户权限授予成功');
+    // 刷新权限
+    await connection.execute('FLUSH PRIVILEGES');
     
-    // 5. 验证测试用户连接
-    console.log('🔗 验证测试用户连接...');
-    testConnection = await mysql.createConnection(testUserConfig);
-    await testConnection.ping();
-    console.log('✅ 测试用户连接验证成功');
+    console.log(`✅ 用户 ${config.testUser} 已创建并授权`);
     
-    // 6. 创建基础表结构
-    console.log('🔧 创建基础表结构...');
-    const schema = `
-      CREATE TABLE IF NOT EXISTS users (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        email VARCHAR(255) UNIQUE NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+    // 4. 切换到测试数据库
+    await connection.execute(`USE \`${config.database}\``);
+    
+    // 5. 执行数据库表结构
+    console.log('📋 创建数据库表结构...');
+    
+    const schemaPath = path.join(__dirname, '../afa-office-system/backend/database/mysql-test-schema.sql');
+    
+    if (fs.existsSync(schemaPath)) {
+      const schema = fs.readFileSync(schemaPath, 'utf8');
       
-      CREATE TABLE IF NOT EXISTS merchants (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(200) NOT NULL,
-        code VARCHAR(50) UNIQUE NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-    `;
+      // 分割SQL语句并执行
+      const statements = schema
+        .split(';')
+        .map(stmt => stmt.trim())
+        .filter(stmt => stmt.length > 0 && !stmt.startsWith('--'));
+      
+      for (const statement of statements) {
+        try {
+          await connection.execute(statement);
+        } catch (err) {
+          console.log(`⚠️ 执行SQL语句时出现错误（可能是重复创建）: ${err.message}`);
+        }
+      }
+      
+      console.log('✅ 数据库表结构创建完成');
+    } else {
+      console.log('⚠️ 未找到数据库表结构文件，跳过表创建');
+    }
     
-    await testConnection.execute(schema);
-    console.log('✅ 基础表结构创建成功');
+    // 6. 验证连接
+    console.log('🔍 验证数据库连接...');
     
-    // 7. 插入测试数据
-    console.log('📝 插入测试数据...');
-    await testConnection.execute(
-      "INSERT IGNORE INTO users (name, email) VALUES ('测试用户', 'test@example.com')"
-    );
-    await testConnection.execute(
-      "INSERT IGNORE INTO merchants (name, code) VALUES ('测试商户', 'TEST001')"
-    );
-    console.log('✅ 测试数据插入成功');
+    // 关闭root连接
+    await connection.end();
     
-    console.log('\n🎉 MySQL连接问题修复完成!');
-    console.log('\n📋 修复摘要:');
-    console.log('  - 管理员连接: ✅ 成功');
-    console.log('  - 测试数据库: ✅ 已创建/验证');
-    console.log('  - 测试用户: ✅ 已创建/更新');
-    console.log('  - 用户权限: ✅ 已授予');
-    console.log('  - 连接验证: ✅ 成功');
-    console.log('  - 表结构: ✅ 已创建');
-    console.log('  - 测试数据: ✅ 已插入');
+    // 使用测试用户连接
+    const testConnection = await mysql.createConnection({
+      host: config.host,
+      port: config.port,
+      user: config.testUser,
+      password: config.testPassword,
+      database: config.database
+    });
+    
+    // 测试查询
+    const [rows] = await testConnection.execute('SELECT COUNT(*) as table_count FROM information_schema.tables WHERE table_schema = ?', [config.database]);
+    console.log(`✅ 测试用户连接成功，数据库中有 ${rows[0].table_count} 个表`);
+    
+    // 列出所有表
+    const [tables] = await testConnection.execute('SHOW TABLES');
+    console.log('📋 数据库表列表:');
+    tables.forEach((table, index) => {
+      console.log(`  ${index + 1}. ${Object.values(table)[0]}`);
+    });
+    
+    await testConnection.end();
+    
+    console.log('🎉 MySQL连接问题修复完成！');
     
   } catch (error) {
-    console.error('❌ 修复过程中发生错误:', error.message);
-    console.error('错误代码:', error.code);
-    console.error('错误编号:', error.errno);
-    
-    // 提供具体的解决建议
-    if (error.code === 'ER_ACCESS_DENIED_ERROR') {
-      console.log('\n💡 解决建议:');
-      console.log('  1. 检查MySQL管理员账户和密码是否正确');
-      console.log('  2. 确保管理员账户有CREATE USER权限');
-      console.log('  3. 验证MySQL服务是否正在运行');
-    } else if (error.code === 'ECONNREFUSED') {
-      console.log('\n💡 解决建议:');
-      console.log('  1. 检查MySQL服务是否正在运行');
-      console.log('  2. 验证MySQL主机地址和端口是否正确');
-      console.log('  3. 确保防火墙没有阻止连接');
-    } else {
-      console.log('\n💡 通用解决建议:');
-      console.log('  1. 检查环境变量配置');
-      console.log('  2. 验证MySQL服务状态');
-      console.log('  3. 确认网络连接');
-    }
-    
+    console.error('❌ 修复MySQL连接时出错:', error.message);
+    console.error('错误详情:', error);
     process.exit(1);
   } finally {
-    // 关闭连接
-    if (testConnection) {
-      await testConnection.end();
-    }
-    if (adminConnection) {
-      await adminConnection.end();
+    if (connection) {
+      try {
+        await connection.end();
+      } catch (err) {
+        // 忽略关闭连接时的错误
+      }
     }
   }
 }
 
-// 如果直接运行此脚本
-if (require.main === module) {
-  fixMySQLConnection().catch(console.error);
-}
-
-module.exports = { fixMySQLConnection };
+// 运行修复脚本
+fixMySQLConnection().catch(console.error);

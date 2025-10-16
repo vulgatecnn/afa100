@@ -1,130 +1,117 @@
-# CI/CD状态监控脚本
-# 用于定期检查GitHub Actions工作流状态
-
+# CI/CD 状态监控脚本
 param(
-    [int]$Interval = 30,  # 检查间隔（秒）
-    [int]$MaxChecks = 60  # 最大检查次数
+    [int]$IntervalSeconds = 30,
+    [int]$MaxChecks = 20
 )
 
-Write-Host "开始监控CI/CD状态..." -ForegroundColor Green
-Write-Host "检查间隔: $Interval 秒, 最大检查次数: $MaxChecks" -ForegroundColor Yellow
+Write-Host "开始监控 CI/CD 流水线状态..." -ForegroundColor Green
+Write-Host "检查间隔: $IntervalSeconds 秒" -ForegroundColor Yellow
+Write-Host "最大检查次数: $MaxChecks 次" -ForegroundColor Yellow
+Write-Host ""
 
 $checkCount = 0
-$lastRunId = $null
-$completed = $false
 
-while ($checkCount -lt $MaxChecks -and -not $completed) {
+while ($checkCount -lt $MaxChecks) {
     $checkCount++
-    Write-Host "`n--- 第 $checkCount 次检查 ---" -ForegroundColor Cyan
+    
+    Write-Host "[$checkCount/$MaxChecks] 检查时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')" -ForegroundColor Cyan
     
     try {
-        # 获取最新的工作流运行
-        $runOutput = gh run list --limit 1 --json databaseId,status,conclusion,event,workflowName,displayTitle,startedAt,updatedAt | ConvertFrom-Json
+        # 获取最新的工作流运行状态
+        $runs = gh run list --limit 5 --json status,conclusion,workflowName,createdAt,id | ConvertFrom-Json
         
-        if ($runOutput.Count -eq 0) {
-            Write-Host "没有找到任何工作流运行" -ForegroundColor Yellow
-            Start-Sleep -Seconds $Interval
-            continue
-        }
+        Write-Host "最新工作流状态:" -ForegroundColor White
+        Write-Host "=" * 80 -ForegroundColor Gray
         
-        $latestRun = $runOutput[0]
-        Write-Host "最新工作流: $($latestRun.workflowName) ($($latestRun.displayTitle))" -ForegroundColor White
-        Write-Host "状态: $($latestRun.status), 结论: $(if ($latestRun.conclusion) { $latestRun.conclusion } else { 'N/A' })" -ForegroundColor White
-        Write-Host "事件: $($latestRun.event), 开始时间: $((Get-Date $latestRun.startedAt).ToString('yyyy-MM-dd HH:mm:ss'))" -ForegroundColor White
-        
-        # 如果是新的运行，记录ID
-        if ($latestRun.databaseId -ne $lastRunId) {
-            Write-Host "检测到新的工作流运行: $($latestRun.databaseId)" -ForegroundColor Magenta
-            $lastRunId = $latestRun.databaseId
-        }
-        
-        # 根据状态采取不同操作
-        if ($latestRun.status -eq 'completed') {
-            Write-Host "工作流已完成，结论: $($latestRun.conclusion)" -ForegroundColor White
+        foreach ($run in $runs) {
+            $status = $run.status
+            $conclusion = $run.conclusion
+            $workflowName = $run.workflowName
+            $runId = $run.id
             
-            # 获取详细信息
-            try {
-                $detailsOutput = gh run view $latestRun.databaseId --json jobs | ConvertFrom-Json
-                Write-Host "`n工作流作业详情:" -ForegroundColor Yellow
-                
-                foreach ($job in $detailsOutput.jobs) {
-                    $statusIcon = switch ($job.status) {
-                        'completed' { 
-                            if ($job.conclusion -eq 'success') { '✓' } else { '✗' }
-                        }
-                        'in_progress' { '●' }
-                        default { '○' }
-                    }
-                    
-                    Write-Host "  $statusIcon $($job.name) ($($job.conclusion ?? $job.status))" -ForegroundColor White
-                    
-                    # 显示步骤详情
-                    if ($job.steps) {
-                        foreach ($step in $job.steps) {
-                            $stepStatusIcon = switch ($step.status) {
-                                'completed' { 
-                                    if ($step.conclusion -eq 'success') { '  ✓' } else { '  ✗' }
-                                }
-                                'in_progress' { '  ●' }
-                                default { '  ○' }
-                            }
-                            
-                            Write-Host "    $stepStatusIcon $($step.name)" -ForegroundColor Gray
-                        }
+            # 状态图标
+            $statusIcon = switch ($status) {
+                "in_progress" { "[RUNNING]" }
+                "completed" { 
+                    switch ($conclusion) {
+                        "success" { "[SUCCESS]" }
+                        "failure" { "[FAILED]" }
+                        "cancelled" { "[CANCELLED]" }
+                        default { "[UNKNOWN]" }
                     }
                 }
-            } catch {
-                Write-Host "获取工作流详情时出错: $($_.Exception.Message)" -ForegroundColor Red
+                default { "[UNKNOWN]" }
             }
             
-            if ($latestRun.conclusion -eq 'success') {
-                Write-Host "✅ CI/CD流水线执行成功!" -ForegroundColor Green
-                $completed = $true
+            # 状态颜色
+            $statusColor = switch ($status) {
+                "in_progress" { "Yellow" }
+                "completed" { 
+                    switch ($conclusion) {
+                        "success" { "Green" }
+                        "failure" { "Red" }
+                        "cancelled" { "DarkYellow" }
+                        default { "Gray" }
+                    }
+                }
+                default { "Gray" }
+            }
+            
+            Write-Host "$statusIcon $workflowName" -ForegroundColor $statusColor
+            Write-Host "   状态: $status" -ForegroundColor Gray
+            if ($conclusion) {
+                Write-Host "   结果: $conclusion" -ForegroundColor Gray
+            }
+            Write-Host "   ID: $runId" -ForegroundColor Gray
+            Write-Host ""
+        }
+        
+        # 检查是否还有运行中的工作流
+        $inProgressRuns = $runs | Where-Object { $_.status -eq "in_progress" }
+        
+        if ($inProgressRuns.Count -eq 0) {
+            Write-Host "所有工作流已完成!" -ForegroundColor Green
+            
+            # 显示最终结果摘要
+            Write-Host ""
+            Write-Host "最终结果摘要:" -ForegroundColor Cyan
+            Write-Host "=" * 50 -ForegroundColor Gray
+            
+            $completedRuns = $runs | Where-Object { $_.status -eq "completed" }
+            $successCount = ($completedRuns | Where-Object { $_.conclusion -eq "success" }).Count
+            $failureCount = ($completedRuns | Where-Object { $_.conclusion -eq "failure" }).Count
+            $cancelledCount = ($completedRuns | Where-Object { $_.conclusion -eq "cancelled" }).Count
+            
+            Write-Host "SUCCESS: $successCount" -ForegroundColor Green
+            Write-Host "FAILED: $failureCount" -ForegroundColor Red
+            Write-Host "CANCELLED: $cancelledCount" -ForegroundColor DarkYellow
+            
+            if ($failureCount -eq 0) {
+                Write-Host ""
+                Write-Host "恭喜！所有CI/CD流水线都成功通过了！" -ForegroundColor Green
             } else {
-                Write-Host "❌ CI/CD流水线执行失败!" -ForegroundColor Red
-                $completed = $true
+                Write-Host ""
+                Write-Host "有 $failureCount 个工作流失败，需要检查。" -ForegroundColor Red
             }
-        } elseif ($latestRun.status -eq 'in_progress') {
-            Write-Host "工作流正在进行中..." -ForegroundColor Yellow
             
-            # 获取详细信息
-            try {
-                $detailsOutput = gh run view $latestRun.databaseId --json jobs | ConvertFrom-Json
-                Write-Host "`n工作流作业详情:" -ForegroundColor Yellow
-                
-                foreach ($job in $detailsOutput.jobs) {
-                    $statusIcon = switch ($job.status) {
-                        'completed' { 
-                            if ($job.conclusion -eq 'success') { '✓' } else { '✗' }
-                        }
-                        'in_progress' { '●' }
-                        default { '○' }
-                    }
-                    
-                    Write-Host "  $statusIcon $($job.name) ($($job.conclusion ?? $job.status))" -ForegroundColor White
-                }
-            } catch {
-                Write-Host "获取工作流详情时出错: $($_.Exception.Message)" -ForegroundColor Red
-            }
-        } elseif ($latestRun.status -eq 'queued') {
-            Write-Host "工作流正在排队中..." -ForegroundColor Yellow
-        } else {
-            Write-Host "工作流状态: $($latestRun.status)" -ForegroundColor White
+            break
         }
+        
+        Write-Host "还有 $($inProgressRuns.Count) 个工作流正在运行中..." -ForegroundColor Yellow
+        Write-Host ""
         
     } catch {
-        Write-Host "检查CI状态时出错: $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "获取状态时出错: $($_.Exception.Message)" -ForegroundColor Red
     }
     
-    # 如果还没完成，等待下次检查
-    if (-not $completed) {
-        Write-Host "等待 $Interval 秒后进行下次检查..." -ForegroundColor Gray
-        Start-Sleep -Seconds $Interval
+    if ($checkCount -lt $MaxChecks) {
+        Write-Host "等待 $IntervalSeconds 秒后继续检查..." -ForegroundColor Gray
+        Start-Sleep -Seconds $IntervalSeconds
+        Write-Host ""
     }
 }
 
-if (-not $completed) {
-    Write-Host "达到最大检查次数 ($MaxChecks)，停止监控" -ForegroundColor Yellow
+if ($checkCount -ge $MaxChecks) {
+    Write-Host "已达到最大检查次数，停止监控。" -ForegroundColor DarkYellow
+    Write-Host "您可以手动检查: https://github.com/vulgatecnn/afa100/actions" -ForegroundColor Blue
 }
-
-Write-Host "CI/CD状态监控结束" -ForegroundColor Green

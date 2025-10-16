@@ -1,18 +1,23 @@
 import { describe, it, expect, vi } from 'vitest';
 
 // Mock environment variables for testing
-vi.mock('dotenv', () => ({
-  default: {
+vi.mock('dotenv', async (importOriginal) => {
+  const actual = await importOriginal() as any;
+  return {
+    ...actual,
+    default: {
+      config: vi.fn()
+    },
     config: vi.fn()
-  }
-}));
+  };
+});
 
 // Set test environment variables
 process.env.NODE_ENV = 'test';
 process.env.TEST_DB_HOST = '127.0.0.1';
 process.env.TEST_DB_PORT = '3306';
-process.env.TEST_DB_USER = 'afa_test_user';
-process.env.TEST_DB_PASSWORD = 'afa_test_2024';
+process.env.TEST_DB_USER = 'afa_test';
+process.env.TEST_DB_PASSWORD = 'test_password';
 process.env.TEST_DB_NAME = 'afa_office_test';
 
 import { 
@@ -29,8 +34,8 @@ describe('MySQL数据库配置测试 (简单版)', () => {
     expect(config).toBeDefined();
     expect(config.host).toBe('127.0.0.1');
     expect(config.port).toBe(3306);
-    expect(config.user).toBe('afa_test_user');
-    expect(config.password).toBe('afa_test_2024');
+    expect(config.user).toBe('afa_test');
+    expect(config.password).toBe('test_password');
     expect(config.database).toBe('afa_office_test');
     expect(config.connectionLimit).toBeGreaterThan(0);
     expect(config.charset).toBe('utf8mb4');

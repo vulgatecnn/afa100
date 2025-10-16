@@ -1,0 +1,7 @@
+fix(frontend): 优化前端测试配置
+
+- 增加测试超时时间从30秒到60秒
+- 添加teardownTimeout配置
+- 设置maxConcurrency为1避免并发问题
+- 启用isolate模式确保测试隔离
+- 修复merchant-admin和tenant-admin的测试配置

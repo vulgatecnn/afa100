@@ -24,8 +24,8 @@ beforeAll(async () => {
     testConnection = await mysql.createConnection({
       host: process.env.TEST_DB_HOST || '127.0.0.1',
       port: parseInt(process.env.TEST_DB_PORT || '3306'),
-      user: process.env.TEST_DB_USER || 'afa_test_user',
-      password: process.env.TEST_DB_PASSWORD || 'afa_test_2024',
+      user: process.env.TEST_DB_USER || process.env.MYSQL_USER || 'afa_test',
+      password: process.env.TEST_DB_PASSWORD || process.env.MYSQL_PASSWORD || 'test_password',
       database: process.env.TEST_DB_NAME || 'afa_office_test',
       multipleStatements: true
     });

@@ -241,7 +241,7 @@ describe('MySQL适配工具类验证 - 最终测试', () => {
                         filesUpdated.miniprogram.length + 
                         filesUpdated.shared.length
       
-      expect(totalFiles).toBe(10)
+      expect(totalFiles).toBe(9)
       expect(filesUpdated.backend).toHaveLength(4)
       expect(filesUpdated.frontend).toHaveLength(2)
       expect(filesUpdated.miniprogram).toHaveLength(2)

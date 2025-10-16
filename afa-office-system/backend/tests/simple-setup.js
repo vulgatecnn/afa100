@@ -193,19 +193,23 @@ async function createBasicTables() {
     await testConnection.execute(`
       CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(100) NOT NULL COMMENT '用户姓名',
-        email VARCHAR(255) UNIQUE NOT NULL COMMENT '邮箱地址',
-        phone VARCHAR(20) COMMENT '手机号码',
-        password_hash VARCHAR(255) NOT NULL COMMENT '密码哈希',
-        user_type ENUM('tenant_admin', 'merchant_admin', 'merchant_employee') NOT NULL COMMENT '用户类型',
-        status ENUM('active', 'inactive', 'pending') DEFAULT 'pending' COMMENT '用户状态',
-        merchant_id INT NULL COMMENT '所属商户ID',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
-        INDEX idx_email (email),
-        INDEX idx_user_type (user_type),
+        open_id VARCHAR(255) UNIQUE,
+        union_id VARCHAR(255),
+        phone VARCHAR(20),
+        name VARCHAR(100) NOT NULL,
+        avatar TEXT,
+        user_type ENUM('tenant_admin', 'merchant_admin', 'employee', 'visitor') NOT NULL,
+        role VARCHAR(50),
+        status ENUM('active', 'inactive', 'pending') NOT NULL DEFAULT 'active',
+        permissions JSON,
+        merchant_id INT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         INDEX idx_merchant_id (merchant_id),
-        INDEX idx_status (status)
+        INDEX idx_user_type (user_type),
+        INDEX idx_status (status),
+        INDEX idx_open_id (open_id),
+        INDEX idx_role (role)
       ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表'
     `);
 
@@ -221,6 +225,7 @@ async function createBasicTables() {
         address TEXT COMMENT '地址',
         status ENUM('active', 'inactive') DEFAULT 'active' COMMENT '商户状态',
         settings JSON COMMENT '商户配置信息',
+        subscription JSON COMMENT '订阅信息',
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
         INDEX idx_code (code),

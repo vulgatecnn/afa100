@@ -49,15 +49,15 @@ on:
 env:
   NODE_VERSION: '20.x'
   PNPM_VERSION: '8'
-  MYSQL_ROOT_PASSWORD: 'test_password'
+  MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD || 'test_password' }}
   MYSQL_DATABASE: 'afa_office_test'
   MYSQL_USER: 'afa_test'
-  MYSQL_PASSWORD: 'test_password'
+  MYSQL_PASSWORD: ${{ secrets.MYSQL_TEST_PASSWORD || 'test_password' }}
   DB_HOST: '127.0.0.1'
   DB_PORT: '3306'
   DB_NAME: 'afa_office_test'
   DB_USER: 'afa_test'
-  DB_PASSWORD: 'test_password'
+  DB_PASSWORD: ${{ secrets.MYSQL_TEST_PASSWORD || 'test_password' }}
   MYSQL_ROOT_USER: 'root'
 
 jobs:
